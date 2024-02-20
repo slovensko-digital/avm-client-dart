@@ -1,5 +1,5 @@
+import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
-import 'generated/autogram.swagger.dart';
 import 'iautogram_service.dart';
 import 'response_functions.dart';
 
