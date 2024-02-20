@@ -1,7 +1,6 @@
-import 'dart:convert';
-
-import 'package:autogram_sign/service_exception.dart';
 import 'package:chopper/chopper.dart' show Response;
+
+import 'service_exception.dart';
 
 /// Unwraps the [Response.body] and:
 ///  - returns its data if was successful;

@@ -5,24 +5,8 @@ class ServiceException implements Exception {
   /// Error message.
   final String message;
 
-  /// Optional [SerializableError] sent from the server.
-  final dynamic detail;
-
-  factory ServiceException.fromStatusCode(
-    int statusCode, [
-    dynamic detail,
-  ]) {
-    final message = detail?.message ?? "Got HTTP $statusCode.";
-
-    return ServiceException(statusCode, message, detail: detail);
-  }
-
-  const ServiceException(
-    this.statusCode,
-    this.message, {
-    this.detail,
-  });
+  const ServiceException(this.statusCode, this.message);
 
   @override
-  String toString() => "HTTP $statusCode: ${detail?.message ?? message}";
+  String toString() => "HTTP $statusCode: $message}";
 }

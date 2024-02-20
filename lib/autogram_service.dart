@@ -1,6 +1,8 @@
-import 'package:autogram_sign/autogram_authenticator.dart';
-import 'package:autogram_sign/generated/autogram.swagger.dart';
-import 'package:autogram_sign/iautogram_service.dart';
+import 'autogram_authenticator.dart';
+import 'generated/autogram.swagger.dart';
+import 'iautogram_service.dart';
+
+export 'iautogram_service.dart';
 
 class AutogramService implements IAutogramService {
   final Autogram _autogram;
@@ -9,13 +11,13 @@ class AutogramService implements IAutogramService {
     required Uri baseUrl,
     required String encryptionKey,
   }) : _autogram = Autogram.create(
-    baseUrl: baseUrl,
-    interceptors: [
-      AutogramAuthenticator(
-        encryptionKey: encryptionKey,
-      ),
-    ],
-  );
+          baseUrl: baseUrl,
+          interceptors: [
+            AutogramAuthenticator(
+              encryptionKey: encryptionKey,
+            ),
+          ],
+        );
 
   @override
   Future<String> createDocument(DocumentPostRequestBody body) {
