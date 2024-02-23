@@ -24,4 +24,7 @@ abstract class IAutogramService {
     SignRequestBody body, [
     bool returnSignedDocument = true,
   ]);
+
+  Future<GetDocumentResponse> getDocument(String id,
+      [DateTime? ifModifiedSince]);
 }

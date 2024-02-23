@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
 import 'iautogram_service.dart';
@@ -56,7 +58,7 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<void> signDocument(
+  Future<dynamic> signDocument(
     String id,
     SignRequestBody body, [
     bool returnSignedDocument = true,
@@ -66,6 +68,20 @@ class AutogramService implements IAutogramService {
           guid: id,
           body: body,
           returnSignedDocument: returnSignedDocument,
+        )
+        .then(unwrap);
+  }
+
+  @override
+  Future<GetDocumentResponse> getDocument(String id,
+      [DateTime? ifModifiedSince]) {
+    return _autogram
+        .documentsGuidGet(
+          guid: id,
+          ifModifiedSince: ifModifiedSince != null
+              ? DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US')
+                  .format(ifModifiedSince.toUtc())
+              : null,
         )
         .then(unwrap);
   }
