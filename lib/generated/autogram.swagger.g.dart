@@ -92,7 +92,7 @@ Map<String, dynamic> _$GetDocumentResponseToJson(
     };
 
 Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
-      filename: json['filename'] as String?,
+      filename: json['filename'] as String,
       content: json['content'] as String,
     );
 
@@ -113,17 +113,40 @@ Map<String, dynamic> _$SigningParametersToJson(SigningParameters instance) =>
       'container': signingParametersContainerNullableToJson(instance.container),
     };
 
+VisualizationResponse _$VisualizationResponseFromJson(
+        Map<String, dynamic> json) =>
+    VisualizationResponse(
+      mimeType: json['mimeType'] as String,
+      filename: json['filename'] as String,
+      content: json['content'] as String,
+      signers: (json['signers'] as List<dynamic>)
+          .map((e) => VisualizationResponse$Signers$Item.fromJson(
+              e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$VisualizationResponseToJson(
+        VisualizationResponse instance) =>
+    <String, dynamic>{
+      'mimeType': instance.mimeType,
+      'filename': instance.filename,
+      'content': instance.content,
+      'signers': instance.signers.map((e) => e.toJson()).toList(),
+    };
+
 DocumentsGuidDatatosignPost$RequestBody
     _$DocumentsGuidDatatosignPost$RequestBodyFromJson(
             Map<String, dynamic> json) =>
         DocumentsGuidDatatosignPost$RequestBody(
           signingCertificate: json['signingCertificate'] as String,
+          addTimestamp: json['addTimestamp'] as bool? ?? false,
         );
 
 Map<String, dynamic> _$DocumentsGuidDatatosignPost$RequestBodyToJson(
         DocumentsGuidDatatosignPost$RequestBody instance) =>
     <String, dynamic>{
       'signingCertificate': instance.signingCertificate,
+      'addTimestamp': instance.addTimestamp,
     };
 
 DocumentsPost$Response _$DocumentsPost$ResponseFromJson(
@@ -138,25 +161,6 @@ Map<String, dynamic> _$DocumentsPost$ResponseToJson(
       'guid': instance.guid,
     };
 
-DocumentsGuidVisualizationGet$Response
-    _$DocumentsGuidVisualizationGet$ResponseFromJson(
-            Map<String, dynamic> json) =>
-        DocumentsGuidVisualizationGet$Response(
-          mimeType: documentsGuidVisualizationGet$ResponseMimeTypeFromJson(
-              json['mimeType']),
-          filename: json['filename'] as String?,
-          content: json['content'] as String,
-        );
-
-Map<String, dynamic> _$DocumentsGuidVisualizationGet$ResponseToJson(
-        DocumentsGuidVisualizationGet$Response instance) =>
-    <String, dynamic>{
-      'mimeType': documentsGuidVisualizationGet$ResponseMimeTypeToJson(
-          instance.mimeType),
-      'filename': instance.filename,
-      'content': instance.content,
-    };
-
 GetDocumentResponse$Signers$Item _$GetDocumentResponse$Signers$ItemFromJson(
         Map<String, dynamic> json) =>
     GetDocumentResponse$Signers$Item(
@@ -166,6 +170,20 @@ GetDocumentResponse$Signers$Item _$GetDocumentResponse$Signers$ItemFromJson(
 
 Map<String, dynamic> _$GetDocumentResponse$Signers$ItemToJson(
         GetDocumentResponse$Signers$Item instance) =>
+    <String, dynamic>{
+      'signedBy': instance.signedBy,
+      'issuedBy': instance.issuedBy,
+    };
+
+VisualizationResponse$Signers$Item _$VisualizationResponse$Signers$ItemFromJson(
+        Map<String, dynamic> json) =>
+    VisualizationResponse$Signers$Item(
+      signedBy: json['signedBy'] as String?,
+      issuedBy: json['issuedBy'] as String?,
+    );
+
+Map<String, dynamic> _$VisualizationResponse$Signers$ItemToJson(
+        VisualizationResponse$Signers$Item instance) =>
     <String, dynamic>{
       'signedBy': instance.signedBy,
       'issuedBy': instance.issuedBy,

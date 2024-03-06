@@ -6,11 +6,11 @@ abstract class IAutogramService {
   );
 
   Future<void> deleteDocument(
-    String id,
+    String documentId,
   );
 
-  Future<DocumentsGuidVisualizationGet$Response> getDocumentVisualization(
-    String id,
+  Future<VisualizationResponse> getDocumentVisualization(
+    String documentId,
   );
 
   Future<DataToSignStructure> setDataToSign(

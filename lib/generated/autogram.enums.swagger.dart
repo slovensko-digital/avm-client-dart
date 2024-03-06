@@ -5,12 +5,12 @@ enum SignDocumentResponseMimeType {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),
 
-  @JsonValue('application/pdf')
-  applicationPdf('application/pdf'),
-  @JsonValue('application/vnd.etsi.asic-e+zip')
-  applicationVndEtsiAsicEZip('application/vnd.etsi.asic-e+zip'),
-  @JsonValue('application/vnd.etsi.asic-s+zip')
-  applicationVndEtsiAsicSZip('application/vnd.etsi.asic-s+zip');
+  @JsonValue('application/pdf;base64')
+  applicationPdfBase64('application/pdf;base64'),
+  @JsonValue('application/vnd.etsi.asic-e+zip;base64')
+  applicationVndEtsiAsicEZipBase64('application/vnd.etsi.asic-e+zip;base64'),
+  @JsonValue('application/vnd.etsi.asic-s+zip;base64')
+  applicationVndEtsiAsicSZipBase64('application/vnd.etsi.asic-s+zip;base64');
 
   final String? value;
 
@@ -21,12 +21,12 @@ enum GetDocumentResponseMimeType {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),
 
-  @JsonValue('application/pdf')
-  applicationPdf('application/pdf'),
-  @JsonValue('application/vnd.etsi.asic-e+zip')
-  applicationVndEtsiAsicEZip('application/vnd.etsi.asic-e+zip'),
-  @JsonValue('application/vnd.etsi.asic-s+zip')
-  applicationVndEtsiAsicSZip('application/vnd.etsi.asic-s+zip');
+  @JsonValue('application/pdf;base64')
+  applicationPdfBase64('application/pdf;base64'),
+  @JsonValue('application/vnd.etsi.asic-e+zip;base64')
+  applicationVndEtsiAsicEZipBase64('application/vnd.etsi.asic-e+zip;base64'),
+  @JsonValue('application/vnd.etsi.asic-s+zip;base64')
+  applicationVndEtsiAsicSZipBase64('application/vnd.etsi.asic-s+zip;base64');
 
   final String? value;
 
@@ -67,20 +67,4 @@ enum SigningParametersContainer {
   final String? value;
 
   const SigningParametersContainer(this.value);
-}
-
-enum DocumentsGuidVisualizationGet$ResponseMimeType {
-  @JsonValue(null)
-  swaggerGeneratedUnknown(null),
-
-  @JsonValue('application/pdf')
-  applicationPdf('application/pdf'),
-  @JsonValue('text/html')
-  textHtml('text/html'),
-  @JsonValue('text/plain')
-  textPlain('text/plain');
-
-  final String? value;
-
-  const DocumentsGuidVisualizationGet$ResponseMimeType(this.value);
 }

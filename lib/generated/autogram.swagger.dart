@@ -48,43 +48,55 @@ abstract class Autogram extends ChopperService {
   }
 
   ///
-  Future<chopper.Response<DocumentsPost$Response>> documentsPost(
-      {required DocumentPostRequestBody? body}) {
+  ///@param Accept
+  Future<chopper.Response<DocumentsPost$Response>> documentsPost({
+    String? accept,
+    required DocumentPostRequestBody? body,
+  }) {
     generatedMapping.putIfAbsent(
         DocumentsPost$Response, () => DocumentsPost$Response.fromJsonFactory);
 
-    return _documentsPost(body: body);
+    return _documentsPost(accept: accept?.toString(), body: body);
   }
 
   ///
+  ///@param Accept
   @Post(
     path: '/documents',
     optionalBody: true,
   )
-  Future<chopper.Response<DocumentsPost$Response>> _documentsPost(
-      {@Body() required DocumentPostRequestBody? body});
+  Future<chopper.Response<DocumentsPost$Response>> _documentsPost({
+    @Header('Accept') String? accept,
+    @Body() required DocumentPostRequestBody? body,
+  });
 
   ///
   ///@param guid
   ///@param If-Modified-Since
+  ///@param Accept
   Future<chopper.Response<GetDocumentResponse>> documentsGuidGet({
     required String? guid,
     String? ifModifiedSince,
+    String? accept,
   }) {
     generatedMapping.putIfAbsent(
         GetDocumentResponse, () => GetDocumentResponse.fromJsonFactory);
 
     return _documentsGuidGet(
-        guid: guid, ifModifiedSince: ifModifiedSince?.toString());
+        guid: guid,
+        ifModifiedSince: ifModifiedSince?.toString(),
+        accept: accept?.toString());
   }
 
   ///
   ///@param guid
   ///@param If-Modified-Since
+  ///@param Accept
   @Get(path: '/documents/{guid}')
   Future<chopper.Response<GetDocumentResponse>> _documentsGuidGet({
     @Path('guid') required String? guid,
     @Header('If-Modified-Since') String? ifModifiedSince,
+    @Header('Accept') String? accept,
   });
 
   ///
@@ -101,65 +113,89 @@ abstract class Autogram extends ChopperService {
 
   ///
   ///@param guid
-  Future<chopper.Response<DocumentsGuidVisualizationGet$Response>>
-      documentsGuidVisualizationGet({required String? guid}) {
-    generatedMapping.putIfAbsent(DocumentsGuidVisualizationGet$Response,
-        () => DocumentsGuidVisualizationGet$Response.fromJsonFactory);
+  ///@param Accept
+  Future<chopper.Response<VisualizationResponse>>
+      documentsGuidVisualizationGet({
+    required String? guid,
+    String? accept,
+  }) {
+    generatedMapping.putIfAbsent(
+        VisualizationResponse, () => VisualizationResponse.fromJsonFactory);
 
-    return _documentsGuidVisualizationGet(guid: guid);
+    return _documentsGuidVisualizationGet(
+        guid: guid, accept: accept?.toString());
   }
 
   ///
   ///@param guid
+  ///@param Accept
   @Get(path: '/documents/{guid}/visualization')
-  Future<chopper.Response<DocumentsGuidVisualizationGet$Response>>
-      _documentsGuidVisualizationGet({@Path('guid') required String? guid});
+  Future<chopper.Response<VisualizationResponse>>
+      _documentsGuidVisualizationGet({
+    @Path('guid') required String? guid,
+    @Header('Accept') String? accept,
+  });
 
   ///
   ///@param guid
+  ///@param Accept
   Future<chopper.Response<DataToSignStructure>> documentsGuidDatatosignPost({
     required String? guid,
+    String? accept,
     required DocumentsGuidDatatosignPost$RequestBody? body,
   }) {
     generatedMapping.putIfAbsent(
         DataToSignStructure, () => DataToSignStructure.fromJsonFactory);
 
-    return _documentsGuidDatatosignPost(guid: guid, body: body);
+    return _documentsGuidDatatosignPost(
+        guid: guid, accept: accept?.toString(), body: body);
   }
 
   ///
   ///@param guid
+  ///@param Accept
   @Post(
     path: '/documents/{guid}/datatosign',
     optionalBody: true,
   )
   Future<chopper.Response<DataToSignStructure>> _documentsGuidDatatosignPost({
     @Path('guid') required String? guid,
+    @Header('Accept') String? accept,
     @Body() required DocumentsGuidDatatosignPost$RequestBody? body,
   });
 
   ///
   ///@param guid
   ///@param returnSignedDocument Inidcation whether to return signed document in the response. Default to true. Is useful when signing document for external system.
-  Future<chopper.Response> documentsGuidSignPost({
+  ///@param Accept
+  Future<chopper.Response<SignDocumentResponse>> documentsGuidSignPost({
     required String? guid,
     bool? returnSignedDocument,
+    String? accept,
     required SignRequestBody? body,
   }) {
+    generatedMapping.putIfAbsent(
+        SignDocumentResponse, () => SignDocumentResponse.fromJsonFactory);
+
     return _documentsGuidSignPost(
-        guid: guid, returnSignedDocument: returnSignedDocument, body: body);
+        guid: guid,
+        returnSignedDocument: returnSignedDocument,
+        accept: accept?.toString(),
+        body: body);
   }
 
   ///
   ///@param guid
   ///@param returnSignedDocument Inidcation whether to return signed document in the response. Default to true. Is useful when signing document for external system.
+  ///@param Accept
   @Post(
     path: '/documents/{guid}/sign',
     optionalBody: true,
   )
-  Future<chopper.Response> _documentsGuidSignPost({
+  Future<chopper.Response<SignDocumentResponse>> _documentsGuidSignPost({
     @Path('guid') required String? guid,
     @Query('returnSignedDocument') bool? returnSignedDocument,
+    @Header('Accept') String? accept,
     @Body() required SignRequestBody? body,
   });
 }
@@ -550,7 +586,7 @@ extension $GetDocumentResponseExtension on GetDocumentResponse {
 @JsonSerializable(explicitToJson: true)
 class Document {
   const Document({
-    this.filename,
+    required this.filename,
     required this.content,
   });
 
@@ -561,7 +597,7 @@ class Document {
   Map<String, dynamic> toJson() => _$DocumentToJson(this);
 
   @JsonKey(name: 'filename')
-  final String? filename;
+  final String filename;
   @JsonKey(name: 'content')
   final String content;
   static const fromJsonFactory = _$DocumentFromJson;
@@ -594,7 +630,7 @@ extension $DocumentExtension on Document {
   }
 
   Document copyWithWrapped(
-      {Wrapped<String?>? filename, Wrapped<String>? content}) {
+      {Wrapped<String>? filename, Wrapped<String>? content}) {
     return Document(
         filename: (filename != null ? filename.value : this.filename),
         content: (content != null ? content.value : this.content));
@@ -667,9 +703,90 @@ extension $SigningParametersExtension on SigningParameters {
 }
 
 @JsonSerializable(explicitToJson: true)
+class VisualizationResponse {
+  const VisualizationResponse({
+    required this.mimeType,
+    required this.filename,
+    required this.content,
+    required this.signers,
+  });
+
+  factory VisualizationResponse.fromJson(Map<String, dynamic> json) =>
+      _$VisualizationResponseFromJson(json);
+
+  static const toJsonFactory = _$VisualizationResponseToJson;
+  Map<String, dynamic> toJson() => _$VisualizationResponseToJson(this);
+
+  @JsonKey(name: 'mimeType')
+  final String mimeType;
+  @JsonKey(name: 'filename')
+  final String filename;
+  @JsonKey(name: 'content')
+  final String content;
+  @JsonKey(name: 'signers')
+  final List<VisualizationResponse$Signers$Item> signers;
+  static const fromJsonFactory = _$VisualizationResponseFromJson;
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is VisualizationResponse &&
+            (identical(other.mimeType, mimeType) ||
+                const DeepCollectionEquality()
+                    .equals(other.mimeType, mimeType)) &&
+            (identical(other.filename, filename) ||
+                const DeepCollectionEquality()
+                    .equals(other.filename, filename)) &&
+            (identical(other.content, content) ||
+                const DeepCollectionEquality()
+                    .equals(other.content, content)) &&
+            (identical(other.signers, signers) ||
+                const DeepCollectionEquality().equals(other.signers, signers)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(mimeType) ^
+      const DeepCollectionEquality().hash(filename) ^
+      const DeepCollectionEquality().hash(content) ^
+      const DeepCollectionEquality().hash(signers) ^
+      runtimeType.hashCode;
+}
+
+extension $VisualizationResponseExtension on VisualizationResponse {
+  VisualizationResponse copyWith(
+      {String? mimeType,
+      String? filename,
+      String? content,
+      List<VisualizationResponse$Signers$Item>? signers}) {
+    return VisualizationResponse(
+        mimeType: mimeType ?? this.mimeType,
+        filename: filename ?? this.filename,
+        content: content ?? this.content,
+        signers: signers ?? this.signers);
+  }
+
+  VisualizationResponse copyWithWrapped(
+      {Wrapped<String>? mimeType,
+      Wrapped<String>? filename,
+      Wrapped<String>? content,
+      Wrapped<List<VisualizationResponse$Signers$Item>>? signers}) {
+    return VisualizationResponse(
+        mimeType: (mimeType != null ? mimeType.value : this.mimeType),
+        filename: (filename != null ? filename.value : this.filename),
+        content: (content != null ? content.value : this.content),
+        signers: (signers != null ? signers.value : this.signers));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
 class DocumentsGuidDatatosignPost$RequestBody {
   const DocumentsGuidDatatosignPost$RequestBody({
     required this.signingCertificate,
+    this.addTimestamp,
   });
 
   factory DocumentsGuidDatatosignPost$RequestBody.fromJson(
@@ -682,6 +799,8 @@ class DocumentsGuidDatatosignPost$RequestBody {
 
   @JsonKey(name: 'signingCertificate')
   final String signingCertificate;
+  @JsonKey(name: 'addTimestamp', defaultValue: false)
+  final bool? addTimestamp;
   static const fromJsonFactory =
       _$DocumentsGuidDatatosignPost$RequestBodyFromJson;
 
@@ -691,7 +810,10 @@ class DocumentsGuidDatatosignPost$RequestBody {
         (other is DocumentsGuidDatatosignPost$RequestBody &&
             (identical(other.signingCertificate, signingCertificate) ||
                 const DeepCollectionEquality()
-                    .equals(other.signingCertificate, signingCertificate)));
+                    .equals(other.signingCertificate, signingCertificate)) &&
+            (identical(other.addTimestamp, addTimestamp) ||
+                const DeepCollectionEquality()
+                    .equals(other.addTimestamp, addTimestamp)));
   }
 
   @override
@@ -700,23 +822,27 @@ class DocumentsGuidDatatosignPost$RequestBody {
   @override
   int get hashCode =>
       const DeepCollectionEquality().hash(signingCertificate) ^
+      const DeepCollectionEquality().hash(addTimestamp) ^
       runtimeType.hashCode;
 }
 
 extension $DocumentsGuidDatatosignPost$RequestBodyExtension
     on DocumentsGuidDatatosignPost$RequestBody {
   DocumentsGuidDatatosignPost$RequestBody copyWith(
-      {String? signingCertificate}) {
+      {String? signingCertificate, bool? addTimestamp}) {
     return DocumentsGuidDatatosignPost$RequestBody(
-        signingCertificate: signingCertificate ?? this.signingCertificate);
+        signingCertificate: signingCertificate ?? this.signingCertificate,
+        addTimestamp: addTimestamp ?? this.addTimestamp);
   }
 
   DocumentsGuidDatatosignPost$RequestBody copyWithWrapped(
-      {Wrapped<String>? signingCertificate}) {
+      {Wrapped<String>? signingCertificate, Wrapped<bool?>? addTimestamp}) {
     return DocumentsGuidDatatosignPost$RequestBody(
         signingCertificate: (signingCertificate != null
             ? signingCertificate.value
-            : this.signingCertificate));
+            : this.signingCertificate),
+        addTimestamp:
+            (addTimestamp != null ? addTimestamp.value : this.addTimestamp));
   }
 }
 
@@ -760,83 +886,6 @@ extension $DocumentsPost$ResponseExtension on DocumentsPost$Response {
   DocumentsPost$Response copyWithWrapped({Wrapped<String>? guid}) {
     return DocumentsPost$Response(
         guid: (guid != null ? guid.value : this.guid));
-  }
-}
-
-@JsonSerializable(explicitToJson: true)
-class DocumentsGuidVisualizationGet$Response {
-  const DocumentsGuidVisualizationGet$Response({
-    required this.mimeType,
-    this.filename,
-    required this.content,
-  });
-
-  factory DocumentsGuidVisualizationGet$Response.fromJson(
-          Map<String, dynamic> json) =>
-      _$DocumentsGuidVisualizationGet$ResponseFromJson(json);
-
-  static const toJsonFactory = _$DocumentsGuidVisualizationGet$ResponseToJson;
-  Map<String, dynamic> toJson() =>
-      _$DocumentsGuidVisualizationGet$ResponseToJson(this);
-
-  @JsonKey(
-    name: 'mimeType',
-    toJson: documentsGuidVisualizationGet$ResponseMimeTypeToJson,
-    fromJson: documentsGuidVisualizationGet$ResponseMimeTypeFromJson,
-  )
-  final enums.DocumentsGuidVisualizationGet$ResponseMimeType mimeType;
-  @JsonKey(name: 'filename')
-  final String? filename;
-  @JsonKey(name: 'content')
-  final String content;
-  static const fromJsonFactory =
-      _$DocumentsGuidVisualizationGet$ResponseFromJson;
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is DocumentsGuidVisualizationGet$Response &&
-            (identical(other.mimeType, mimeType) ||
-                const DeepCollectionEquality()
-                    .equals(other.mimeType, mimeType)) &&
-            (identical(other.filename, filename) ||
-                const DeepCollectionEquality()
-                    .equals(other.filename, filename)) &&
-            (identical(other.content, content) ||
-                const DeepCollectionEquality().equals(other.content, content)));
-  }
-
-  @override
-  String toString() => jsonEncode(this);
-
-  @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(mimeType) ^
-      const DeepCollectionEquality().hash(filename) ^
-      const DeepCollectionEquality().hash(content) ^
-      runtimeType.hashCode;
-}
-
-extension $DocumentsGuidVisualizationGet$ResponseExtension
-    on DocumentsGuidVisualizationGet$Response {
-  DocumentsGuidVisualizationGet$Response copyWith(
-      {enums.DocumentsGuidVisualizationGet$ResponseMimeType? mimeType,
-      String? filename,
-      String? content}) {
-    return DocumentsGuidVisualizationGet$Response(
-        mimeType: mimeType ?? this.mimeType,
-        filename: filename ?? this.filename,
-        content: content ?? this.content);
-  }
-
-  DocumentsGuidVisualizationGet$Response copyWithWrapped(
-      {Wrapped<enums.DocumentsGuidVisualizationGet$ResponseMimeType>? mimeType,
-      Wrapped<String?>? filename,
-      Wrapped<String>? content}) {
-    return DocumentsGuidVisualizationGet$Response(
-        mimeType: (mimeType != null ? mimeType.value : this.mimeType),
-        filename: (filename != null ? filename.value : this.filename),
-        content: (content != null ? content.value : this.content));
   }
 }
 
@@ -895,6 +944,66 @@ extension $GetDocumentResponse$Signers$ItemExtension
   GetDocumentResponse$Signers$Item copyWithWrapped(
       {Wrapped<String?>? signedBy, Wrapped<String?>? issuedBy}) {
     return GetDocumentResponse$Signers$Item(
+        signedBy: (signedBy != null ? signedBy.value : this.signedBy),
+        issuedBy: (issuedBy != null ? issuedBy.value : this.issuedBy));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class VisualizationResponse$Signers$Item {
+  const VisualizationResponse$Signers$Item({
+    this.signedBy,
+    this.issuedBy,
+  });
+
+  factory VisualizationResponse$Signers$Item.fromJson(
+          Map<String, dynamic> json) =>
+      _$VisualizationResponse$Signers$ItemFromJson(json);
+
+  static const toJsonFactory = _$VisualizationResponse$Signers$ItemToJson;
+  Map<String, dynamic> toJson() =>
+      _$VisualizationResponse$Signers$ItemToJson(this);
+
+  @JsonKey(name: 'signedBy')
+  final String? signedBy;
+  @JsonKey(name: 'issuedBy')
+  final String? issuedBy;
+  static const fromJsonFactory = _$VisualizationResponse$Signers$ItemFromJson;
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is VisualizationResponse$Signers$Item &&
+            (identical(other.signedBy, signedBy) ||
+                const DeepCollectionEquality()
+                    .equals(other.signedBy, signedBy)) &&
+            (identical(other.issuedBy, issuedBy) ||
+                const DeepCollectionEquality()
+                    .equals(other.issuedBy, issuedBy)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(signedBy) ^
+      const DeepCollectionEquality().hash(issuedBy) ^
+      runtimeType.hashCode;
+}
+
+extension $VisualizationResponse$Signers$ItemExtension
+    on VisualizationResponse$Signers$Item {
+  VisualizationResponse$Signers$Item copyWith(
+      {String? signedBy, String? issuedBy}) {
+    return VisualizationResponse$Signers$Item(
+        signedBy: signedBy ?? this.signedBy,
+        issuedBy: issuedBy ?? this.issuedBy);
+  }
+
+  VisualizationResponse$Signers$Item copyWithWrapped(
+      {Wrapped<String?>? signedBy, Wrapped<String?>? issuedBy}) {
+    return VisualizationResponse$Signers$Item(
         signedBy: (signedBy != null ? signedBy.value : this.signedBy),
         issuedBy: (issuedBy != null ? issuedBy.value : this.issuedBy));
   }
@@ -1190,96 +1299,6 @@ List<enums.SigningParametersContainer>?
 
   return signingParametersContainer
       .map((e) => signingParametersContainerFromJson(e.toString()))
-      .toList();
-}
-
-String? documentsGuidVisualizationGet$ResponseMimeTypeNullableToJson(
-    enums.DocumentsGuidVisualizationGet$ResponseMimeType?
-        documentsGuidVisualizationGet$ResponseMimeType) {
-  return documentsGuidVisualizationGet$ResponseMimeType?.value;
-}
-
-String? documentsGuidVisualizationGet$ResponseMimeTypeToJson(
-    enums.DocumentsGuidVisualizationGet$ResponseMimeType
-        documentsGuidVisualizationGet$ResponseMimeType) {
-  return documentsGuidVisualizationGet$ResponseMimeType.value;
-}
-
-enums.DocumentsGuidVisualizationGet$ResponseMimeType
-    documentsGuidVisualizationGet$ResponseMimeTypeFromJson(
-  Object? documentsGuidVisualizationGet$ResponseMimeType, [
-  enums.DocumentsGuidVisualizationGet$ResponseMimeType? defaultValue,
-]) {
-  return enums.DocumentsGuidVisualizationGet$ResponseMimeType.values
-          .firstWhereOrNull((e) =>
-              e.value == documentsGuidVisualizationGet$ResponseMimeType) ??
-      defaultValue ??
-      enums.DocumentsGuidVisualizationGet$ResponseMimeType
-          .swaggerGeneratedUnknown;
-}
-
-enums.DocumentsGuidVisualizationGet$ResponseMimeType?
-    documentsGuidVisualizationGet$ResponseMimeTypeNullableFromJson(
-  Object? documentsGuidVisualizationGet$ResponseMimeType, [
-  enums.DocumentsGuidVisualizationGet$ResponseMimeType? defaultValue,
-]) {
-  if (documentsGuidVisualizationGet$ResponseMimeType == null) {
-    return null;
-  }
-  return enums.DocumentsGuidVisualizationGet$ResponseMimeType.values
-          .firstWhereOrNull((e) =>
-              e.value == documentsGuidVisualizationGet$ResponseMimeType) ??
-      defaultValue;
-}
-
-String documentsGuidVisualizationGet$ResponseMimeTypeExplodedListToJson(
-    List<enums.DocumentsGuidVisualizationGet$ResponseMimeType>?
-        documentsGuidVisualizationGet$ResponseMimeType) {
-  return documentsGuidVisualizationGet$ResponseMimeType
-          ?.map((e) => e.value!)
-          .join(',') ??
-      '';
-}
-
-List<String> documentsGuidVisualizationGet$ResponseMimeTypeListToJson(
-    List<enums.DocumentsGuidVisualizationGet$ResponseMimeType>?
-        documentsGuidVisualizationGet$ResponseMimeType) {
-  if (documentsGuidVisualizationGet$ResponseMimeType == null) {
-    return [];
-  }
-
-  return documentsGuidVisualizationGet$ResponseMimeType
-      .map((e) => e.value!)
-      .toList();
-}
-
-List<enums.DocumentsGuidVisualizationGet$ResponseMimeType>
-    documentsGuidVisualizationGet$ResponseMimeTypeListFromJson(
-  List? documentsGuidVisualizationGet$ResponseMimeType, [
-  List<enums.DocumentsGuidVisualizationGet$ResponseMimeType>? defaultValue,
-]) {
-  if (documentsGuidVisualizationGet$ResponseMimeType == null) {
-    return defaultValue ?? [];
-  }
-
-  return documentsGuidVisualizationGet$ResponseMimeType
-      .map((e) =>
-          documentsGuidVisualizationGet$ResponseMimeTypeFromJson(e.toString()))
-      .toList();
-}
-
-List<enums.DocumentsGuidVisualizationGet$ResponseMimeType>?
-    documentsGuidVisualizationGet$ResponseMimeTypeNullableListFromJson(
-  List? documentsGuidVisualizationGet$ResponseMimeType, [
-  List<enums.DocumentsGuidVisualizationGet$ResponseMimeType>? defaultValue,
-]) {
-  if (documentsGuidVisualizationGet$ResponseMimeType == null) {
-    return defaultValue;
-  }
-
-  return documentsGuidVisualizationGet$ResponseMimeType
-      .map((e) =>
-          documentsGuidVisualizationGet$ResponseMimeTypeFromJson(e.toString()))
       .toList();
 }
 

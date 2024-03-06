@@ -191,26 +191,7 @@ paths:
           content:
             "application/json":
               schema:
-                type: object
-                properties:
-                  mimeType:
-                    type: string
-                    enum:
-                      - "application/pdf"
-                      - "text/html"
-                      - "text/plain"
-                    example: "application/pdf"
-                  filename:
-                    type: string
-                    description: Name of the document
-                    example: sample_document.pdf
-                  content:
-                    type: string
-                    description: Base64 encoded contentto be displayed
-                    example: ZXhhbXBsZSBzdHJpbmcgaW4gYmFzZTY0Cg==
-                required:
-                  - mimeType
-                  - content
+                $ref: "#/components/schemas/VisualizationResponse"
 
   /documents/{guid}/datatosign:
     post:
@@ -240,6 +221,11 @@ paths:
               properties:
                 signingCertificate:
                   $ref: "#/components/schemas/SigningCertificate"
+                addTimestamp:
+                  type: boolean
+                  description: Indication whether to add a timestamp to the signature if it was not set at document creation time
+                  example: true
+                  default: false
               required:
                 - signingCertificate
       responses:
@@ -301,10 +287,11 @@ paths:
           description: Not found
         422:
           description: Unprocessable entity - possibly dataToSign mismatch.
-        204:
-          description: 'When `"returnSignedDocument": false` Document was sucessfuly signed and can be obtained via GET signed request. Empty response.'
         200:
-          description: Document was sucessfuly signed, can be obtained via GET signed request, and is also returned in the response.
+          description: |
+            Document was sucessfuly signed, can be obtained via GET signed request, and is also returned in the response.
+
+            When `"returnSignedDocument": false` Document.Content is empty.
           content:
             "application/json":
               schema:
@@ -387,9 +374,9 @@ components:
           type: string
           description: mimeType of the signed document
           enum:
-            - "application/pdf"
-            - "application/vnd.etsi.asic-e+zip"
-            - "application/vnd.etsi.asic-s+zip"
+            - "application/pdf;base64"
+            - "application/vnd.etsi.asic-e+zip;base64"
+            - "application/vnd.etsi.asic-s+zip;base64"
         content:
           type: string
           description: Base64 encrypted content of the signed document
@@ -420,9 +407,9 @@ components:
           type: string
           description: mimeType of the signed document
           enum:
-            - "application/pdf"
-            - "application/vnd.etsi.asic-e+zip"
-            - "application/vnd.etsi.asic-s+zip"
+            - "application/pdf;base64"
+            - "application/vnd.etsi.asic-e+zip;base64"
+            - "application/vnd.etsi.asic-s+zip;base64"
         content:
           type: string
           description: Base64 encrypted content of the signed document
@@ -462,6 +449,7 @@ components:
           example: ZXhhbXBsZSBzdHJpbmcgaW4gYmFzZTY0Cg==
       required:
         - content
+        - filename
 
     SigningParameters:
       type: object
@@ -487,6 +475,40 @@ components:
             - ASiC-S
       required:
         - level
+
+    VisualizationResponse:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          example: "application/pdf;base64"
+        filename:
+          type: string
+          description: Name of the document
+          example: sample_document.pdf
+        content:
+          type: string
+          description: Base64 encoded contentto be displayed
+          example: ZXhhbXBsZSBzdHJpbmcgaW4gYmFzZTY0Cg==
+        signers:
+          type: array
+          description: Array of all signers of the documents
+          items:
+            type: object
+            properties:
+              signedBy:
+                type: string
+                example: "SERIALNUMBER=PNOSK-1234567890, C=SK, L=Bratislava, SURNAME=Smith, GIVENNAME=John, CN=John Smith"
+                description: "Distinguished name of the certificate used/attempting to sign the document."
+              issuedBy:
+                type: string
+                example: "CN=SVK eID ACA2, O=Disig a.s., OID.2.5.4.97=NTRSK-12345678, L=Bratislava, C=SK"
+                description: "Distinguished name of the issuer of the certificate used/attempting to sign the document."
+      required:
+        - mimeType
+        - content
+        - filename
+        - signers
 
   securitySchemes:
     Header:

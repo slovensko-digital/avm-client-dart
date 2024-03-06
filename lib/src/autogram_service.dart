@@ -35,16 +35,18 @@ class AutogramService implements IAutogramService {
 
   @override
   Future<void> deleteDocument(
-    String id,
+    String documentId,
   ) {
-    return _autogram.documentsGuidDelete(guid: id).then(unwrap);
+    return _autogram.documentsGuidDelete(guid: documentId).then(unwrap);
   }
 
   @override
-  Future<DocumentsGuidVisualizationGet$Response> getDocumentVisualization(
-    String id,
+  Future<VisualizationResponse> getDocumentVisualization(
+    String documentId,
   ) {
-    return _autogram.documentsGuidVisualizationGet(guid: id).then(unwrap);
+    return _autogram
+        .documentsGuidVisualizationGet(guid: documentId)
+        .then(unwrap);
   }
 
   @override
