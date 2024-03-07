@@ -9,6 +9,9 @@ export 'iautogram_service.dart';
 
 /// Implements [IAutogramService] using [Autogram] instance.
 class AutogramService implements IAutogramService {
+  static final _rfcDateFormat =
+      DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US');
+
   final Autogram _autogram;
 
   AutogramService({
@@ -51,23 +54,23 @@ class AutogramService implements IAutogramService {
 
   @override
   Future<DataToSignStructure> setDataToSign(
-    String id,
+    String documentId,
     DocumentsGuidDatatosignPost$RequestBody body,
   ) {
     return _autogram
-        .documentsGuidDatatosignPost(guid: id, body: body)
+        .documentsGuidDatatosignPost(guid: documentId, body: body)
         .then(unwrap);
   }
 
   @override
-  Future<dynamic> signDocument(
-    String id,
+  Future<SignDocumentResponse> signDocument(
+    String documentId,
     SignRequestBody body, [
     bool returnSignedDocument = true,
   ]) {
     return _autogram
         .documentsGuidSignPost(
-          guid: id,
+          guid: documentId,
           body: body,
           returnSignedDocument: returnSignedDocument,
         )
@@ -75,14 +78,17 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<GetDocumentResponse> getDocument(String id,
-      [DateTime? ifModifiedSince]) {
+  Future<GetDocumentResponse> getDocument(
+    String documentId, [
+    DateTime? ifModifiedSince,
+  ]) {
     return _autogram
         .documentsGuidGet(
-          guid: id,
+          guid: documentId,
           ifModifiedSince: ifModifiedSince != null
-              ? DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US')
-                  .format(ifModifiedSince.toUtc())
+              // TODO Extract as extension fun with reasonable name
+              // https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1
+              ? _rfcDateFormat.format(ifModifiedSince.toUtc())
               : null,
         )
         .then(unwrap);

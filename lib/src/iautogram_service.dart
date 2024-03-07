@@ -14,17 +14,18 @@ abstract class IAutogramService {
   );
 
   Future<DataToSignStructure> setDataToSign(
-    String id,
+    String documentId,
     DocumentsGuidDatatosignPost$RequestBody body,
   );
 
-  // TODO Use proper return type
-  Future<void> signDocument(
-    String id,
+  Future<SignDocumentResponse> signDocument(
+    String documentId,
     SignRequestBody body, [
     bool returnSignedDocument = true,
   ]);
 
-  Future<GetDocumentResponse> getDocument(String id,
-      [DateTime? ifModifiedSince]);
+  Future<GetDocumentResponse> getDocument(
+    String documentId, [
+    DateTime? ifModifiedSince,
+  ]);
 }
