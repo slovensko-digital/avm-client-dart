@@ -223,7 +223,7 @@ class DocumentPostRequestBody {
   static const fromJsonFactory = _$DocumentPostRequestBodyFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is DocumentPostRequestBody &&
             (identical(other.document, document) ||
@@ -295,7 +295,7 @@ class DataToSignStructure {
   static const fromJsonFactory = _$DataToSignStructureFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is DataToSignStructure &&
             (identical(other.dataToSign, dataToSign) ||
@@ -363,7 +363,7 @@ class SignRequestBody {
   static const fromJsonFactory = _$SignRequestBodyFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is SignRequestBody &&
             (identical(other.signedData, signedData) ||
@@ -436,7 +436,7 @@ class SignDocumentResponse {
   static const fromJsonFactory = _$SignDocumentResponseFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is SignDocumentResponse &&
             (identical(other.filename, filename) ||
@@ -529,7 +529,7 @@ class GetDocumentResponse {
   static const fromJsonFactory = _$GetDocumentResponseFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is GetDocumentResponse &&
             (identical(other.filename, filename) ||
@@ -603,7 +603,7 @@ class Document {
   static const fromJsonFactory = _$DocumentFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is Document &&
             (identical(other.filename, filename) ||
@@ -665,7 +665,7 @@ class SigningParameters {
   static const fromJsonFactory = _$SigningParametersFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is SigningParameters &&
             (identical(other.level, level) ||
@@ -708,7 +708,7 @@ class VisualizationResponse {
     required this.mimeType,
     required this.filename,
     required this.content,
-    required this.signers,
+    this.signers,
   });
 
   factory VisualizationResponse.fromJson(Map<String, dynamic> json) =>
@@ -724,11 +724,11 @@ class VisualizationResponse {
   @JsonKey(name: 'content')
   final String content;
   @JsonKey(name: 'signers')
-  final List<VisualizationResponse$Signers$Item> signers;
+  final List<VisualizationResponse$Signers$Item>? signers;
   static const fromJsonFactory = _$VisualizationResponseFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is VisualizationResponse &&
             (identical(other.mimeType, mimeType) ||
@@ -773,7 +773,7 @@ extension $VisualizationResponseExtension on VisualizationResponse {
       {Wrapped<String>? mimeType,
       Wrapped<String>? filename,
       Wrapped<String>? content,
-      Wrapped<List<VisualizationResponse$Signers$Item>>? signers}) {
+      Wrapped<List<VisualizationResponse$Signers$Item>?>? signers}) {
     return VisualizationResponse(
         mimeType: (mimeType != null ? mimeType.value : this.mimeType),
         filename: (filename != null ? filename.value : this.filename),
@@ -805,7 +805,7 @@ class DocumentsGuidDatatosignPost$RequestBody {
       _$DocumentsGuidDatatosignPost$RequestBodyFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is DocumentsGuidDatatosignPost$RequestBody &&
             (identical(other.signingCertificate, signingCertificate) ||
@@ -863,7 +863,7 @@ class DocumentsPost$Response {
   static const fromJsonFactory = _$DocumentsPost$ResponseFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is DocumentsPost$Response &&
             (identical(other.guid, guid) ||
@@ -911,7 +911,7 @@ class GetDocumentResponse$Signers$Item {
   static const fromJsonFactory = _$GetDocumentResponse$Signers$ItemFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is GetDocumentResponse$Signers$Item &&
             (identical(other.signedBy, signedBy) ||
@@ -971,7 +971,7 @@ class VisualizationResponse$Signers$Item {
   static const fromJsonFactory = _$VisualizationResponse$Signers$ItemFromJson;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other is VisualizationResponse$Signers$Item &&
             (identical(other.signedBy, signedBy) ||

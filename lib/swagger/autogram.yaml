@@ -508,7 +508,6 @@ components:
         - mimeType
         - content
         - filename
-        - signers
 
   securitySchemes:
     Header:

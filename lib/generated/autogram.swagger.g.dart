@@ -119,8 +119,8 @@ VisualizationResponse _$VisualizationResponseFromJson(
       mimeType: json['mimeType'] as String,
       filename: json['filename'] as String,
       content: json['content'] as String,
-      signers: (json['signers'] as List<dynamic>)
-          .map((e) => VisualizationResponse$Signers$Item.fromJson(
+      signers: (json['signers'] as List<dynamic>?)
+          ?.map((e) => VisualizationResponse$Signers$Item.fromJson(
               e as Map<String, dynamic>))
           .toList(),
     );
@@ -131,7 +131,7 @@ Map<String, dynamic> _$VisualizationResponseToJson(
       'mimeType': instance.mimeType,
       'filename': instance.filename,
       'content': instance.content,
-      'signers': instance.signers.map((e) => e.toJson()).toList(),
+      'signers': instance.signers?.map((e) => e.toJson()).toList(),
     };
 
 DocumentsGuidDatatosignPost$RequestBody
