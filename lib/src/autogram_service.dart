@@ -44,7 +44,7 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<VisualizationResponse> getDocumentVisualization(
+  Future<DocumentVisualizationResponseBody> getDocumentVisualization(
     String documentId,
   ) {
     return _autogram
@@ -55,7 +55,7 @@ class AutogramService implements IAutogramService {
   @override
   Future<DataToSignStructure> setDataToSign(
     String documentId,
-    DocumentsGuidDatatosignPost$RequestBody body,
+    DataToSignRequestBody body,
   ) {
     return _autogram
         .documentsGuidDatatosignPost(guid: documentId, body: body)
@@ -63,7 +63,7 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<SignDocumentResponse> signDocument(
+  Future<SignDocumentResponseBody> signDocument(
     String documentId,
     SignRequestBody body, [
     bool returnSignedDocument = true,
@@ -78,7 +78,7 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<GetDocumentResponse> getDocument(
+  Future<GetDocumentResponseBody> getDocument(
     String documentId, [
     DateTime? ifModifiedSince,
   ]) {

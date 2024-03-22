@@ -9,22 +9,22 @@ abstract class IAutogramService {
     String documentId,
   );
 
-  Future<VisualizationResponse> getDocumentVisualization(
+  Future<DocumentVisualizationResponseBody> getDocumentVisualization(
     String documentId,
   );
 
   Future<DataToSignStructure> setDataToSign(
     String documentId,
-    DocumentsGuidDatatosignPost$RequestBody body,
+    DataToSignRequestBody body,
   );
 
-  Future<SignDocumentResponse> signDocument(
+  Future<SignDocumentResponseBody> signDocument(
     String documentId,
     SignRequestBody body, [
     bool returnSignedDocument = true,
   ]);
 
-  Future<GetDocumentResponse> getDocument(
+  Future<GetDocumentResponseBody> getDocument(
     String documentId, [
     DateTime? ifModifiedSince,
   ]);

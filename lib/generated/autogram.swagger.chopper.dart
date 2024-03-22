@@ -18,7 +18,7 @@ final class _$Autogram extends Autogram {
   final Type definitionType = Autogram;
 
   @override
-  Future<Response<DocumentsPost$Response>> _documentsPost({
+  Future<Response<CreateDocumentResponseBody>> _documentsPost({
     String? accept,
     required DocumentPostRequestBody? body,
   }) {
@@ -35,11 +35,11 @@ final class _$Autogram extends Autogram {
       headers: $headers,
     );
     return client
-        .send<DocumentsPost$Response, DocumentsPost$Response>($request);
+        .send<CreateDocumentResponseBody, CreateDocumentResponseBody>($request);
   }
 
   @override
-  Future<Response<GetDocumentResponse>> _documentsGuidGet({
+  Future<Response<GetDocumentResponseBody>> _documentsGuidGet({
     required String? guid,
     String? ifModifiedSince,
     String? accept,
@@ -55,7 +55,8 @@ final class _$Autogram extends Autogram {
       client.baseUrl,
       headers: $headers,
     );
-    return client.send<GetDocumentResponse, GetDocumentResponse>($request);
+    return client
+        .send<GetDocumentResponseBody, GetDocumentResponseBody>($request);
   }
 
   @override
@@ -70,7 +71,8 @@ final class _$Autogram extends Autogram {
   }
 
   @override
-  Future<Response<VisualizationResponse>> _documentsGuidVisualizationGet({
+  Future<Response<DocumentVisualizationResponseBody>>
+      _documentsGuidVisualizationGet({
     required String? guid,
     String? accept,
   }) {
@@ -84,14 +86,34 @@ final class _$Autogram extends Autogram {
       client.baseUrl,
       headers: $headers,
     );
-    return client.send<VisualizationResponse, VisualizationResponse>($request);
+    return client.send<DocumentVisualizationResponseBody,
+        DocumentVisualizationResponseBody>($request);
+  }
+
+  @override
+  Future<Response<DocumentValidationResponseBody>> _documentsGuidValidationGet({
+    required String? guid,
+    String? accept,
+  }) {
+    final Uri $url = Uri.parse('/documents/${guid}/validation');
+    final Map<String, String> $headers = {
+      if (accept != null) 'Accept': accept,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      headers: $headers,
+    );
+    return client.send<DocumentValidationResponseBody,
+        DocumentValidationResponseBody>($request);
   }
 
   @override
   Future<Response<DataToSignStructure>> _documentsGuidDatatosignPost({
     required String? guid,
     String? accept,
-    required DocumentsGuidDatatosignPost$RequestBody? body,
+    required DataToSignRequestBody? body,
   }) {
     final Uri $url = Uri.parse('/documents/${guid}/datatosign');
     final Map<String, String> $headers = {
@@ -109,7 +131,7 @@ final class _$Autogram extends Autogram {
   }
 
   @override
-  Future<Response<SignDocumentResponse>> _documentsGuidSignPost({
+  Future<Response<SignDocumentResponseBody>> _documentsGuidSignPost({
     required String? guid,
     bool? returnSignedDocument,
     String? accept,
@@ -131,6 +153,7 @@ final class _$Autogram extends Autogram {
       parameters: $params,
       headers: $headers,
     );
-    return client.send<SignDocumentResponse, SignDocumentResponse>($request);
+    return client
+        .send<SignDocumentResponseBody, SignDocumentResponseBody>($request);
   }
 }
