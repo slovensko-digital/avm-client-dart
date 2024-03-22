@@ -14,5 +14,10 @@ BodyType unwrap<BodyType>(Response<BodyType> response) {
   final error = response.error;
   final statusCode = response.statusCode;
 
+  // TODO Impl. deserialization of JSON data:
+  // code: String - it's enum, e.g. InvalidSignatureErrorResponseBodyCode
+  // message: String
+  // details: String?
+
   throw ServiceException(statusCode, error.toString());
 }
