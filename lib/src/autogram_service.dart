@@ -9,9 +9,6 @@ export 'iautogram_service.dart';
 
 /// Implements [IAutogramService] using [Autogram] instance.
 class AutogramService implements IAutogramService {
-  static final _rfcDateFormat =
-      DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US');
-
   final Autogram _autogram;
 
   AutogramService({
@@ -85,12 +82,20 @@ class AutogramService implements IAutogramService {
     return _autogram
         .documentsGuidGet(
           guid: documentId,
-          ifModifiedSince: ifModifiedSince != null
-              // TODO Extract as extension fun with reasonable name
-              // https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1
-              ? _rfcDateFormat.format(ifModifiedSince.toUtc())
-              : null,
+          ifModifiedSince: ifModifiedSince?.toImfFixDateString(),
         )
         .then(unwrap);
+  }
+}
+
+extension _DateTimeExtensions on DateTime {
+  static final _imfFixDateFormat =
+      DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US');
+
+  /// Returns this date formatted as "IMF-fixdate".
+  ///
+  /// See: <https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1>
+  String toImfFixDateString() {
+    return _imfFixDateFormat.format(toUtc());
   }
 }
