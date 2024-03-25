@@ -7,7 +7,7 @@ import 'response_functions.dart';
 
 export 'iautogram_service.dart';
 
-/// Implements [IAutogramService] using [Autogram] instance.
+/// Implements [IAutogramService] using [Autogram] instance REST API client.
 class AutogramService implements IAutogramService {
   final Autogram _autogram;
 

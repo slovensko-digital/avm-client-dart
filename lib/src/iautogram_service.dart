@@ -1,5 +1,6 @@
 import '../generated/autogram.swagger.dart';
 
+/// Provides operations to call Autogram service.
 abstract class IAutogramService {
   Future<String> createDocument(
     DocumentPostRequestBody body,
