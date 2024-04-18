@@ -1,3 +1,8 @@
+## 0.2.0
+
+* Implement functions for document validation
+* Implement functions for device registration to receive Push notifications
+
 ## 0.1.0
 
 * Implement all necessary functions for document visualisation and signing. 

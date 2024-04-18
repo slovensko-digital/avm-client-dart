@@ -6,12 +6,131 @@ part of 'autogram.swagger.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+PostSignRequestBody _$PostSignRequestBodyFromJson(Map<String, dynamic> json) =>
+    PostSignRequestBody(
+      documentGuid: json['documentGuid'] as String,
+      documentEncryptionKey: json['documentEncryptionKey'] as String,
+    );
+
+Map<String, dynamic> _$PostSignRequestBodyToJson(
+        PostSignRequestBody instance) =>
+    <String, dynamic>{
+      'documentGuid': instance.documentGuid,
+      'documentEncryptionKey': instance.documentEncryptionKey,
+    };
+
+PostIntegrationRequestBody _$PostIntegrationRequestBodyFromJson(
+        Map<String, dynamic> json) =>
+    PostIntegrationRequestBody(
+      platform: json['platform'] as String,
+      displayName: json['displayName'] as String,
+      publicKey: json['publicKey'] as String,
+      pushkey: json['pushkey'] as String,
+    );
+
+Map<String, dynamic> _$PostIntegrationRequestBodyToJson(
+        PostIntegrationRequestBody instance) =>
+    <String, dynamic>{
+      'platform': instance.platform,
+      'displayName': instance.displayName,
+      'publicKey': instance.publicKey,
+      'pushkey': instance.pushkey,
+    };
+
+PostIntegrationResponse _$PostIntegrationResponseFromJson(
+        Map<String, dynamic> json) =>
+    PostIntegrationResponse(
+      guid: json['guid'] as String,
+    );
+
+Map<String, dynamic> _$PostIntegrationResponseToJson(
+        PostIntegrationResponse instance) =>
+    <String, dynamic>{
+      'guid': instance.guid,
+    };
+
+PostDeviceRequestBody _$PostDeviceRequestBodyFromJson(
+        Map<String, dynamic> json) =>
+    PostDeviceRequestBody(
+      platform: json['platform'] as String,
+      registrationId: json['registrationId'] as String,
+      displayName: json['displayName'] as String,
+      publicKey: json['publicKey'] as String,
+    );
+
+Map<String, dynamic> _$PostDeviceRequestBodyToJson(
+        PostDeviceRequestBody instance) =>
+    <String, dynamic>{
+      'platform': instance.platform,
+      'registrationId': instance.registrationId,
+      'displayName': instance.displayName,
+      'publicKey': instance.publicKey,
+    };
+
+PostDeviceResponse _$PostDeviceResponseFromJson(Map<String, dynamic> json) =>
+    PostDeviceResponse(
+      guid: json['guid'] as String?,
+    );
+
+Map<String, dynamic> _$PostDeviceResponseToJson(PostDeviceResponse instance) =>
+    <String, dynamic>{
+      'guid': instance.guid,
+    };
+
+GetDeviceIntegrationsResponseBody$Item
+    _$GetDeviceIntegrationsResponseBody$ItemFromJson(
+            Map<String, dynamic> json) =>
+        GetDeviceIntegrationsResponseBody$Item(
+          integrationId: json['integrationId'] as String,
+          platform: json['platform'] as String,
+          displayName: json['displayName'] as String,
+        );
+
+Map<String, dynamic> _$GetDeviceIntegrationsResponseBody$ItemToJson(
+        GetDeviceIntegrationsResponseBody$Item instance) =>
+    <String, dynamic>{
+      'integrationId': instance.integrationId,
+      'platform': instance.platform,
+      'displayName': instance.displayName,
+    };
+
+GetIntegrationDevicesResponseBody$Item
+    _$GetIntegrationDevicesResponseBody$ItemFromJson(
+            Map<String, dynamic> json) =>
+        GetIntegrationDevicesResponseBody$Item(
+          deviceId: json['deviceId'] as String,
+          platform: json['platform'] as String,
+          displayName: json['displayName'] as String,
+        );
+
+Map<String, dynamic> _$GetIntegrationDevicesResponseBody$ItemToJson(
+        GetIntegrationDevicesResponseBody$Item instance) =>
+    <String, dynamic>{
+      'deviceId': instance.deviceId,
+      'platform': instance.platform,
+      'displayName': instance.displayName,
+    };
+
+PostDeviceIntegrationsRequestBody _$PostDeviceIntegrationsRequestBodyFromJson(
+        Map<String, dynamic> json) =>
+    PostDeviceIntegrationsRequestBody(
+      integrationPairingToken: json['integrationPairingToken'] as String,
+    );
+
+Map<String, dynamic> _$PostDeviceIntegrationsRequestBodyToJson(
+        PostDeviceIntegrationsRequestBody instance) =>
+    <String, dynamic>{
+      'integrationPairingToken': instance.integrationPairingToken,
+    };
+
 DocumentPostRequestBody _$DocumentPostRequestBodyFromJson(
         Map<String, dynamic> json) =>
     DocumentPostRequestBody(
       document: Document.fromJson(json['document'] as Map<String, dynamic>),
-      parameters: SigningParameters.fromJson(
-          json['parameters'] as Map<String, dynamic>),
+      parameters: json['parameters'] == null
+          ? null
+          : SigningParameters.fromJson(
+              json['parameters'] as Map<String, dynamic>),
       payloadMimeType: json['payloadMimeType'] as String?,
     );
 
@@ -19,7 +138,7 @@ Map<String, dynamic> _$DocumentPostRequestBodyToJson(
         DocumentPostRequestBody instance) =>
     <String, dynamic>{
       'document': instance.document.toJson(),
-      'parameters': instance.parameters.toJson(),
+      'parameters': instance.parameters?.toJson(),
       'payloadMimeType': instance.payloadMimeType,
     };
 
@@ -107,7 +226,7 @@ Map<String, dynamic> _$GetDocumentResponseBodyToJson(
     };
 
 Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
-      filename: json['filename'] as String,
+      filename: json['filename'] as String?,
       content: json['content'] as String,
     );
 
@@ -118,14 +237,75 @@ Map<String, dynamic> _$DocumentToJson(Document instance) => <String, dynamic>{
 
 SigningParameters _$SigningParametersFromJson(Map<String, dynamic> json) =>
     SigningParameters(
-      level: signingParametersLevelFromJson(json['level']),
+      checkPDFACompliance: json['checkPDFACompliance'] as bool? ?? false,
+      autoLoadEform: json['autoLoadEform'] as bool? ?? false,
+      level: signingParametersLevelNullableFromJson(json['level']),
       container: signingParametersContainerNullableFromJson(json['container']),
+      containerXmlns: signingParametersContainerXmlnsNullableFromJson(
+          json['containerXmlns']),
+      embedUsedSchemas: json['embedUsedSchemas'] as bool?,
+      identifier: json['identifier'] as String?,
+      packaging:
+          SigningParameters.signingParametersPackagingPackagingNullableFromJson(
+              json['packaging']),
+      digestAlgorithm: SigningParameters
+          .signingParametersDigestAlgorithmDigestAlgorithmNullableFromJson(
+              json['digestAlgorithm']),
+      en319132: json['en319132'] as bool? ?? false,
+      infoCanonicalization: SigningParameters
+          .signingParametersInfoCanonicalizationInfoCanonicalizationNullableFromJson(
+              json['infoCanonicalization']),
+      propertiesCanonicalization: SigningParameters
+          .signingParametersPropertiesCanonicalizationPropertiesCanonicalizationNullableFromJson(
+              json['propertiesCanonicalization']),
+      keyInfoCanonicalization: SigningParameters
+          .signingParametersKeyInfoCanonicalizationKeyInfoCanonicalizationNullableFromJson(
+              json['keyInfoCanonicalization']),
+      schema: json['schema'] as String?,
+      schemaIdentifier: json['schemaIdentifier'] as String?,
+      transformation: json['transformation'] as String?,
+      transformationIdentifier: json['transformationIdentifier'] as String?,
+      transformationLanguage: json['transformationLanguage'] as String?,
+      transformationMediaDestinationTypeDescription:
+          signingParametersTransformationMediaDestinationTypeDescriptionNullableFromJson(
+              json['transformationMediaDestinationTypeDescription']),
+      transformationTargetEnvironment:
+          json['transformationTargetEnvironment'] as String?,
     );
 
 Map<String, dynamic> _$SigningParametersToJson(SigningParameters instance) =>
     <String, dynamic>{
-      'level': signingParametersLevelToJson(instance.level),
+      'checkPDFACompliance': instance.checkPDFACompliance,
+      'autoLoadEform': instance.autoLoadEform,
+      'level': signingParametersLevelNullableToJson(instance.level),
       'container': signingParametersContainerNullableToJson(instance.container),
+      'containerXmlns': signingParametersContainerXmlnsNullableToJson(
+          instance.containerXmlns),
+      'embedUsedSchemas': instance.embedUsedSchemas,
+      'identifier': instance.identifier,
+      'packaging': signingParametersPackagingNullableToJson(instance.packaging),
+      'digestAlgorithm': signingParametersDigestAlgorithmNullableToJson(
+          instance.digestAlgorithm),
+      'en319132': instance.en319132,
+      'infoCanonicalization':
+          signingParametersInfoCanonicalizationNullableToJson(
+              instance.infoCanonicalization),
+      'propertiesCanonicalization':
+          signingParametersPropertiesCanonicalizationNullableToJson(
+              instance.propertiesCanonicalization),
+      'keyInfoCanonicalization':
+          signingParametersKeyInfoCanonicalizationNullableToJson(
+              instance.keyInfoCanonicalization),
+      'schema': instance.schema,
+      'schemaIdentifier': instance.schemaIdentifier,
+      'transformation': instance.transformation,
+      'transformationIdentifier': instance.transformationIdentifier,
+      'transformationLanguage': instance.transformationLanguage,
+      'transformationMediaDestinationTypeDescription':
+          signingParametersTransformationMediaDestinationTypeDescriptionNullableToJson(
+              instance.transformationMediaDestinationTypeDescription),
+      'transformationTargetEnvironment':
+          instance.transformationTargetEnvironment,
     };
 
 CreateDocumentResponseBody _$CreateDocumentResponseBodyFromJson(

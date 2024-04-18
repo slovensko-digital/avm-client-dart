@@ -156,4 +156,134 @@ final class _$Autogram extends Autogram {
     return client
         .send<SignDocumentResponseBody, SignDocumentResponseBody>($request);
   }
+
+  @override
+  Future<Response<PostIntegrationResponse>> _integrationsPost(
+      {required PostIntegrationRequestBody? body}) {
+    final Uri $url = Uri.parse('/integrations');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client
+        .send<PostIntegrationResponse, PostIntegrationResponse>($request);
+  }
+
+  @override
+  Future<Response<PostDeviceResponse>> _devicesPost(
+      {required PostDeviceRequestBody? body}) {
+    final Uri $url = Uri.parse('/devices');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<PostDeviceResponse, PostDeviceResponse>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> _deviceIntegrationsPost(
+      {required PostDeviceIntegrationsRequestBody? body}) {
+    final Uri $url = Uri.parse('/device-integrations');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<List<GetDeviceIntegrationsResponseBody$Item>>>
+      _deviceIntegrationsGet() {
+    final Uri $url = Uri.parse('/device-integrations');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<List<GetDeviceIntegrationsResponseBody$Item>,
+        GetDeviceIntegrationsResponseBody$Item>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> _deviceIntegrationsIntegrationIdDelete(
+      {required String? integrationId}) {
+    final Uri $url = Uri.parse('/device-integrations/${integrationId}');
+    final Request $request = Request(
+      'DELETE',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<List<GetIntegrationDevicesResponseBody$Item>>>
+      _integrationDevicesGet() {
+    final Uri $url = Uri.parse('/integration-devices');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<List<GetIntegrationDevicesResponseBody$Item>,
+        GetIntegrationDevicesResponseBody$Item>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> _integrationDevicesDeviceIdDelete(
+      {required String? deviceId}) {
+    final Uri $url = Uri.parse('/integration-devices/${deviceId}');
+    final Request $request = Request(
+      'DELETE',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> _signRequestPost(
+      {required PostSignRequestBody? body}) {
+    final Uri $url = Uri.parse('/sign-request');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> _qrCodeGet({
+    required String? guid,
+    required String? key,
+    String? pushkey,
+    String? integration,
+  }) {
+    final Uri $url = Uri.parse('/qr-code');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'guid': guid,
+      'key': key,
+      'pushkey': pushkey,
+      'integration': integration,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }

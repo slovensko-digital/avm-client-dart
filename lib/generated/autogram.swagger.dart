@@ -47,7 +47,7 @@ abstract class Autogram extends ChopperService {
     return _$Autogram(newClient);
   }
 
-  ///
+  ///Client app posts document along with some parameters to Server.
   ///@param Accept
   Future<chopper.Response<CreateDocumentResponseBody>> documentsPost({
     String? accept,
@@ -59,7 +59,7 @@ abstract class Autogram extends ChopperService {
     return _documentsPost(accept: accept?.toString(), body: body);
   }
 
-  ///
+  ///Client app posts document along with some parameters to Server.
   ///@param Accept
   @Post(
     path: '/documents',
@@ -70,7 +70,7 @@ abstract class Autogram extends ChopperService {
     @Body() required DocumentPostRequestBody? body,
   });
 
-  ///
+  ///External system requests signed document at the end of the process.
   ///@param guid
   ///@param If-Modified-Since
   ///@param Accept
@@ -88,7 +88,7 @@ abstract class Autogram extends ChopperService {
         accept: accept?.toString());
   }
 
-  ///
+  ///External system requests signed document at the end of the process.
   ///@param guid
   ///@param If-Modified-Since
   ///@param Accept
@@ -99,19 +99,19 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
-  ///
+  ///External system requests signed document at the end of the process.
   ///@param guid
   Future<chopper.Response> documentsGuidDelete({required String? guid}) {
     return _documentsGuidDelete(guid: guid);
   }
 
-  ///
+  ///External system requests signed document at the end of the process.
   ///@param guid
   @Delete(path: '/documents/{guid}')
   Future<chopper.Response> _documentsGuidDelete(
       {@Path('guid') required String? guid});
 
-  ///
+  ///Client app requests encrypted document to visualize it.
   ///@param guid
   ///@param Accept
   Future<chopper.Response<DocumentVisualizationResponseBody>>
@@ -126,7 +126,7 @@ abstract class Autogram extends ChopperService {
         guid: guid, accept: accept?.toString());
   }
 
-  ///
+  ///Client app requests encrypted document to visualize it.
   ///@param guid
   ///@param Accept
   @Get(path: '/documents/{guid}/visualization')
@@ -136,7 +136,7 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
-  ///
+  ///Client app requests a signature validation report of the document.
   ///@param guid
   ///@param Accept
   Future<chopper.Response<DocumentValidationResponseBody>>
@@ -150,7 +150,7 @@ abstract class Autogram extends ChopperService {
     return _documentsGuidValidationGet(guid: guid, accept: accept?.toString());
   }
 
-  ///
+  ///Client app requests a signature validation report of the document.
   ///@param guid
   ///@param Accept
   @Get(path: '/documents/{guid}/validation')
@@ -160,7 +160,7 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
-  ///
+  ///Client app gets datatosign based on provided signing certificate.
   ///@param guid
   ///@param Accept
   Future<chopper.Response<DataToSignStructure>> documentsGuidDatatosignPost({
@@ -175,7 +175,7 @@ abstract class Autogram extends ChopperService {
         guid: guid, accept: accept?.toString(), body: body);
   }
 
-  ///
+  ///Client app gets datatosign based on provided signing certificate.
   ///@param guid
   ///@param Accept
   @Post(
@@ -188,7 +188,7 @@ abstract class Autogram extends ChopperService {
     @Body() required DataToSignRequestBody? body,
   });
 
-  ///
+  ///Create signed document using the SignedData obtained from client.
   ///@param guid
   ///@param returnSignedDocument Inidcation whether to return signed document in the response. Default to true. Is useful when signing document for external system.
   ///@param Accept
@@ -208,7 +208,7 @@ abstract class Autogram extends ChopperService {
         body: body);
   }
 
-  ///
+  ///Create signed document using the SignedData obtained from client.
   ///@param guid
   ///@param returnSignedDocument Inidcation whether to return signed document in the response. Default to true. Is useful when signing document for external system.
   ///@param Accept
@@ -222,13 +222,676 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
     @Body() required SignRequestBody? body,
   });
+
+  ///Integration registers itself at the server
+  Future<chopper.Response<PostIntegrationResponse>> integrationsPost(
+      {required PostIntegrationRequestBody? body}) {
+    generatedMapping.putIfAbsent(
+        PostIntegrationResponse, () => PostIntegrationResponse.fromJsonFactory);
+
+    return _integrationsPost(body: body);
+  }
+
+  ///Integration registers itself at the server
+  @Post(
+    path: '/integrations',
+    optionalBody: true,
+  )
+  Future<chopper.Response<PostIntegrationResponse>> _integrationsPost(
+      {@Body() required PostIntegrationRequestBody? body});
+
+  ///Device registers itself at the server
+  Future<chopper.Response<PostDeviceResponse>> devicesPost(
+      {required PostDeviceRequestBody? body}) {
+    generatedMapping.putIfAbsent(
+        PostDeviceResponse, () => PostDeviceResponse.fromJsonFactory);
+
+    return _devicesPost(body: body);
+  }
+
+  ///Device registers itself at the server
+  @Post(
+    path: '/devices',
+    optionalBody: true,
+  )
+  Future<chopper.Response<PostDeviceResponse>> _devicesPost(
+      {@Body() required PostDeviceRequestBody? body});
+
+  ///Device registers itself for receiving sign requests (push notification) from given integration
+  Future<chopper.Response> deviceIntegrationsPost(
+      {required PostDeviceIntegrationsRequestBody? body}) {
+    return _deviceIntegrationsPost(body: body);
+  }
+
+  ///Device registers itself for receiving sign requests (push notification) from given integration
+  @Post(
+    path: '/device-integrations',
+    optionalBody: true,
+  )
+  Future<chopper.Response> _deviceIntegrationsPost(
+      {@Body() required PostDeviceIntegrationsRequestBody? body});
+
+  ///Integration retrieves a list of paired devices
+  Future<chopper.Response<GetDeviceIntegrationsResponseBody>>
+      deviceIntegrationsGet() {
+    generatedMapping.putIfAbsent(GetDeviceIntegrationsResponseBody$Item,
+        () => GetDeviceIntegrationsResponseBody$Item.fromJsonFactory);
+
+    return _deviceIntegrationsGet();
+  }
+
+  ///Integration retrieves a list of paired devices
+  @Get(path: '/device-integrations')
+  Future<chopper.Response<GetDeviceIntegrationsResponseBody>>
+      _deviceIntegrationsGet();
+
+  ///Integration deletes device from its subscribers
+  ///@param integration_id Identifier of the integration
+  Future<chopper.Response> deviceIntegrationsIntegrationIdDelete(
+      {required String? integrationId}) {
+    return _deviceIntegrationsIntegrationIdDelete(integrationId: integrationId);
+  }
+
+  ///Integration deletes device from its subscribers
+  ///@param integration_id Identifier of the integration
+  @Delete(path: '/device-integrations/{integration_id}')
+  Future<chopper.Response> _deviceIntegrationsIntegrationIdDelete(
+      {@Path('integration_id') required String? integrationId});
+
+  ///Integration retrieves a list of connected devices
+  Future<chopper.Response<GetIntegrationDevicesResponseBody>>
+      integrationDevicesGet() {
+    generatedMapping.putIfAbsent(GetIntegrationDevicesResponseBody$Item,
+        () => GetIntegrationDevicesResponseBody$Item.fromJsonFactory);
+
+    return _integrationDevicesGet();
+  }
+
+  ///Integration retrieves a list of connected devices
+  @Get(path: '/integration-devices')
+  Future<chopper.Response<GetIntegrationDevicesResponseBody>>
+      _integrationDevicesGet();
+
+  ///Integration deletes device from its subscribers
+  ///@param device_id Identifier of the device
+  Future<chopper.Response> integrationDevicesDeviceIdDelete(
+      {required String? deviceId}) {
+    return _integrationDevicesDeviceIdDelete(deviceId: deviceId);
+  }
+
+  ///Integration deletes device from its subscribers
+  ///@param device_id Identifier of the device
+  @Delete(path: '/integration-devices/{device_id}')
+  Future<chopper.Response> _integrationDevicesDeviceIdDelete(
+      {@Path('device_id') required String? deviceId});
+
+  ///Integration sends a sign request (push notification) to all paired signing devices
+  Future<chopper.Response> signRequestPost(
+      {required PostSignRequestBody? body}) {
+    return _signRequestPost(body: body);
+  }
+
+  ///Integration sends a sign request (push notification) to all paired signing devices
+  @Post(
+    path: '/sign-request',
+    optionalBody: true,
+  )
+  Future<chopper.Response> _signRequestPost(
+      {@Body() required PostSignRequestBody? body});
+
+  ///
+  ///@param guid GUID of a document
+  ///@param key AES256 key in Base64 for the document
+  ///@param pushkey AES256 key in Base64 for push notification content
+  ///@param integration JWT of source integration. Can be used to pair device with the integration. Must contain `aud: "device"` claim
+  Future<chopper.Response> qrCodeGet({
+    required String? guid,
+    required String? key,
+    String? pushkey,
+    String? integration,
+  }) {
+    return _qrCodeGet(
+        guid: guid, key: key, pushkey: pushkey, integration: integration);
+  }
+
+  ///
+  ///@param guid GUID of a document
+  ///@param key AES256 key in Base64 for the document
+  ///@param pushkey AES256 key in Base64 for push notification content
+  ///@param integration JWT of source integration. Can be used to pair device with the integration. Must contain `aud: "device"` claim
+  @Get(path: '/qr-code')
+  Future<chopper.Response> _qrCodeGet({
+    @Query('guid') required String? guid,
+    @Query('key') required String? key,
+    @Query('pushkey') String? pushkey,
+    @Query('integration') String? integration,
+  });
+}
+
+@JsonSerializable(explicitToJson: true)
+class PostSignRequestBody {
+  const PostSignRequestBody({
+    required this.documentGuid,
+    required this.documentEncryptionKey,
+  });
+
+  factory PostSignRequestBody.fromJson(Map<String, dynamic> json) =>
+      _$PostSignRequestBodyFromJson(json);
+
+  static const toJsonFactory = _$PostSignRequestBodyToJson;
+  Map<String, dynamic> toJson() => _$PostSignRequestBodyToJson(this);
+
+  @JsonKey(name: 'documentGuid')
+  final String documentGuid;
+  @JsonKey(name: 'documentEncryptionKey')
+  final String documentEncryptionKey;
+  static const fromJsonFactory = _$PostSignRequestBodyFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is PostSignRequestBody &&
+            (identical(other.documentGuid, documentGuid) ||
+                const DeepCollectionEquality()
+                    .equals(other.documentGuid, documentGuid)) &&
+            (identical(other.documentEncryptionKey, documentEncryptionKey) ||
+                const DeepCollectionEquality().equals(
+                    other.documentEncryptionKey, documentEncryptionKey)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(documentGuid) ^
+      const DeepCollectionEquality().hash(documentEncryptionKey) ^
+      runtimeType.hashCode;
+}
+
+extension $PostSignRequestBodyExtension on PostSignRequestBody {
+  PostSignRequestBody copyWith(
+      {String? documentGuid, String? documentEncryptionKey}) {
+    return PostSignRequestBody(
+        documentGuid: documentGuid ?? this.documentGuid,
+        documentEncryptionKey:
+            documentEncryptionKey ?? this.documentEncryptionKey);
+  }
+
+  PostSignRequestBody copyWithWrapped(
+      {Wrapped<String>? documentGuid, Wrapped<String>? documentEncryptionKey}) {
+    return PostSignRequestBody(
+        documentGuid:
+            (documentGuid != null ? documentGuid.value : this.documentGuid),
+        documentEncryptionKey: (documentEncryptionKey != null
+            ? documentEncryptionKey.value
+            : this.documentEncryptionKey));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class PostIntegrationRequestBody {
+  const PostIntegrationRequestBody({
+    required this.platform,
+    required this.displayName,
+    required this.publicKey,
+    required this.pushkey,
+  });
+
+  factory PostIntegrationRequestBody.fromJson(Map<String, dynamic> json) =>
+      _$PostIntegrationRequestBodyFromJson(json);
+
+  static const toJsonFactory = _$PostIntegrationRequestBodyToJson;
+  Map<String, dynamic> toJson() => _$PostIntegrationRequestBodyToJson(this);
+
+  @JsonKey(name: 'platform')
+  final String platform;
+  @JsonKey(name: 'displayName')
+  final String displayName;
+  @JsonKey(name: 'publicKey')
+  final String publicKey;
+  @JsonKey(name: 'pushkey')
+  final String pushkey;
+  static const fromJsonFactory = _$PostIntegrationRequestBodyFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is PostIntegrationRequestBody &&
+            (identical(other.platform, platform) ||
+                const DeepCollectionEquality()
+                    .equals(other.platform, platform)) &&
+            (identical(other.displayName, displayName) ||
+                const DeepCollectionEquality()
+                    .equals(other.displayName, displayName)) &&
+            (identical(other.publicKey, publicKey) ||
+                const DeepCollectionEquality()
+                    .equals(other.publicKey, publicKey)) &&
+            (identical(other.pushkey, pushkey) ||
+                const DeepCollectionEquality().equals(other.pushkey, pushkey)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(platform) ^
+      const DeepCollectionEquality().hash(displayName) ^
+      const DeepCollectionEquality().hash(publicKey) ^
+      const DeepCollectionEquality().hash(pushkey) ^
+      runtimeType.hashCode;
+}
+
+extension $PostIntegrationRequestBodyExtension on PostIntegrationRequestBody {
+  PostIntegrationRequestBody copyWith(
+      {String? platform,
+      String? displayName,
+      String? publicKey,
+      String? pushkey}) {
+    return PostIntegrationRequestBody(
+        platform: platform ?? this.platform,
+        displayName: displayName ?? this.displayName,
+        publicKey: publicKey ?? this.publicKey,
+        pushkey: pushkey ?? this.pushkey);
+  }
+
+  PostIntegrationRequestBody copyWithWrapped(
+      {Wrapped<String>? platform,
+      Wrapped<String>? displayName,
+      Wrapped<String>? publicKey,
+      Wrapped<String>? pushkey}) {
+    return PostIntegrationRequestBody(
+        platform: (platform != null ? platform.value : this.platform),
+        displayName:
+            (displayName != null ? displayName.value : this.displayName),
+        publicKey: (publicKey != null ? publicKey.value : this.publicKey),
+        pushkey: (pushkey != null ? pushkey.value : this.pushkey));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class PostIntegrationResponse {
+  const PostIntegrationResponse({
+    required this.guid,
+  });
+
+  factory PostIntegrationResponse.fromJson(Map<String, dynamic> json) =>
+      _$PostIntegrationResponseFromJson(json);
+
+  static const toJsonFactory = _$PostIntegrationResponseToJson;
+  Map<String, dynamic> toJson() => _$PostIntegrationResponseToJson(this);
+
+  @JsonKey(name: 'guid')
+  final String guid;
+  static const fromJsonFactory = _$PostIntegrationResponseFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is PostIntegrationResponse &&
+            (identical(other.guid, guid) ||
+                const DeepCollectionEquality().equals(other.guid, guid)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(guid) ^ runtimeType.hashCode;
+}
+
+extension $PostIntegrationResponseExtension on PostIntegrationResponse {
+  PostIntegrationResponse copyWith({String? guid}) {
+    return PostIntegrationResponse(guid: guid ?? this.guid);
+  }
+
+  PostIntegrationResponse copyWithWrapped({Wrapped<String>? guid}) {
+    return PostIntegrationResponse(
+        guid: (guid != null ? guid.value : this.guid));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class PostDeviceRequestBody {
+  const PostDeviceRequestBody({
+    required this.platform,
+    required this.registrationId,
+    required this.displayName,
+    required this.publicKey,
+  });
+
+  factory PostDeviceRequestBody.fromJson(Map<String, dynamic> json) =>
+      _$PostDeviceRequestBodyFromJson(json);
+
+  static const toJsonFactory = _$PostDeviceRequestBodyToJson;
+  Map<String, dynamic> toJson() => _$PostDeviceRequestBodyToJson(this);
+
+  @JsonKey(name: 'platform')
+  final String platform;
+  @JsonKey(name: 'registrationId')
+  final String registrationId;
+  @JsonKey(name: 'displayName')
+  final String displayName;
+  @JsonKey(name: 'publicKey')
+  final String publicKey;
+  static const fromJsonFactory = _$PostDeviceRequestBodyFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is PostDeviceRequestBody &&
+            (identical(other.platform, platform) ||
+                const DeepCollectionEquality()
+                    .equals(other.platform, platform)) &&
+            (identical(other.registrationId, registrationId) ||
+                const DeepCollectionEquality()
+                    .equals(other.registrationId, registrationId)) &&
+            (identical(other.displayName, displayName) ||
+                const DeepCollectionEquality()
+                    .equals(other.displayName, displayName)) &&
+            (identical(other.publicKey, publicKey) ||
+                const DeepCollectionEquality()
+                    .equals(other.publicKey, publicKey)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(platform) ^
+      const DeepCollectionEquality().hash(registrationId) ^
+      const DeepCollectionEquality().hash(displayName) ^
+      const DeepCollectionEquality().hash(publicKey) ^
+      runtimeType.hashCode;
+}
+
+extension $PostDeviceRequestBodyExtension on PostDeviceRequestBody {
+  PostDeviceRequestBody copyWith(
+      {String? platform,
+      String? registrationId,
+      String? displayName,
+      String? publicKey}) {
+    return PostDeviceRequestBody(
+        platform: platform ?? this.platform,
+        registrationId: registrationId ?? this.registrationId,
+        displayName: displayName ?? this.displayName,
+        publicKey: publicKey ?? this.publicKey);
+  }
+
+  PostDeviceRequestBody copyWithWrapped(
+      {Wrapped<String>? platform,
+      Wrapped<String>? registrationId,
+      Wrapped<String>? displayName,
+      Wrapped<String>? publicKey}) {
+    return PostDeviceRequestBody(
+        platform: (platform != null ? platform.value : this.platform),
+        registrationId: (registrationId != null
+            ? registrationId.value
+            : this.registrationId),
+        displayName:
+            (displayName != null ? displayName.value : this.displayName),
+        publicKey: (publicKey != null ? publicKey.value : this.publicKey));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class PostDeviceResponse {
+  const PostDeviceResponse({
+    this.guid,
+  });
+
+  factory PostDeviceResponse.fromJson(Map<String, dynamic> json) =>
+      _$PostDeviceResponseFromJson(json);
+
+  static const toJsonFactory = _$PostDeviceResponseToJson;
+  Map<String, dynamic> toJson() => _$PostDeviceResponseToJson(this);
+
+  @JsonKey(name: 'guid')
+  final String? guid;
+  static const fromJsonFactory = _$PostDeviceResponseFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is PostDeviceResponse &&
+            (identical(other.guid, guid) ||
+                const DeepCollectionEquality().equals(other.guid, guid)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(guid) ^ runtimeType.hashCode;
+}
+
+extension $PostDeviceResponseExtension on PostDeviceResponse {
+  PostDeviceResponse copyWith({String? guid}) {
+    return PostDeviceResponse(guid: guid ?? this.guid);
+  }
+
+  PostDeviceResponse copyWithWrapped({Wrapped<String?>? guid}) {
+    return PostDeviceResponse(guid: (guid != null ? guid.value : this.guid));
+  }
+}
+
+typedef GetDeviceIntegrationsResponseBody
+    = List<GetDeviceIntegrationsResponseBody$Item>;
+
+@JsonSerializable(explicitToJson: true)
+class GetDeviceIntegrationsResponseBody$Item {
+  const GetDeviceIntegrationsResponseBody$Item({
+    required this.integrationId,
+    required this.platform,
+    required this.displayName,
+  });
+
+  factory GetDeviceIntegrationsResponseBody$Item.fromJson(
+          Map<String, dynamic> json) =>
+      _$GetDeviceIntegrationsResponseBody$ItemFromJson(json);
+
+  static const toJsonFactory = _$GetDeviceIntegrationsResponseBody$ItemToJson;
+  Map<String, dynamic> toJson() =>
+      _$GetDeviceIntegrationsResponseBody$ItemToJson(this);
+
+  @JsonKey(name: 'integrationId')
+  final String integrationId;
+  @JsonKey(name: 'platform')
+  final String platform;
+  @JsonKey(name: 'displayName')
+  final String displayName;
+  static const fromJsonFactory =
+      _$GetDeviceIntegrationsResponseBody$ItemFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is GetDeviceIntegrationsResponseBody$Item &&
+            (identical(other.integrationId, integrationId) ||
+                const DeepCollectionEquality()
+                    .equals(other.integrationId, integrationId)) &&
+            (identical(other.platform, platform) ||
+                const DeepCollectionEquality()
+                    .equals(other.platform, platform)) &&
+            (identical(other.displayName, displayName) ||
+                const DeepCollectionEquality()
+                    .equals(other.displayName, displayName)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(integrationId) ^
+      const DeepCollectionEquality().hash(platform) ^
+      const DeepCollectionEquality().hash(displayName) ^
+      runtimeType.hashCode;
+}
+
+extension $GetDeviceIntegrationsResponseBody$ItemExtension
+    on GetDeviceIntegrationsResponseBody$Item {
+  GetDeviceIntegrationsResponseBody$Item copyWith(
+      {String? integrationId, String? platform, String? displayName}) {
+    return GetDeviceIntegrationsResponseBody$Item(
+        integrationId: integrationId ?? this.integrationId,
+        platform: platform ?? this.platform,
+        displayName: displayName ?? this.displayName);
+  }
+
+  GetDeviceIntegrationsResponseBody$Item copyWithWrapped(
+      {Wrapped<String>? integrationId,
+      Wrapped<String>? platform,
+      Wrapped<String>? displayName}) {
+    return GetDeviceIntegrationsResponseBody$Item(
+        integrationId:
+            (integrationId != null ? integrationId.value : this.integrationId),
+        platform: (platform != null ? platform.value : this.platform),
+        displayName:
+            (displayName != null ? displayName.value : this.displayName));
+  }
+}
+
+typedef GetIntegrationDevicesResponseBody
+    = List<GetIntegrationDevicesResponseBody$Item>;
+
+@JsonSerializable(explicitToJson: true)
+class GetIntegrationDevicesResponseBody$Item {
+  const GetIntegrationDevicesResponseBody$Item({
+    required this.deviceId,
+    required this.platform,
+    required this.displayName,
+  });
+
+  factory GetIntegrationDevicesResponseBody$Item.fromJson(
+          Map<String, dynamic> json) =>
+      _$GetIntegrationDevicesResponseBody$ItemFromJson(json);
+
+  static const toJsonFactory = _$GetIntegrationDevicesResponseBody$ItemToJson;
+  Map<String, dynamic> toJson() =>
+      _$GetIntegrationDevicesResponseBody$ItemToJson(this);
+
+  @JsonKey(name: 'deviceId')
+  final String deviceId;
+  @JsonKey(name: 'platform')
+  final String platform;
+  @JsonKey(name: 'displayName')
+  final String displayName;
+  static const fromJsonFactory =
+      _$GetIntegrationDevicesResponseBody$ItemFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is GetIntegrationDevicesResponseBody$Item &&
+            (identical(other.deviceId, deviceId) ||
+                const DeepCollectionEquality()
+                    .equals(other.deviceId, deviceId)) &&
+            (identical(other.platform, platform) ||
+                const DeepCollectionEquality()
+                    .equals(other.platform, platform)) &&
+            (identical(other.displayName, displayName) ||
+                const DeepCollectionEquality()
+                    .equals(other.displayName, displayName)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(deviceId) ^
+      const DeepCollectionEquality().hash(platform) ^
+      const DeepCollectionEquality().hash(displayName) ^
+      runtimeType.hashCode;
+}
+
+extension $GetIntegrationDevicesResponseBody$ItemExtension
+    on GetIntegrationDevicesResponseBody$Item {
+  GetIntegrationDevicesResponseBody$Item copyWith(
+      {String? deviceId, String? platform, String? displayName}) {
+    return GetIntegrationDevicesResponseBody$Item(
+        deviceId: deviceId ?? this.deviceId,
+        platform: platform ?? this.platform,
+        displayName: displayName ?? this.displayName);
+  }
+
+  GetIntegrationDevicesResponseBody$Item copyWithWrapped(
+      {Wrapped<String>? deviceId,
+      Wrapped<String>? platform,
+      Wrapped<String>? displayName}) {
+    return GetIntegrationDevicesResponseBody$Item(
+        deviceId: (deviceId != null ? deviceId.value : this.deviceId),
+        platform: (platform != null ? platform.value : this.platform),
+        displayName:
+            (displayName != null ? displayName.value : this.displayName));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class PostDeviceIntegrationsRequestBody {
+  const PostDeviceIntegrationsRequestBody({
+    required this.integrationPairingToken,
+  });
+
+  factory PostDeviceIntegrationsRequestBody.fromJson(
+          Map<String, dynamic> json) =>
+      _$PostDeviceIntegrationsRequestBodyFromJson(json);
+
+  static const toJsonFactory = _$PostDeviceIntegrationsRequestBodyToJson;
+  Map<String, dynamic> toJson() =>
+      _$PostDeviceIntegrationsRequestBodyToJson(this);
+
+  @JsonKey(name: 'integrationPairingToken')
+  final String integrationPairingToken;
+  static const fromJsonFactory = _$PostDeviceIntegrationsRequestBodyFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is PostDeviceIntegrationsRequestBody &&
+            (identical(
+                    other.integrationPairingToken, integrationPairingToken) ||
+                const DeepCollectionEquality().equals(
+                    other.integrationPairingToken, integrationPairingToken)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(integrationPairingToken) ^
+      runtimeType.hashCode;
+}
+
+extension $PostDeviceIntegrationsRequestBodyExtension
+    on PostDeviceIntegrationsRequestBody {
+  PostDeviceIntegrationsRequestBody copyWith(
+      {String? integrationPairingToken}) {
+    return PostDeviceIntegrationsRequestBody(
+        integrationPairingToken:
+            integrationPairingToken ?? this.integrationPairingToken);
+  }
+
+  PostDeviceIntegrationsRequestBody copyWithWrapped(
+      {Wrapped<String>? integrationPairingToken}) {
+    return PostDeviceIntegrationsRequestBody(
+        integrationPairingToken: (integrationPairingToken != null
+            ? integrationPairingToken.value
+            : this.integrationPairingToken));
+  }
 }
 
 @JsonSerializable(explicitToJson: true)
 class DocumentPostRequestBody {
   const DocumentPostRequestBody({
     required this.document,
-    required this.parameters,
+    this.parameters,
     this.payloadMimeType,
   });
 
@@ -241,7 +904,7 @@ class DocumentPostRequestBody {
   @JsonKey(name: 'document')
   final Document document;
   @JsonKey(name: 'parameters')
-  final SigningParameters parameters;
+  final SigningParameters? parameters;
   @JsonKey(name: 'payloadMimeType')
   final String? payloadMimeType;
   static const fromJsonFactory = _$DocumentPostRequestBodyFromJson;
@@ -285,7 +948,7 @@ extension $DocumentPostRequestBodyExtension on DocumentPostRequestBody {
 
   DocumentPostRequestBody copyWithWrapped(
       {Wrapped<Document>? document,
-      Wrapped<SigningParameters>? parameters,
+      Wrapped<SigningParameters?>? parameters,
       Wrapped<String?>? payloadMimeType}) {
     return DocumentPostRequestBody(
         document: (document != null ? document.value : this.document),
@@ -670,7 +1333,7 @@ extension $GetDocumentResponseBodyExtension on GetDocumentResponseBody {
 @JsonSerializable(explicitToJson: true)
 class Document {
   const Document({
-    required this.filename,
+    this.filename,
     required this.content,
   });
 
@@ -681,7 +1344,7 @@ class Document {
   Map<String, dynamic> toJson() => _$DocumentToJson(this);
 
   @JsonKey(name: 'filename')
-  final String filename;
+  final String? filename;
   @JsonKey(name: 'content')
   final String content;
   static const fromJsonFactory = _$DocumentFromJson;
@@ -714,7 +1377,7 @@ extension $DocumentExtension on Document {
   }
 
   Document copyWithWrapped(
-      {Wrapped<String>? filename, Wrapped<String>? content}) {
+      {Wrapped<String?>? filename, Wrapped<String>? content}) {
     return Document(
         filename: (filename != null ? filename.value : this.filename),
         content: (content != null ? content.value : this.content));
@@ -724,8 +1387,26 @@ extension $DocumentExtension on Document {
 @JsonSerializable(explicitToJson: true)
 class SigningParameters {
   const SigningParameters({
-    required this.level,
+    this.checkPDFACompliance,
+    this.autoLoadEform,
+    this.level,
     this.container,
+    this.containerXmlns,
+    this.embedUsedSchemas,
+    this.identifier,
+    this.packaging,
+    this.digestAlgorithm,
+    this.en319132,
+    this.infoCanonicalization,
+    this.propertiesCanonicalization,
+    this.keyInfoCanonicalization,
+    this.schema,
+    this.schemaIdentifier,
+    this.transformation,
+    this.transformationIdentifier,
+    this.transformationLanguage,
+    this.transformationMediaDestinationTypeDescription,
+    this.transformationTargetEnvironment,
   });
 
   factory SigningParameters.fromJson(Map<String, dynamic> json) =>
@@ -734,29 +1415,180 @@ class SigningParameters {
   static const toJsonFactory = _$SigningParametersToJson;
   Map<String, dynamic> toJson() => _$SigningParametersToJson(this);
 
+  @JsonKey(name: 'checkPDFACompliance', defaultValue: false)
+  final bool? checkPDFACompliance;
+  @JsonKey(name: 'autoLoadEform', defaultValue: false)
+  final bool? autoLoadEform;
   @JsonKey(
     name: 'level',
-    toJson: signingParametersLevelToJson,
-    fromJson: signingParametersLevelFromJson,
+    toJson: signingParametersLevelNullableToJson,
+    fromJson: signingParametersLevelNullableFromJson,
   )
-  final enums.SigningParametersLevel level;
+  final enums.SigningParametersLevel? level;
   @JsonKey(
     name: 'container',
     toJson: signingParametersContainerNullableToJson,
     fromJson: signingParametersContainerNullableFromJson,
   )
   final enums.SigningParametersContainer? container;
+  @JsonKey(
+    name: 'containerXmlns',
+    toJson: signingParametersContainerXmlnsNullableToJson,
+    fromJson: signingParametersContainerXmlnsNullableFromJson,
+  )
+  final enums.SigningParametersContainerXmlns? containerXmlns;
+  @JsonKey(name: 'embedUsedSchemas')
+  final bool? embedUsedSchemas;
+  @JsonKey(name: 'identifier')
+  final String? identifier;
+  @JsonKey(
+    name: 'packaging',
+    toJson: signingParametersPackagingNullableToJson,
+    fromJson: signingParametersPackagingPackagingNullableFromJson,
+  )
+  final enums.SigningParametersPackaging? packaging;
+  static enums.SigningParametersPackaging?
+      signingParametersPackagingPackagingNullableFromJson(Object? value) =>
+          signingParametersPackagingNullableFromJson(
+              value, enums.SigningParametersPackaging.enveloped);
+
+  @JsonKey(
+    name: 'digestAlgorithm',
+    toJson: signingParametersDigestAlgorithmNullableToJson,
+    fromJson: signingParametersDigestAlgorithmDigestAlgorithmNullableFromJson,
+  )
+  final enums.SigningParametersDigestAlgorithm? digestAlgorithm;
+  static enums.SigningParametersDigestAlgorithm?
+      signingParametersDigestAlgorithmDigestAlgorithmNullableFromJson(
+              Object? value) =>
+          signingParametersDigestAlgorithmNullableFromJson(
+              value, enums.SigningParametersDigestAlgorithm.sha256);
+
+  @JsonKey(name: 'en319132', defaultValue: false)
+  final bool? en319132;
+  @JsonKey(
+    name: 'infoCanonicalization',
+    toJson: signingParametersInfoCanonicalizationNullableToJson,
+    fromJson:
+        signingParametersInfoCanonicalizationInfoCanonicalizationNullableFromJson,
+  )
+  final enums.SigningParametersInfoCanonicalization? infoCanonicalization;
+  static enums.SigningParametersInfoCanonicalization?
+      signingParametersInfoCanonicalizationInfoCanonicalizationNullableFromJson(
+              Object? value) =>
+          signingParametersInfoCanonicalizationNullableFromJson(
+              value, enums.SigningParametersInfoCanonicalization.inclusive);
+
+  @JsonKey(
+    name: 'propertiesCanonicalization',
+    toJson: signingParametersPropertiesCanonicalizationNullableToJson,
+    fromJson:
+        signingParametersPropertiesCanonicalizationPropertiesCanonicalizationNullableFromJson,
+  )
+  final enums.SigningParametersPropertiesCanonicalization?
+      propertiesCanonicalization;
+  static enums.SigningParametersPropertiesCanonicalization?
+      signingParametersPropertiesCanonicalizationPropertiesCanonicalizationNullableFromJson(
+              Object? value) =>
+          signingParametersPropertiesCanonicalizationNullableFromJson(value,
+              enums.SigningParametersPropertiesCanonicalization.inclusive);
+
+  @JsonKey(
+    name: 'keyInfoCanonicalization',
+    toJson: signingParametersKeyInfoCanonicalizationNullableToJson,
+    fromJson:
+        signingParametersKeyInfoCanonicalizationKeyInfoCanonicalizationNullableFromJson,
+  )
+  final enums.SigningParametersKeyInfoCanonicalization? keyInfoCanonicalization;
+  static enums.SigningParametersKeyInfoCanonicalization?
+      signingParametersKeyInfoCanonicalizationKeyInfoCanonicalizationNullableFromJson(
+              Object? value) =>
+          signingParametersKeyInfoCanonicalizationNullableFromJson(
+              value, enums.SigningParametersKeyInfoCanonicalization.inclusive);
+
+  @JsonKey(name: 'schema')
+  final String? schema;
+  @JsonKey(name: 'schemaIdentifier')
+  final String? schemaIdentifier;
+  @JsonKey(name: 'transformation')
+  final String? transformation;
+  @JsonKey(name: 'transformationIdentifier')
+  final String? transformationIdentifier;
+  @JsonKey(name: 'transformationLanguage')
+  final String? transformationLanguage;
+  @JsonKey(
+    name: 'transformationMediaDestinationTypeDescription',
+    toJson:
+        signingParametersTransformationMediaDestinationTypeDescriptionNullableToJson,
+    fromJson:
+        signingParametersTransformationMediaDestinationTypeDescriptionNullableFromJson,
+  )
+  final enums.SigningParametersTransformationMediaDestinationTypeDescription?
+      transformationMediaDestinationTypeDescription;
+  @JsonKey(name: 'transformationTargetEnvironment')
+  final String? transformationTargetEnvironment;
   static const fromJsonFactory = _$SigningParametersFromJson;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other is SigningParameters &&
+            (identical(other.checkPDFACompliance, checkPDFACompliance) ||
+                const DeepCollectionEquality()
+                    .equals(other.checkPDFACompliance, checkPDFACompliance)) &&
+            (identical(other.autoLoadEform, autoLoadEform) ||
+                const DeepCollectionEquality()
+                    .equals(other.autoLoadEform, autoLoadEform)) &&
             (identical(other.level, level) ||
                 const DeepCollectionEquality().equals(other.level, level)) &&
             (identical(other.container, container) ||
                 const DeepCollectionEquality()
-                    .equals(other.container, container)));
+                    .equals(other.container, container)) &&
+            (identical(other.containerXmlns, containerXmlns) ||
+                const DeepCollectionEquality()
+                    .equals(other.containerXmlns, containerXmlns)) &&
+            (identical(other.embedUsedSchemas, embedUsedSchemas) ||
+                const DeepCollectionEquality()
+                    .equals(other.embedUsedSchemas, embedUsedSchemas)) &&
+            (identical(other.identifier, identifier) ||
+                const DeepCollectionEquality()
+                    .equals(other.identifier, identifier)) &&
+            (identical(other.packaging, packaging) ||
+                const DeepCollectionEquality()
+                    .equals(other.packaging, packaging)) &&
+            (identical(other.digestAlgorithm, digestAlgorithm) ||
+                const DeepCollectionEquality()
+                    .equals(other.digestAlgorithm, digestAlgorithm)) &&
+            (identical(other.en319132, en319132) ||
+                const DeepCollectionEquality()
+                    .equals(other.en319132, en319132)) &&
+            (identical(other.infoCanonicalization, infoCanonicalization) ||
+                const DeepCollectionEquality().equals(
+                    other.infoCanonicalization, infoCanonicalization)) &&
+            (identical(other.propertiesCanonicalization, propertiesCanonicalization) ||
+                const DeepCollectionEquality().equals(
+                    other.propertiesCanonicalization,
+                    propertiesCanonicalization)) &&
+            (identical(other.keyInfoCanonicalization, keyInfoCanonicalization) ||
+                const DeepCollectionEquality().equals(
+                    other.keyInfoCanonicalization, keyInfoCanonicalization)) &&
+            (identical(other.schema, schema) ||
+                const DeepCollectionEquality().equals(other.schema, schema)) &&
+            (identical(other.schemaIdentifier, schemaIdentifier) ||
+                const DeepCollectionEquality()
+                    .equals(other.schemaIdentifier, schemaIdentifier)) &&
+            (identical(other.transformation, transformation) ||
+                const DeepCollectionEquality()
+                    .equals(other.transformation, transformation)) &&
+            (identical(other.transformationIdentifier, transformationIdentifier) ||
+                const DeepCollectionEquality().equals(
+                    other.transformationIdentifier,
+                    transformationIdentifier)) &&
+            (identical(other.transformationLanguage, transformationLanguage) ||
+                const DeepCollectionEquality().equals(
+                    other.transformationLanguage, transformationLanguage)) &&
+            (identical(other.transformationMediaDestinationTypeDescription, transformationMediaDestinationTypeDescription) || const DeepCollectionEquality().equals(other.transformationMediaDestinationTypeDescription, transformationMediaDestinationTypeDescription)) &&
+            (identical(other.transformationTargetEnvironment, transformationTargetEnvironment) || const DeepCollectionEquality().equals(other.transformationTargetEnvironment, transformationTargetEnvironment)));
   }
 
   @override
@@ -764,25 +1596,161 @@ class SigningParameters {
 
   @override
   int get hashCode =>
+      const DeepCollectionEquality().hash(checkPDFACompliance) ^
+      const DeepCollectionEquality().hash(autoLoadEform) ^
       const DeepCollectionEquality().hash(level) ^
       const DeepCollectionEquality().hash(container) ^
+      const DeepCollectionEquality().hash(containerXmlns) ^
+      const DeepCollectionEquality().hash(embedUsedSchemas) ^
+      const DeepCollectionEquality().hash(identifier) ^
+      const DeepCollectionEquality().hash(packaging) ^
+      const DeepCollectionEquality().hash(digestAlgorithm) ^
+      const DeepCollectionEquality().hash(en319132) ^
+      const DeepCollectionEquality().hash(infoCanonicalization) ^
+      const DeepCollectionEquality().hash(propertiesCanonicalization) ^
+      const DeepCollectionEquality().hash(keyInfoCanonicalization) ^
+      const DeepCollectionEquality().hash(schema) ^
+      const DeepCollectionEquality().hash(schemaIdentifier) ^
+      const DeepCollectionEquality().hash(transformation) ^
+      const DeepCollectionEquality().hash(transformationIdentifier) ^
+      const DeepCollectionEquality().hash(transformationLanguage) ^
+      const DeepCollectionEquality()
+          .hash(transformationMediaDestinationTypeDescription) ^
+      const DeepCollectionEquality().hash(transformationTargetEnvironment) ^
       runtimeType.hashCode;
 }
 
 extension $SigningParametersExtension on SigningParameters {
   SigningParameters copyWith(
-      {enums.SigningParametersLevel? level,
-      enums.SigningParametersContainer? container}) {
+      {bool? checkPDFACompliance,
+      bool? autoLoadEform,
+      enums.SigningParametersLevel? level,
+      enums.SigningParametersContainer? container,
+      enums.SigningParametersContainerXmlns? containerXmlns,
+      bool? embedUsedSchemas,
+      String? identifier,
+      enums.SigningParametersPackaging? packaging,
+      enums.SigningParametersDigestAlgorithm? digestAlgorithm,
+      bool? en319132,
+      enums.SigningParametersInfoCanonicalization? infoCanonicalization,
+      enums.SigningParametersPropertiesCanonicalization?
+          propertiesCanonicalization,
+      enums.SigningParametersKeyInfoCanonicalization? keyInfoCanonicalization,
+      String? schema,
+      String? schemaIdentifier,
+      String? transformation,
+      String? transformationIdentifier,
+      String? transformationLanguage,
+      enums.SigningParametersTransformationMediaDestinationTypeDescription?
+          transformationMediaDestinationTypeDescription,
+      String? transformationTargetEnvironment}) {
     return SigningParameters(
-        level: level ?? this.level, container: container ?? this.container);
+        checkPDFACompliance: checkPDFACompliance ?? this.checkPDFACompliance,
+        autoLoadEform: autoLoadEform ?? this.autoLoadEform,
+        level: level ?? this.level,
+        container: container ?? this.container,
+        containerXmlns: containerXmlns ?? this.containerXmlns,
+        embedUsedSchemas: embedUsedSchemas ?? this.embedUsedSchemas,
+        identifier: identifier ?? this.identifier,
+        packaging: packaging ?? this.packaging,
+        digestAlgorithm: digestAlgorithm ?? this.digestAlgorithm,
+        en319132: en319132 ?? this.en319132,
+        infoCanonicalization: infoCanonicalization ?? this.infoCanonicalization,
+        propertiesCanonicalization:
+            propertiesCanonicalization ?? this.propertiesCanonicalization,
+        keyInfoCanonicalization:
+            keyInfoCanonicalization ?? this.keyInfoCanonicalization,
+        schema: schema ?? this.schema,
+        schemaIdentifier: schemaIdentifier ?? this.schemaIdentifier,
+        transformation: transformation ?? this.transformation,
+        transformationIdentifier:
+            transformationIdentifier ?? this.transformationIdentifier,
+        transformationLanguage:
+            transformationLanguage ?? this.transformationLanguage,
+        transformationMediaDestinationTypeDescription:
+            transformationMediaDestinationTypeDescription ??
+                this.transformationMediaDestinationTypeDescription,
+        transformationTargetEnvironment: transformationTargetEnvironment ??
+            this.transformationTargetEnvironment);
   }
 
   SigningParameters copyWithWrapped(
-      {Wrapped<enums.SigningParametersLevel>? level,
-      Wrapped<enums.SigningParametersContainer?>? container}) {
+      {Wrapped<bool?>? checkPDFACompliance,
+      Wrapped<bool?>? autoLoadEform,
+      Wrapped<enums.SigningParametersLevel?>? level,
+      Wrapped<enums.SigningParametersContainer?>? container,
+      Wrapped<enums.SigningParametersContainerXmlns?>? containerXmlns,
+      Wrapped<bool?>? embedUsedSchemas,
+      Wrapped<String?>? identifier,
+      Wrapped<enums.SigningParametersPackaging?>? packaging,
+      Wrapped<enums.SigningParametersDigestAlgorithm?>? digestAlgorithm,
+      Wrapped<bool?>? en319132,
+      Wrapped<enums.SigningParametersInfoCanonicalization?>?
+          infoCanonicalization,
+      Wrapped<enums.SigningParametersPropertiesCanonicalization?>?
+          propertiesCanonicalization,
+      Wrapped<enums.SigningParametersKeyInfoCanonicalization?>?
+          keyInfoCanonicalization,
+      Wrapped<String?>? schema,
+      Wrapped<String?>? schemaIdentifier,
+      Wrapped<String?>? transformation,
+      Wrapped<String?>? transformationIdentifier,
+      Wrapped<String?>? transformationLanguage,
+      Wrapped<
+              enums
+              .SigningParametersTransformationMediaDestinationTypeDescription?>?
+          transformationMediaDestinationTypeDescription,
+      Wrapped<String?>? transformationTargetEnvironment}) {
     return SigningParameters(
+        checkPDFACompliance: (checkPDFACompliance != null
+            ? checkPDFACompliance.value
+            : this.checkPDFACompliance),
+        autoLoadEform:
+            (autoLoadEform != null ? autoLoadEform.value : this.autoLoadEform),
         level: (level != null ? level.value : this.level),
-        container: (container != null ? container.value : this.container));
+        container: (container != null ? container.value : this.container),
+        containerXmlns: (containerXmlns != null
+            ? containerXmlns.value
+            : this.containerXmlns),
+        embedUsedSchemas: (embedUsedSchemas != null
+            ? embedUsedSchemas.value
+            : this.embedUsedSchemas),
+        identifier: (identifier != null ? identifier.value : this.identifier),
+        packaging: (packaging != null ? packaging.value : this.packaging),
+        digestAlgorithm: (digestAlgorithm != null
+            ? digestAlgorithm.value
+            : this.digestAlgorithm),
+        en319132: (en319132 != null ? en319132.value : this.en319132),
+        infoCanonicalization: (infoCanonicalization != null
+            ? infoCanonicalization.value
+            : this.infoCanonicalization),
+        propertiesCanonicalization: (propertiesCanonicalization != null
+            ? propertiesCanonicalization.value
+            : this.propertiesCanonicalization),
+        keyInfoCanonicalization: (keyInfoCanonicalization != null
+            ? keyInfoCanonicalization.value
+            : this.keyInfoCanonicalization),
+        schema: (schema != null ? schema.value : this.schema),
+        schemaIdentifier: (schemaIdentifier != null
+            ? schemaIdentifier.value
+            : this.schemaIdentifier),
+        transformation: (transformation != null
+            ? transformation.value
+            : this.transformation),
+        transformationIdentifier: (transformationIdentifier != null
+            ? transformationIdentifier.value
+            : this.transformationIdentifier),
+        transformationLanguage: (transformationLanguage != null
+            ? transformationLanguage.value
+            : this.transformationLanguage),
+        transformationMediaDestinationTypeDescription:
+            (transformationMediaDestinationTypeDescription != null
+                ? transformationMediaDestinationTypeDescription.value
+                : this.transformationMediaDestinationTypeDescription),
+        transformationTargetEnvironment:
+            (transformationTargetEnvironment != null
+                ? transformationTargetEnvironment.value
+                : this.transformationTargetEnvironment));
   }
 }
 
@@ -2736,6 +3704,597 @@ List<enums.SigningParametersContainer>?
 
   return signingParametersContainer
       .map((e) => signingParametersContainerFromJson(e.toString()))
+      .toList();
+}
+
+String? signingParametersContainerXmlnsNullableToJson(
+    enums.SigningParametersContainerXmlns? signingParametersContainerXmlns) {
+  return signingParametersContainerXmlns?.value;
+}
+
+String? signingParametersContainerXmlnsToJson(
+    enums.SigningParametersContainerXmlns signingParametersContainerXmlns) {
+  return signingParametersContainerXmlns.value;
+}
+
+enums.SigningParametersContainerXmlns signingParametersContainerXmlnsFromJson(
+  Object? signingParametersContainerXmlns, [
+  enums.SigningParametersContainerXmlns? defaultValue,
+]) {
+  return enums.SigningParametersContainerXmlns.values.firstWhereOrNull(
+          (e) => e.value == signingParametersContainerXmlns) ??
+      defaultValue ??
+      enums.SigningParametersContainerXmlns.swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersContainerXmlns?
+    signingParametersContainerXmlnsNullableFromJson(
+  Object? signingParametersContainerXmlns, [
+  enums.SigningParametersContainerXmlns? defaultValue,
+]) {
+  if (signingParametersContainerXmlns == null) {
+    return null;
+  }
+  return enums.SigningParametersContainerXmlns.values.firstWhereOrNull(
+          (e) => e.value == signingParametersContainerXmlns) ??
+      defaultValue;
+}
+
+String signingParametersContainerXmlnsExplodedListToJson(
+    List<enums.SigningParametersContainerXmlns>?
+        signingParametersContainerXmlns) {
+  return signingParametersContainerXmlns?.map((e) => e.value!).join(',') ?? '';
+}
+
+List<String> signingParametersContainerXmlnsListToJson(
+    List<enums.SigningParametersContainerXmlns>?
+        signingParametersContainerXmlns) {
+  if (signingParametersContainerXmlns == null) {
+    return [];
+  }
+
+  return signingParametersContainerXmlns.map((e) => e.value!).toList();
+}
+
+List<enums.SigningParametersContainerXmlns>
+    signingParametersContainerXmlnsListFromJson(
+  List? signingParametersContainerXmlns, [
+  List<enums.SigningParametersContainerXmlns>? defaultValue,
+]) {
+  if (signingParametersContainerXmlns == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersContainerXmlns
+      .map((e) => signingParametersContainerXmlnsFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersContainerXmlns>?
+    signingParametersContainerXmlnsNullableListFromJson(
+  List? signingParametersContainerXmlns, [
+  List<enums.SigningParametersContainerXmlns>? defaultValue,
+]) {
+  if (signingParametersContainerXmlns == null) {
+    return defaultValue;
+  }
+
+  return signingParametersContainerXmlns
+      .map((e) => signingParametersContainerXmlnsFromJson(e.toString()))
+      .toList();
+}
+
+String? signingParametersPackagingNullableToJson(
+    enums.SigningParametersPackaging? signingParametersPackaging) {
+  return signingParametersPackaging?.value;
+}
+
+String? signingParametersPackagingToJson(
+    enums.SigningParametersPackaging signingParametersPackaging) {
+  return signingParametersPackaging.value;
+}
+
+enums.SigningParametersPackaging signingParametersPackagingFromJson(
+  Object? signingParametersPackaging, [
+  enums.SigningParametersPackaging? defaultValue,
+]) {
+  return enums.SigningParametersPackaging.values
+          .firstWhereOrNull((e) => e.value == signingParametersPackaging) ??
+      defaultValue ??
+      enums.SigningParametersPackaging.swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersPackaging? signingParametersPackagingNullableFromJson(
+  Object? signingParametersPackaging, [
+  enums.SigningParametersPackaging? defaultValue,
+]) {
+  if (signingParametersPackaging == null) {
+    return null;
+  }
+  return enums.SigningParametersPackaging.values
+          .firstWhereOrNull((e) => e.value == signingParametersPackaging) ??
+      defaultValue;
+}
+
+String signingParametersPackagingExplodedListToJson(
+    List<enums.SigningParametersPackaging>? signingParametersPackaging) {
+  return signingParametersPackaging?.map((e) => e.value!).join(',') ?? '';
+}
+
+List<String> signingParametersPackagingListToJson(
+    List<enums.SigningParametersPackaging>? signingParametersPackaging) {
+  if (signingParametersPackaging == null) {
+    return [];
+  }
+
+  return signingParametersPackaging.map((e) => e.value!).toList();
+}
+
+List<enums.SigningParametersPackaging> signingParametersPackagingListFromJson(
+  List? signingParametersPackaging, [
+  List<enums.SigningParametersPackaging>? defaultValue,
+]) {
+  if (signingParametersPackaging == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersPackaging
+      .map((e) => signingParametersPackagingFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersPackaging>?
+    signingParametersPackagingNullableListFromJson(
+  List? signingParametersPackaging, [
+  List<enums.SigningParametersPackaging>? defaultValue,
+]) {
+  if (signingParametersPackaging == null) {
+    return defaultValue;
+  }
+
+  return signingParametersPackaging
+      .map((e) => signingParametersPackagingFromJson(e.toString()))
+      .toList();
+}
+
+String? signingParametersDigestAlgorithmNullableToJson(
+    enums.SigningParametersDigestAlgorithm? signingParametersDigestAlgorithm) {
+  return signingParametersDigestAlgorithm?.value;
+}
+
+String? signingParametersDigestAlgorithmToJson(
+    enums.SigningParametersDigestAlgorithm signingParametersDigestAlgorithm) {
+  return signingParametersDigestAlgorithm.value;
+}
+
+enums.SigningParametersDigestAlgorithm signingParametersDigestAlgorithmFromJson(
+  Object? signingParametersDigestAlgorithm, [
+  enums.SigningParametersDigestAlgorithm? defaultValue,
+]) {
+  return enums.SigningParametersDigestAlgorithm.values.firstWhereOrNull(
+          (e) => e.value == signingParametersDigestAlgorithm) ??
+      defaultValue ??
+      enums.SigningParametersDigestAlgorithm.swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersDigestAlgorithm?
+    signingParametersDigestAlgorithmNullableFromJson(
+  Object? signingParametersDigestAlgorithm, [
+  enums.SigningParametersDigestAlgorithm? defaultValue,
+]) {
+  if (signingParametersDigestAlgorithm == null) {
+    return null;
+  }
+  return enums.SigningParametersDigestAlgorithm.values.firstWhereOrNull(
+          (e) => e.value == signingParametersDigestAlgorithm) ??
+      defaultValue;
+}
+
+String signingParametersDigestAlgorithmExplodedListToJson(
+    List<enums.SigningParametersDigestAlgorithm>?
+        signingParametersDigestAlgorithm) {
+  return signingParametersDigestAlgorithm?.map((e) => e.value!).join(',') ?? '';
+}
+
+List<String> signingParametersDigestAlgorithmListToJson(
+    List<enums.SigningParametersDigestAlgorithm>?
+        signingParametersDigestAlgorithm) {
+  if (signingParametersDigestAlgorithm == null) {
+    return [];
+  }
+
+  return signingParametersDigestAlgorithm.map((e) => e.value!).toList();
+}
+
+List<enums.SigningParametersDigestAlgorithm>
+    signingParametersDigestAlgorithmListFromJson(
+  List? signingParametersDigestAlgorithm, [
+  List<enums.SigningParametersDigestAlgorithm>? defaultValue,
+]) {
+  if (signingParametersDigestAlgorithm == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersDigestAlgorithm
+      .map((e) => signingParametersDigestAlgorithmFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersDigestAlgorithm>?
+    signingParametersDigestAlgorithmNullableListFromJson(
+  List? signingParametersDigestAlgorithm, [
+  List<enums.SigningParametersDigestAlgorithm>? defaultValue,
+]) {
+  if (signingParametersDigestAlgorithm == null) {
+    return defaultValue;
+  }
+
+  return signingParametersDigestAlgorithm
+      .map((e) => signingParametersDigestAlgorithmFromJson(e.toString()))
+      .toList();
+}
+
+String? signingParametersInfoCanonicalizationNullableToJson(
+    enums.SigningParametersInfoCanonicalization?
+        signingParametersInfoCanonicalization) {
+  return signingParametersInfoCanonicalization?.value;
+}
+
+String? signingParametersInfoCanonicalizationToJson(
+    enums.SigningParametersInfoCanonicalization
+        signingParametersInfoCanonicalization) {
+  return signingParametersInfoCanonicalization.value;
+}
+
+enums.SigningParametersInfoCanonicalization
+    signingParametersInfoCanonicalizationFromJson(
+  Object? signingParametersInfoCanonicalization, [
+  enums.SigningParametersInfoCanonicalization? defaultValue,
+]) {
+  return enums.SigningParametersInfoCanonicalization.values.firstWhereOrNull(
+          (e) => e.value == signingParametersInfoCanonicalization) ??
+      defaultValue ??
+      enums.SigningParametersInfoCanonicalization.swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersInfoCanonicalization?
+    signingParametersInfoCanonicalizationNullableFromJson(
+  Object? signingParametersInfoCanonicalization, [
+  enums.SigningParametersInfoCanonicalization? defaultValue,
+]) {
+  if (signingParametersInfoCanonicalization == null) {
+    return null;
+  }
+  return enums.SigningParametersInfoCanonicalization.values.firstWhereOrNull(
+          (e) => e.value == signingParametersInfoCanonicalization) ??
+      defaultValue;
+}
+
+String signingParametersInfoCanonicalizationExplodedListToJson(
+    List<enums.SigningParametersInfoCanonicalization>?
+        signingParametersInfoCanonicalization) {
+  return signingParametersInfoCanonicalization
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String> signingParametersInfoCanonicalizationListToJson(
+    List<enums.SigningParametersInfoCanonicalization>?
+        signingParametersInfoCanonicalization) {
+  if (signingParametersInfoCanonicalization == null) {
+    return [];
+  }
+
+  return signingParametersInfoCanonicalization.map((e) => e.value!).toList();
+}
+
+List<enums.SigningParametersInfoCanonicalization>
+    signingParametersInfoCanonicalizationListFromJson(
+  List? signingParametersInfoCanonicalization, [
+  List<enums.SigningParametersInfoCanonicalization>? defaultValue,
+]) {
+  if (signingParametersInfoCanonicalization == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersInfoCanonicalization
+      .map((e) => signingParametersInfoCanonicalizationFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersInfoCanonicalization>?
+    signingParametersInfoCanonicalizationNullableListFromJson(
+  List? signingParametersInfoCanonicalization, [
+  List<enums.SigningParametersInfoCanonicalization>? defaultValue,
+]) {
+  if (signingParametersInfoCanonicalization == null) {
+    return defaultValue;
+  }
+
+  return signingParametersInfoCanonicalization
+      .map((e) => signingParametersInfoCanonicalizationFromJson(e.toString()))
+      .toList();
+}
+
+String? signingParametersPropertiesCanonicalizationNullableToJson(
+    enums.SigningParametersPropertiesCanonicalization?
+        signingParametersPropertiesCanonicalization) {
+  return signingParametersPropertiesCanonicalization?.value;
+}
+
+String? signingParametersPropertiesCanonicalizationToJson(
+    enums.SigningParametersPropertiesCanonicalization
+        signingParametersPropertiesCanonicalization) {
+  return signingParametersPropertiesCanonicalization.value;
+}
+
+enums.SigningParametersPropertiesCanonicalization
+    signingParametersPropertiesCanonicalizationFromJson(
+  Object? signingParametersPropertiesCanonicalization, [
+  enums.SigningParametersPropertiesCanonicalization? defaultValue,
+]) {
+  return enums.SigningParametersPropertiesCanonicalization.values
+          .firstWhereOrNull(
+              (e) => e.value == signingParametersPropertiesCanonicalization) ??
+      defaultValue ??
+      enums.SigningParametersPropertiesCanonicalization.swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersPropertiesCanonicalization?
+    signingParametersPropertiesCanonicalizationNullableFromJson(
+  Object? signingParametersPropertiesCanonicalization, [
+  enums.SigningParametersPropertiesCanonicalization? defaultValue,
+]) {
+  if (signingParametersPropertiesCanonicalization == null) {
+    return null;
+  }
+  return enums.SigningParametersPropertiesCanonicalization.values
+          .firstWhereOrNull(
+              (e) => e.value == signingParametersPropertiesCanonicalization) ??
+      defaultValue;
+}
+
+String signingParametersPropertiesCanonicalizationExplodedListToJson(
+    List<enums.SigningParametersPropertiesCanonicalization>?
+        signingParametersPropertiesCanonicalization) {
+  return signingParametersPropertiesCanonicalization
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String> signingParametersPropertiesCanonicalizationListToJson(
+    List<enums.SigningParametersPropertiesCanonicalization>?
+        signingParametersPropertiesCanonicalization) {
+  if (signingParametersPropertiesCanonicalization == null) {
+    return [];
+  }
+
+  return signingParametersPropertiesCanonicalization
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<enums.SigningParametersPropertiesCanonicalization>
+    signingParametersPropertiesCanonicalizationListFromJson(
+  List? signingParametersPropertiesCanonicalization, [
+  List<enums.SigningParametersPropertiesCanonicalization>? defaultValue,
+]) {
+  if (signingParametersPropertiesCanonicalization == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersPropertiesCanonicalization
+      .map((e) =>
+          signingParametersPropertiesCanonicalizationFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersPropertiesCanonicalization>?
+    signingParametersPropertiesCanonicalizationNullableListFromJson(
+  List? signingParametersPropertiesCanonicalization, [
+  List<enums.SigningParametersPropertiesCanonicalization>? defaultValue,
+]) {
+  if (signingParametersPropertiesCanonicalization == null) {
+    return defaultValue;
+  }
+
+  return signingParametersPropertiesCanonicalization
+      .map((e) =>
+          signingParametersPropertiesCanonicalizationFromJson(e.toString()))
+      .toList();
+}
+
+String? signingParametersKeyInfoCanonicalizationNullableToJson(
+    enums.SigningParametersKeyInfoCanonicalization?
+        signingParametersKeyInfoCanonicalization) {
+  return signingParametersKeyInfoCanonicalization?.value;
+}
+
+String? signingParametersKeyInfoCanonicalizationToJson(
+    enums.SigningParametersKeyInfoCanonicalization
+        signingParametersKeyInfoCanonicalization) {
+  return signingParametersKeyInfoCanonicalization.value;
+}
+
+enums.SigningParametersKeyInfoCanonicalization
+    signingParametersKeyInfoCanonicalizationFromJson(
+  Object? signingParametersKeyInfoCanonicalization, [
+  enums.SigningParametersKeyInfoCanonicalization? defaultValue,
+]) {
+  return enums.SigningParametersKeyInfoCanonicalization.values.firstWhereOrNull(
+          (e) => e.value == signingParametersKeyInfoCanonicalization) ??
+      defaultValue ??
+      enums.SigningParametersKeyInfoCanonicalization.swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersKeyInfoCanonicalization?
+    signingParametersKeyInfoCanonicalizationNullableFromJson(
+  Object? signingParametersKeyInfoCanonicalization, [
+  enums.SigningParametersKeyInfoCanonicalization? defaultValue,
+]) {
+  if (signingParametersKeyInfoCanonicalization == null) {
+    return null;
+  }
+  return enums.SigningParametersKeyInfoCanonicalization.values.firstWhereOrNull(
+          (e) => e.value == signingParametersKeyInfoCanonicalization) ??
+      defaultValue;
+}
+
+String signingParametersKeyInfoCanonicalizationExplodedListToJson(
+    List<enums.SigningParametersKeyInfoCanonicalization>?
+        signingParametersKeyInfoCanonicalization) {
+  return signingParametersKeyInfoCanonicalization
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String> signingParametersKeyInfoCanonicalizationListToJson(
+    List<enums.SigningParametersKeyInfoCanonicalization>?
+        signingParametersKeyInfoCanonicalization) {
+  if (signingParametersKeyInfoCanonicalization == null) {
+    return [];
+  }
+
+  return signingParametersKeyInfoCanonicalization.map((e) => e.value!).toList();
+}
+
+List<enums.SigningParametersKeyInfoCanonicalization>
+    signingParametersKeyInfoCanonicalizationListFromJson(
+  List? signingParametersKeyInfoCanonicalization, [
+  List<enums.SigningParametersKeyInfoCanonicalization>? defaultValue,
+]) {
+  if (signingParametersKeyInfoCanonicalization == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersKeyInfoCanonicalization
+      .map(
+          (e) => signingParametersKeyInfoCanonicalizationFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersKeyInfoCanonicalization>?
+    signingParametersKeyInfoCanonicalizationNullableListFromJson(
+  List? signingParametersKeyInfoCanonicalization, [
+  List<enums.SigningParametersKeyInfoCanonicalization>? defaultValue,
+]) {
+  if (signingParametersKeyInfoCanonicalization == null) {
+    return defaultValue;
+  }
+
+  return signingParametersKeyInfoCanonicalization
+      .map(
+          (e) => signingParametersKeyInfoCanonicalizationFromJson(e.toString()))
+      .toList();
+}
+
+String?
+    signingParametersTransformationMediaDestinationTypeDescriptionNullableToJson(
+        enums.SigningParametersTransformationMediaDestinationTypeDescription?
+            signingParametersTransformationMediaDestinationTypeDescription) {
+  return signingParametersTransformationMediaDestinationTypeDescription?.value;
+}
+
+String? signingParametersTransformationMediaDestinationTypeDescriptionToJson(
+    enums.SigningParametersTransformationMediaDestinationTypeDescription
+        signingParametersTransformationMediaDestinationTypeDescription) {
+  return signingParametersTransformationMediaDestinationTypeDescription.value;
+}
+
+enums.SigningParametersTransformationMediaDestinationTypeDescription
+    signingParametersTransformationMediaDestinationTypeDescriptionFromJson(
+  Object? signingParametersTransformationMediaDestinationTypeDescription, [
+  enums.SigningParametersTransformationMediaDestinationTypeDescription?
+      defaultValue,
+]) {
+  return enums
+          .SigningParametersTransformationMediaDestinationTypeDescription.values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              signingParametersTransformationMediaDestinationTypeDescription) ??
+      defaultValue ??
+      enums.SigningParametersTransformationMediaDestinationTypeDescription
+          .swaggerGeneratedUnknown;
+}
+
+enums.SigningParametersTransformationMediaDestinationTypeDescription?
+    signingParametersTransformationMediaDestinationTypeDescriptionNullableFromJson(
+  Object? signingParametersTransformationMediaDestinationTypeDescription, [
+  enums.SigningParametersTransformationMediaDestinationTypeDescription?
+      defaultValue,
+]) {
+  if (signingParametersTransformationMediaDestinationTypeDescription == null) {
+    return null;
+  }
+  return enums
+          .SigningParametersTransformationMediaDestinationTypeDescription.values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              signingParametersTransformationMediaDestinationTypeDescription) ??
+      defaultValue;
+}
+
+String
+    signingParametersTransformationMediaDestinationTypeDescriptionExplodedListToJson(
+        List<
+                enums
+                .SigningParametersTransformationMediaDestinationTypeDescription>?
+            signingParametersTransformationMediaDestinationTypeDescription) {
+  return signingParametersTransformationMediaDestinationTypeDescription
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String>
+    signingParametersTransformationMediaDestinationTypeDescriptionListToJson(
+        List<
+                enums
+                .SigningParametersTransformationMediaDestinationTypeDescription>?
+            signingParametersTransformationMediaDestinationTypeDescription) {
+  if (signingParametersTransformationMediaDestinationTypeDescription == null) {
+    return [];
+  }
+
+  return signingParametersTransformationMediaDestinationTypeDescription
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<enums.SigningParametersTransformationMediaDestinationTypeDescription>
+    signingParametersTransformationMediaDestinationTypeDescriptionListFromJson(
+  List? signingParametersTransformationMediaDestinationTypeDescription, [
+  List<enums.SigningParametersTransformationMediaDestinationTypeDescription>?
+      defaultValue,
+]) {
+  if (signingParametersTransformationMediaDestinationTypeDescription == null) {
+    return defaultValue ?? [];
+  }
+
+  return signingParametersTransformationMediaDestinationTypeDescription
+      .map((e) =>
+          signingParametersTransformationMediaDestinationTypeDescriptionFromJson(
+              e.toString()))
+      .toList();
+}
+
+List<enums.SigningParametersTransformationMediaDestinationTypeDescription>?
+    signingParametersTransformationMediaDestinationTypeDescriptionNullableListFromJson(
+  List? signingParametersTransformationMediaDestinationTypeDescription, [
+  List<enums.SigningParametersTransformationMediaDestinationTypeDescription>?
+      defaultValue,
+]) {
+  if (signingParametersTransformationMediaDestinationTypeDescription == null) {
+    return defaultValue;
+  }
+
+  return signingParametersTransformationMediaDestinationTypeDescription
+      .map((e) =>
+          signingParametersTransformationMediaDestinationTypeDescriptionFromJson(
+              e.toString()))
       .toList();
 }
 

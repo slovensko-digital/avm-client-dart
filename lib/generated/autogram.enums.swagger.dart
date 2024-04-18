@@ -69,6 +69,132 @@ enum SigningParametersContainer {
   const SigningParametersContainer(this.value);
 }
 
+enum SigningParametersContainerXmlns {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('http://data.gov.sk/def/container/xmldatacontainer+xml/1.1')
+  httpDataGovSkDefContainerXmldatacontainerXml11(
+      'http://data.gov.sk/def/container/xmldatacontainer+xml/1.1');
+
+  final String? value;
+
+  const SigningParametersContainerXmlns(this.value);
+}
+
+enum SigningParametersPackaging {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('ENVELOPED')
+  enveloped('ENVELOPED'),
+  @JsonValue('ENVELOPING')
+  enveloping('ENVELOPING');
+
+  final String? value;
+
+  const SigningParametersPackaging(this.value);
+}
+
+enum SigningParametersDigestAlgorithm {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('SHA256')
+  sha256('SHA256'),
+  @JsonValue('SHA384')
+  sha384('SHA384'),
+  @JsonValue('SHA512')
+  sha512('SHA512');
+
+  final String? value;
+
+  const SigningParametersDigestAlgorithm(this.value);
+}
+
+enum SigningParametersInfoCanonicalization {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('INCLUSIVE')
+  inclusive('INCLUSIVE'),
+  @JsonValue('EXCLUSIVE')
+  exclusive('EXCLUSIVE'),
+  @JsonValue('INCLUSIVE_WITH_COMMENTS')
+  inclusiveWithComments('INCLUSIVE_WITH_COMMENTS'),
+  @JsonValue('EXCLUSIVE_WITH_COMMENTS')
+  exclusiveWithComments('EXCLUSIVE_WITH_COMMENTS'),
+  @JsonValue('INCLUSIVE_11')
+  inclusive11('INCLUSIVE_11'),
+  @JsonValue('INCLUSIVE_11_WITH_COMMENTS')
+  inclusive11WithComments('INCLUSIVE_11_WITH_COMMENTS');
+
+  final String? value;
+
+  const SigningParametersInfoCanonicalization(this.value);
+}
+
+enum SigningParametersPropertiesCanonicalization {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('INCLUSIVE')
+  inclusive('INCLUSIVE'),
+  @JsonValue('EXCLUSIVE')
+  exclusive('EXCLUSIVE'),
+  @JsonValue('INCLUSIVE_WITH_COMMENTS')
+  inclusiveWithComments('INCLUSIVE_WITH_COMMENTS'),
+  @JsonValue('EXCLUSIVE_WITH_COMMENTS')
+  exclusiveWithComments('EXCLUSIVE_WITH_COMMENTS'),
+  @JsonValue('INCLUSIVE_11')
+  inclusive11('INCLUSIVE_11'),
+  @JsonValue('INCLUSIVE_11_WITH_COMMENTS')
+  inclusive11WithComments('INCLUSIVE_11_WITH_COMMENTS');
+
+  final String? value;
+
+  const SigningParametersPropertiesCanonicalization(this.value);
+}
+
+enum SigningParametersKeyInfoCanonicalization {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('INCLUSIVE')
+  inclusive('INCLUSIVE'),
+  @JsonValue('EXCLUSIVE')
+  exclusive('EXCLUSIVE'),
+  @JsonValue('INCLUSIVE_WITH_COMMENTS')
+  inclusiveWithComments('INCLUSIVE_WITH_COMMENTS'),
+  @JsonValue('EXCLUSIVE_WITH_COMMENTS')
+  exclusiveWithComments('EXCLUSIVE_WITH_COMMENTS'),
+  @JsonValue('INCLUSIVE_11')
+  inclusive11('INCLUSIVE_11'),
+  @JsonValue('INCLUSIVE_11_WITH_COMMENTS')
+  inclusive11WithComments('INCLUSIVE_11_WITH_COMMENTS');
+
+  final String? value;
+
+  const SigningParametersKeyInfoCanonicalization(this.value);
+}
+
+enum SigningParametersTransformationMediaDestinationTypeDescription {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('XHTML')
+  xhtml('XHTML'),
+  @JsonValue('HTML')
+  html('HTML'),
+  @JsonValue('TXT')
+  txt('TXT');
+
+  final String? value;
+
+  const SigningParametersTransformationMediaDestinationTypeDescription(
+      this.value);
+}
+
 enum DocumentValidationResponseBodyFileFormat {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),

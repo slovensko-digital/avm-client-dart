@@ -50,6 +50,13 @@ class AutogramService implements IAutogramService {
   }
 
   @override
+  Future<DocumentValidationResponseBody> getDocumentValidation(
+    String documentId,
+  ) {
+    return _autogram.documentsGuidValidationGet(guid: documentId).then(unwrap);
+  }
+
+  @override
   Future<DataToSignStructure> setDataToSign(
     String documentId,
     DataToSignRequestBody body,
@@ -85,6 +92,11 @@ class AutogramService implements IAutogramService {
           ifModifiedSince: ifModifiedSince?.toImfFixDateString(),
         )
         .then(unwrap);
+  }
+
+  @override
+  Future<PostDeviceResponse> registerDevice(PostDeviceRequestBody body) {
+    return _autogram.devicesPost(body: body).then(unwrap);
   }
 }
 
