@@ -59,4 +59,14 @@ abstract class IAutogramService {
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_devices>
   Future<PostDeviceResponse> registerDevice(PostDeviceRequestBody body);
+
+  /// Device returns list of paired integrations.
+  ///
+  /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Integration/get_device_integrations>
+  Future<GetDeviceIntegrationsResponseBody> listIntegrations();
+
+  /// Device returns list of paired integrations.
+  ///
+  /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Integration/delete_device_integrations__integration_id_>
+  Future<void> deleteIntegration(String integrationId);
 }

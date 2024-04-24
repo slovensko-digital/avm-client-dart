@@ -98,6 +98,18 @@ class AutogramService implements IAutogramService {
   Future<PostDeviceResponse> registerDevice(PostDeviceRequestBody body) {
     return _autogram.devicesPost(body: body).then(unwrap);
   }
+
+  @override
+  Future<GetDeviceIntegrationsResponseBody> listIntegrations() {
+    return _autogram.deviceIntegrationsGet().then(unwrap);
+  }
+
+  @override
+  Future<void> deleteIntegration(String integrationId) {
+    return _autogram
+        .deviceIntegrationsIntegrationIdDelete(integrationId: integrationId)
+        .then(unwrap);
+  }
 }
 
 extension _DateTimeExtensions on DateTime {

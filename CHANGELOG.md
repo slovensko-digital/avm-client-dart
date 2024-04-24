@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Implement functions for listing and deleting device integrations
+
 ## 0.2.0
 
 * Implement functions for document validation
