@@ -9,17 +9,19 @@ export 'iautogram_service.dart';
 
 /// Implements [IAutogramService] using [Autogram] instance REST API client.
 class AutogramService implements IAutogramService {
+  static final Uri _defaultBaseUrl =
+      Uri.parse("https://autogram.slovensko.digital/api/v1");
+
   final Autogram _autogram;
 
+  /// Constructs new [AutogramService] instance.
   AutogramService({
-    required Uri baseUrl,
-    required String encryptionKey,
+    Uri? baseUrl,
+    required String Function() encryptionKeySource,
   }) : _autogram = Autogram.create(
-          baseUrl: baseUrl,
+          baseUrl: baseUrl ?? _defaultBaseUrl,
           interceptors: [
-            AutogramAuthenticator(
-              encryptionKey: encryptionKey,
-            ),
+            AutogramAuthenticator(encryptionKeySource),
           ],
         );
 

@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Allow dynamic "Encryption Key" value.
+
 ## 0.3.0
 
 * Implement functions for listing and deleting device integrations
