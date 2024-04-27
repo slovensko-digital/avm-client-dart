@@ -1,6 +1,7 @@
 ## 0.4.0
 
 * Allow dynamic "Encryption Key" value.
+* Update service docs.
 
 ## 0.3.0
 

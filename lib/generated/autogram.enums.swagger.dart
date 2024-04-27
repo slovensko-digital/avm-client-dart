@@ -419,7 +419,9 @@ enum ErrorResponseBodyCode {
   @JsonValue('DATATOSIGN_MISMATCH')
   datatosignMismatch('DATATOSIGN_MISMATCH'),
   @JsonValue('CERTIFICATE_NOT_VALID')
-  certificateNotValid('CERTIFICATE_NOT_VALID');
+  certificateNotValid('CERTIFICATE_NOT_VALID'),
+  @JsonValue('FAILED_PARSING_MIMETYPE')
+  failedParsingMimetype('FAILED_PARSING_MIMETYPE');
 
   final String? value;
 

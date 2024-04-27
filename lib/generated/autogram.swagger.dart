@@ -271,7 +271,7 @@ abstract class Autogram extends ChopperService {
   Future<chopper.Response> _deviceIntegrationsPost(
       {@Body() required PostDeviceIntegrationsRequestBody? body});
 
-  ///Integration retrieves a list of paired devices
+  ///Device retrieves a list of paired integrations
   Future<chopper.Response<GetDeviceIntegrationsResponseBody>>
       deviceIntegrationsGet() {
     generatedMapping.putIfAbsent(GetDeviceIntegrationsResponseBody$Item,
@@ -280,25 +280,25 @@ abstract class Autogram extends ChopperService {
     return _deviceIntegrationsGet();
   }
 
-  ///Integration retrieves a list of paired devices
+  ///Device retrieves a list of paired integrations
   @Get(path: '/device-integrations')
   Future<chopper.Response<GetDeviceIntegrationsResponseBody>>
       _deviceIntegrationsGet();
 
-  ///Integration deletes device from its subscribers
+  ///Device deletes integration from its paired integrations
   ///@param integration_id Identifier of the integration
   Future<chopper.Response> deviceIntegrationsIntegrationIdDelete(
       {required String? integrationId}) {
     return _deviceIntegrationsIntegrationIdDelete(integrationId: integrationId);
   }
 
-  ///Integration deletes device from its subscribers
+  ///Device deletes integration from its paired integrations
   ///@param integration_id Identifier of the integration
   @Delete(path: '/device-integrations/{integration_id}')
   Future<chopper.Response> _deviceIntegrationsIntegrationIdDelete(
       {@Path('integration_id') required String? integrationId});
 
-  ///Integration retrieves a list of connected devices
+  ///Integration retrieves a list of paired devices
   Future<chopper.Response<GetIntegrationDevicesResponseBody>>
       integrationDevicesGet() {
     generatedMapping.putIfAbsent(GetIntegrationDevicesResponseBody$Item,
@@ -307,19 +307,19 @@ abstract class Autogram extends ChopperService {
     return _integrationDevicesGet();
   }
 
-  ///Integration retrieves a list of connected devices
+  ///Integration retrieves a list of paired devices
   @Get(path: '/integration-devices')
   Future<chopper.Response<GetIntegrationDevicesResponseBody>>
       _integrationDevicesGet();
 
-  ///Integration deletes device from its subscribers
+  ///Integration deletes device from its paired devices
   ///@param device_id Identifier of the device
   Future<chopper.Response> integrationDevicesDeviceIdDelete(
       {required String? deviceId}) {
     return _integrationDevicesDeviceIdDelete(deviceId: deviceId);
   }
 
-  ///Integration deletes device from its subscribers
+  ///Integration deletes device from its paired devices
   ///@param device_id Identifier of the device
   @Delete(path: '/integration-devices/{device_id}')
   Future<chopper.Response> _integrationDevicesDeviceIdDelete(
