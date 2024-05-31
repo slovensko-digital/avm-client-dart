@@ -11,6 +11,8 @@ dependencies:
   json_annotation: 4.9.0
   http: any
   basic_utils: ^5.7.0
+  dart_jsonwebtoken: any
+  uuid: ^4.3.0
   intl: ^0.18.1
 
 dev_dependencies:

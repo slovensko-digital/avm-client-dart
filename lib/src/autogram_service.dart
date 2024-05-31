@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:autogram_sign/src/jwt.dart';
 import 'package:basic_utils/basic_utils.dart' show AsymmetricKeyPair;
 import 'package:chopper/chopper.dart' show Request;
 import 'package:intl/intl.dart' show DateFormat;
@@ -26,6 +27,11 @@ class AutogramService implements IAutogramService {
   AutogramService._(this._autogram, this._deviceKeysStore);
 
   /// Constructs new [AutogramService] instance.
+  ///
+  /// Params:
+  ///  - [baseUrl] - hostname
+  ///  - [encryptionKeySource] - function that returns "Encryption key" value
+  ///  - [deviceKeysStore] - secure store for device private/public keys
   factory AutogramService({
     Uri? baseUrl,
     required String Function() encryptionKeySource,
@@ -150,19 +156,16 @@ class AutogramService implements IAutogramService {
     );
 
     // return _autogram.deviceIntegrationsPost(body: body).then(unwrap);
-    // Need to set Authorization header dynamically based on param,
-    // therefore cannot call function above directly!
 
-    // Calculate JWT
-    // TODO Set "Authorization: Bearer token
-    // JWT:
-    // - sub je tvoje deviceId, čo dostaneš pri registrácii
-    // - jti je random UUID
-    // - exp je now + 5min
-    final token = "TEST";
-    final authorization = 'Bearer: $token';
+    // Need to set Authorization header based on function param, therefore
+    // cannot call function above directly!
+
     final privateKey = await _getDeviceKeys().then((value) => value.privateKey);
-
+    final token = signedJwt(
+      subject: deviceId,
+      privateKey: privateKey,
+      expiresIn: const Duration(minutes: 5),
+    );
     final Uri url = Uri.parse('/device-integrations');
     final request = Request(
       'POST',
@@ -170,7 +173,7 @@ class AutogramService implements IAutogramService {
       _autogram.client.baseUrl,
       body: body,
       headers: {
-        'Authorization': '',
+        'Authorization': 'Bearer: $token',
       },
     );
     final call = _autogram.client.send<dynamic, dynamic>(request);
