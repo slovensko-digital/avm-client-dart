@@ -1,12 +1,17 @@
 import 'dart:io';
+import 'dart:isolate';
 
-import 'package:intl/intl.dart';
+import 'package:basic_utils/basic_utils.dart' show AsymmetricKeyPair;
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
+import 'device_keys_store.dart';
 import 'iautogram_service.dart';
+import 'keys.dart';
 import 'response_functions.dart';
 
+export 'device_keys_store.dart';
 export 'iautogram_service.dart';
 
 /// Implements [IAutogramService] using [Autogram] instance REST API client.
@@ -15,17 +20,29 @@ class AutogramService implements IAutogramService {
       Uri.parse("https://autogram.slovensko.digital/api/v1");
 
   final Autogram _autogram;
+  final DeviceKeysStore _deviceKeysStore;
+
+  AutogramService._(this._autogram, this._deviceKeysStore);
 
   /// Constructs new [AutogramService] instance.
-  AutogramService({
+  factory AutogramService({
     Uri? baseUrl,
     required String Function() encryptionKeySource,
-  }) : _autogram = Autogram.create(
-          baseUrl: baseUrl ?? _defaultBaseUrl,
-          interceptors: [
-            AutogramAuthenticator(encryptionKeySource),
-          ],
-        );
+    required DeviceKeysStore deviceKeysStore,
+  }) {
+    final authenticator = AutogramAuthenticator(
+      encryptionKeySource: encryptionKeySource,
+      deviceKeySource: () =>
+          // _getDeviceKeys needs to be static so that deviceKeysStore can be used
+          _getDeviceKeys(deviceKeysStore).then((keyPair) => keyPair.privateKey),
+    );
+    final autogram = Autogram.create(
+      baseUrl: baseUrl ?? _defaultBaseUrl,
+      interceptors: [authenticator],
+    );
+
+    return AutogramService._(autogram, deviceKeysStore);
+  }
 
   @override
   Future<String> createDocument(
@@ -106,26 +123,29 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<PostDeviceResponse> registerDevice({
+  Future<String> registerDevice({
     required String registrationId,
     required String displayName,
-  }) {
-    // TODO Get public key
+  }) async {
+    final keyPair = await _getDeviceKeys(_deviceKeysStore);
+    final publicKey = keyPair.publicKey.getEncoded();
     final body = PostDeviceRequestBody(
       platform: Platform.operatingSystem,
       registrationId: registrationId,
       displayName: displayName,
-      publicKey: "",
+      publicKey: publicKey,
     );
 
-    return _autogram.devicesPost(body: body).then(unwrap);
+    return _autogram
+        .devicesPost(body: body)
+        .then(unwrap)
+        .then((value) => value.guid ?? '');
   }
 
   @override
   Future<void> registerDeviceIntegration(
     String integrationPairingToken,
   ) {
-    // TODO Set JWT in header
     final body = PostDeviceIntegrationsRequestBody(
       integrationPairingToken: integrationPairingToken,
     );
@@ -143,6 +163,22 @@ class AutogramService implements IAutogramService {
     return _autogram
         .deviceIntegrationsIntegrationIdDelete(integrationId: integrationId)
         .then(unwrap);
+  }
+
+  /// Gets the [AsymmetricKeyPair] for this device.
+  /// New value is generated and saved when it was initially empty.
+  static Future<AsymmetricKeyPair> _getDeviceKeys(
+    DeviceKeysStore deviceKeysStore,
+  ) async {
+    var value = await deviceKeysStore.load();
+
+    if (value == null) {
+      value = await Isolate.run(generateAsymmetricKeyPair);
+
+      deviceKeysStore.save(value!);
+    }
+
+    return value;
   }
 }
 

@@ -1,3 +1,7 @@
+## 0.5.0
+
+* Prepare `DeviceKeysStore` and finish functions that works with asymmetric key pair.
+
 ## 0.4.1
 
 * Implement `generateEncryptionKey()` and `generateAsymmetricKeyPair()` helpers

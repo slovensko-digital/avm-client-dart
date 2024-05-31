@@ -65,7 +65,7 @@ abstract class IAutogramService {
   /// Registers itself at the server.
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_devices>
-  Future<PostDeviceResponse> registerDevice({
+  Future<String> registerDevice({
     required String registrationId,
     required String displayName,
   });
