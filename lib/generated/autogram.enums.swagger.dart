@@ -33,6 +33,28 @@ enum GetDocumentResponseBodyMimeType {
   const GetDocumentResponseBodyMimeType(this.value);
 }
 
+enum SignatureLevelResponseLevel {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('PAdES_BASELINE_B')
+  padesBaselineB('PAdES_BASELINE_B'),
+  @JsonValue('PAdES_BASELINE_T')
+  padesBaselineT('PAdES_BASELINE_T'),
+  @JsonValue('XAdES_BASELINE_B')
+  xadesBaselineB('XAdES_BASELINE_B'),
+  @JsonValue('XAdES_BASELINE_T')
+  xadesBaselineT('XAdES_BASELINE_T'),
+  @JsonValue('CAdES_BASELINE_B')
+  cadesBaselineB('CAdES_BASELINE_B'),
+  @JsonValue('CAdES_BASELINE_T')
+  cadesBaselineT('CAdES_BASELINE_T');
+
+  final String? value;
+
+  const SignatureLevelResponseLevel(this.value);
+}
+
 enum SigningParametersLevel {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),

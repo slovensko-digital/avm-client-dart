@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:intl/intl.dart';
 
 import '../generated/autogram.swagger.dart';
@@ -33,6 +35,13 @@ class AutogramService implements IAutogramService {
         .documentsPost(body: body)
         .then(unwrap)
         .then((value) => value.guid);
+  }
+
+  @override
+  Future<SigningParameters> getDocumentParameters(
+    String documentId,
+  ) {
+    return _autogram.documentsGuidParametersGet(guid: documentId).then(unwrap);
   }
 
   @override
@@ -97,8 +106,31 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<PostDeviceResponse> registerDevice(PostDeviceRequestBody body) {
+  Future<PostDeviceResponse> registerDevice({
+    required String registrationId,
+    required String displayName,
+  }) {
+    // TODO Get public key
+    final body = PostDeviceRequestBody(
+      platform: Platform.operatingSystem,
+      registrationId: registrationId,
+      displayName: displayName,
+      publicKey: "",
+    );
+
     return _autogram.devicesPost(body: body).then(unwrap);
+  }
+
+  @override
+  Future<void> registerDeviceIntegration(
+    String integrationPairingToken,
+  ) {
+    // TODO Set JWT in header
+    final body = PostDeviceIntegrationsRequestBody(
+      integrationPairingToken: integrationPairingToken,
+    );
+
+    return _autogram.deviceIntegrationsPost(body: body).then(unwrap);
   }
 
   @override

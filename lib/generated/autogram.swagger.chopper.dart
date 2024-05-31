@@ -91,6 +91,24 @@ final class _$Autogram extends Autogram {
   }
 
   @override
+  Future<Response<SigningParameters>> _documentsGuidParametersGet({
+    required String? guid,
+    String? accept,
+  }) {
+    final Uri $url = Uri.parse('/documents/${guid}/parameters');
+    final Map<String, String> $headers = {
+      if (accept != null) 'Accept': accept,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      headers: $headers,
+    );
+    return client.send<SigningParameters, SigningParameters>($request);
+  }
+
+  @override
   Future<Response<DocumentValidationResponseBody>> _documentsGuidValidationGet({
     required String? guid,
     String? accept,

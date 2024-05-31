@@ -9,6 +9,13 @@ abstract class IAutogramService {
     DocumentPostRequestBody body,
   );
 
+  /// Gets the signature parameters of the document.
+  ///
+  /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Desktop2App%20-%20Client/get_documents__guid__parameters>
+  Future<SigningParameters> getDocumentParameters(
+    String documentId,
+  );
+
   /// Deletes existing Document by its [documentId].
   ///
   /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Desktop2App%20-%20Extension/delete_documents__guid_>
@@ -58,7 +65,17 @@ abstract class IAutogramService {
   /// Registers itself at the server.
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_devices>
-  Future<PostDeviceResponse> registerDevice(PostDeviceRequestBody body);
+  Future<PostDeviceResponse> registerDevice({
+    required String registrationId,
+    required String displayName,
+  });
+
+  /// Registers itself for receiving sign requests (push notification) from given integration
+  ///
+  /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_device_integrations>
+  Future<void> registerDeviceIntegration(
+    String integrationPairingToken,
+  );
 
   /// Retrieves a list of paired integrations.
   ///

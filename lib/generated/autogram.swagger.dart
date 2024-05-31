@@ -136,6 +136,28 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
+  ///Client app gets the signature parameters of the doucment
+  ///@param guid
+  ///@param Accept
+  Future<chopper.Response<SigningParameters>> documentsGuidParametersGet({
+    required String? guid,
+    String? accept,
+  }) {
+    generatedMapping.putIfAbsent(
+        SigningParameters, () => SigningParameters.fromJsonFactory);
+
+    return _documentsGuidParametersGet(guid: guid, accept: accept?.toString());
+  }
+
+  ///Client app gets the signature parameters of the doucment
+  ///@param guid
+  ///@param Accept
+  @Get(path: '/documents/{guid}/parameters')
+  Future<chopper.Response<SigningParameters>> _documentsGuidParametersGet({
+    @Path('guid') required String? guid,
+    @Header('Accept') String? accept,
+  });
+
   ///Client app requests a signature validation report of the document.
   ///@param guid
   ///@param Accept
@@ -1381,6 +1403,54 @@ extension $DocumentExtension on Document {
     return Document(
         filename: (filename != null ? filename.value : this.filename),
         content: (content != null ? content.value : this.content));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class SignatureLevelResponse {
+  const SignatureLevelResponse({
+    this.level,
+  });
+
+  factory SignatureLevelResponse.fromJson(Map<String, dynamic> json) =>
+      _$SignatureLevelResponseFromJson(json);
+
+  static const toJsonFactory = _$SignatureLevelResponseToJson;
+  Map<String, dynamic> toJson() => _$SignatureLevelResponseToJson(this);
+
+  @JsonKey(
+    name: 'level',
+    toJson: signatureLevelResponseLevelNullableToJson,
+    fromJson: signatureLevelResponseLevelNullableFromJson,
+  )
+  final enums.SignatureLevelResponseLevel? level;
+  static const fromJsonFactory = _$SignatureLevelResponseFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is SignatureLevelResponse &&
+            (identical(other.level, level) ||
+                const DeepCollectionEquality().equals(other.level, level)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(level) ^ runtimeType.hashCode;
+}
+
+extension $SignatureLevelResponseExtension on SignatureLevelResponse {
+  SignatureLevelResponse copyWith({enums.SignatureLevelResponseLevel? level}) {
+    return SignatureLevelResponse(level: level ?? this.level);
+  }
+
+  SignatureLevelResponse copyWithWrapped(
+      {Wrapped<enums.SignatureLevelResponseLevel?>? level}) {
+    return SignatureLevelResponse(
+        level: (level != null ? level.value : this.level));
   }
 }
 
@@ -3559,6 +3629,79 @@ List<enums.GetDocumentResponseBodyMimeType>?
 
   return getDocumentResponseBodyMimeType
       .map((e) => getDocumentResponseBodyMimeTypeFromJson(e.toString()))
+      .toList();
+}
+
+String? signatureLevelResponseLevelNullableToJson(
+    enums.SignatureLevelResponseLevel? signatureLevelResponseLevel) {
+  return signatureLevelResponseLevel?.value;
+}
+
+String? signatureLevelResponseLevelToJson(
+    enums.SignatureLevelResponseLevel signatureLevelResponseLevel) {
+  return signatureLevelResponseLevel.value;
+}
+
+enums.SignatureLevelResponseLevel signatureLevelResponseLevelFromJson(
+  Object? signatureLevelResponseLevel, [
+  enums.SignatureLevelResponseLevel? defaultValue,
+]) {
+  return enums.SignatureLevelResponseLevel.values
+          .firstWhereOrNull((e) => e.value == signatureLevelResponseLevel) ??
+      defaultValue ??
+      enums.SignatureLevelResponseLevel.swaggerGeneratedUnknown;
+}
+
+enums.SignatureLevelResponseLevel? signatureLevelResponseLevelNullableFromJson(
+  Object? signatureLevelResponseLevel, [
+  enums.SignatureLevelResponseLevel? defaultValue,
+]) {
+  if (signatureLevelResponseLevel == null) {
+    return null;
+  }
+  return enums.SignatureLevelResponseLevel.values
+          .firstWhereOrNull((e) => e.value == signatureLevelResponseLevel) ??
+      defaultValue;
+}
+
+String signatureLevelResponseLevelExplodedListToJson(
+    List<enums.SignatureLevelResponseLevel>? signatureLevelResponseLevel) {
+  return signatureLevelResponseLevel?.map((e) => e.value!).join(',') ?? '';
+}
+
+List<String> signatureLevelResponseLevelListToJson(
+    List<enums.SignatureLevelResponseLevel>? signatureLevelResponseLevel) {
+  if (signatureLevelResponseLevel == null) {
+    return [];
+  }
+
+  return signatureLevelResponseLevel.map((e) => e.value!).toList();
+}
+
+List<enums.SignatureLevelResponseLevel> signatureLevelResponseLevelListFromJson(
+  List? signatureLevelResponseLevel, [
+  List<enums.SignatureLevelResponseLevel>? defaultValue,
+]) {
+  if (signatureLevelResponseLevel == null) {
+    return defaultValue ?? [];
+  }
+
+  return signatureLevelResponseLevel
+      .map((e) => signatureLevelResponseLevelFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.SignatureLevelResponseLevel>?
+    signatureLevelResponseLevelNullableListFromJson(
+  List? signatureLevelResponseLevel, [
+  List<enums.SignatureLevelResponseLevel>? defaultValue,
+]) {
+  if (signatureLevelResponseLevel == null) {
+    return defaultValue;
+  }
+
+  return signatureLevelResponseLevel
+      .map((e) => signatureLevelResponseLevelFromJson(e.toString()))
       .toList();
 }
 

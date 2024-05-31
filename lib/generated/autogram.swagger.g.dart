@@ -159,7 +159,7 @@ Map<String, dynamic> _$DataToSignRequestBodyToJson(
 DataToSignStructure _$DataToSignStructureFromJson(Map<String, dynamic> json) =>
     DataToSignStructure(
       dataToSign: json['dataToSign'] as String,
-      signingTime: json['signingTime'] as int,
+      signingTime: (json['signingTime'] as num).toInt(),
       signingCertificate: json['signingCertificate'] as String,
     );
 
@@ -233,6 +233,18 @@ Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
 Map<String, dynamic> _$DocumentToJson(Document instance) => <String, dynamic>{
       'filename': instance.filename,
       'content': instance.content,
+    };
+
+SignatureLevelResponse _$SignatureLevelResponseFromJson(
+        Map<String, dynamic> json) =>
+    SignatureLevelResponse(
+      level: signatureLevelResponseLevelNullableFromJson(json['level']),
+    );
+
+Map<String, dynamic> _$SignatureLevelResponseToJson(
+        SignatureLevelResponse instance) =>
+    <String, dynamic>{
+      'level': signatureLevelResponseLevelNullableToJson(instance.level),
     };
 
 SigningParameters _$SigningParametersFromJson(Map<String, dynamic> json) =>
@@ -555,7 +567,7 @@ DocumentValidationResponseBody$Signatures$Item$ValidationResult
     _$DocumentValidationResponseBody$Signatures$Item$ValidationResultFromJson(
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$Signatures$Item$ValidationResult(
-          code: json['code'] as int?,
+          code: (json['code'] as num?)?.toInt(),
           description:
               documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionNullableFromJson(
                   json['description']),
@@ -683,7 +695,7 @@ DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$
     _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationFromJson(
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification(
-          code: json['code'] as int?,
+          code: (json['code'] as num?)?.toInt(),
           description:
               documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableFromJson(
                   json['description']),
@@ -704,7 +716,7 @@ DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qua
     _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationFromJson(
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification(
-          code: json['code'] as int?,
+          code: (json['code'] as num?)?.toInt(),
           description:
               documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableFromJson(
                   json['description']),

@@ -1,3 +1,12 @@
+## 0.4.1
+
+* Implement `generateEncryptionKey()` and `generateAsymmetricKeyPair()` helpers
+* Update API client - prepare functions:
+  * to get Document signing parameters
+  * to register Device
+  * to register Device integration
+* Limit `chopper` version and increase `json_annotation` version
+
 ## 0.4.0
 
 * Allow dynamic "Encryption Key" value.
