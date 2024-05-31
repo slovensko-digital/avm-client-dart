@@ -74,6 +74,7 @@ abstract class IAutogramService {
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_device_integrations>
   Future<void> registerDeviceIntegration(
+    String deviceId,
     String integrationPairingToken,
   );
 

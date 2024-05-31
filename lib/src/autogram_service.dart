@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:basic_utils/basic_utils.dart' show AsymmetricKeyPair;
+import 'package:chopper/chopper.dart' show Request;
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../generated/autogram.swagger.dart';
@@ -32,9 +33,6 @@ class AutogramService implements IAutogramService {
   }) {
     final authenticator = AutogramAuthenticator(
       encryptionKeySource: encryptionKeySource,
-      deviceKeySource: () =>
-          // _getDeviceKeys needs to be static so that deviceKeysStore can be used
-          _getDeviceKeys(deviceKeysStore).then((keyPair) => keyPair.privateKey),
     );
     final autogram = Autogram.create(
       baseUrl: baseUrl ?? _defaultBaseUrl,
@@ -127,7 +125,7 @@ class AutogramService implements IAutogramService {
     required String registrationId,
     required String displayName,
   }) async {
-    final keyPair = await _getDeviceKeys(_deviceKeysStore);
+    final keyPair = await _getDeviceKeys();
     final publicKey = keyPair.publicKey.getEncoded();
     final body = PostDeviceRequestBody(
       platform: Platform.operatingSystem,
@@ -144,13 +142,40 @@ class AutogramService implements IAutogramService {
 
   @override
   Future<void> registerDeviceIntegration(
+    String deviceId,
     String integrationPairingToken,
-  ) {
+  ) async {
     final body = PostDeviceIntegrationsRequestBody(
       integrationPairingToken: integrationPairingToken,
     );
 
-    return _autogram.deviceIntegrationsPost(body: body).then(unwrap);
+    // return _autogram.deviceIntegrationsPost(body: body).then(unwrap);
+    // Need to set Authorization header dynamically based on param,
+    // therefore cannot call function above directly!
+
+    // Calculate JWT
+    // TODO Set "Authorization: Bearer token
+    // JWT:
+    // - sub je tvoje deviceId, čo dostaneš pri registrácii
+    // - jti je random UUID
+    // - exp je now + 5min
+    final token = "TEST";
+    final authorization = 'Bearer: $token';
+    final privateKey = await _getDeviceKeys().then((value) => value.privateKey);
+
+    final Uri url = Uri.parse('/device-integrations');
+    final request = Request(
+      'POST',
+      url,
+      _autogram.client.baseUrl,
+      body: body,
+      headers: {
+        'Authorization': '',
+      },
+    );
+    final call = _autogram.client.send<dynamic, dynamic>(request);
+
+    return await call.then(unwrap);
   }
 
   @override
@@ -167,15 +192,13 @@ class AutogramService implements IAutogramService {
 
   /// Gets the [AsymmetricKeyPair] for this device.
   /// New value is generated and saved when it was initially empty.
-  static Future<AsymmetricKeyPair> _getDeviceKeys(
-    DeviceKeysStore deviceKeysStore,
-  ) async {
-    var value = await deviceKeysStore.load();
+  Future<AsymmetricKeyPair> _getDeviceKeys() async {
+    var value = await _deviceKeysStore.load();
 
     if (value == null) {
       value = await Isolate.run(generateAsymmetricKeyPair);
 
-      deviceKeysStore.save(value!);
+      _deviceKeysStore.save(value!);
     }
 
     return value;

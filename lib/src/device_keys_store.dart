@@ -6,5 +6,5 @@ abstract interface class DeviceKeysStore {
   Future<AsymmetricKeyPair?> load();
 
   /// Saves the [AsymmetricKeyPair].
-  Future save(AsymmetricKeyPair it);
+  Future save(AsymmetricKeyPair value);
 }
