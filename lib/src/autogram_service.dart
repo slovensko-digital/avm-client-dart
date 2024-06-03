@@ -183,11 +183,15 @@ class AutogramService implements IAutogramService {
 
   @override
   Future<GetDeviceIntegrationsResponseBody> listIntegrations() {
+    // TODO Authenticate by _getDeviceKeys()
+
     return _autogram.deviceIntegrationsGet().then(unwrap);
   }
 
   @override
   Future<void> deleteIntegration(String integrationId) {
+    // TODO Authenticate by _getDeviceKeys()
+
     return _autogram
         .deviceIntegrationsIntegrationIdDelete(integrationId: integrationId)
         .then(unwrap);
