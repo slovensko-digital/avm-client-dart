@@ -18,6 +18,12 @@ Projekt sa skladá z viacerých častí:
 
 Repozitár sa volá `avm-client-dart`, ale knižnica sa potom zvykne používať `autogram_sign`, takže odporúčame si repozitár naklonovať práve do adresára `autogram_sign`.
 
+Stiahnutie aktuálnej verzie schémy:
+
+```shell
+curl -o lib/swagger/autogram.yaml https://autogram.slovensko.digital/openapi.yaml
+```
+
 Vygenerovanie kódu:
 
 ```shell

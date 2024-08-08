@@ -162,22 +162,22 @@ abstract class Autogram extends ChopperService {
   ///@param guid
   ///@param Accept
   Future<chopper.Response<DocumentValidationResponseBody>>
-      documentsGuidValidationGet({
+      documentsGuidValidateGet({
     required String? guid,
     String? accept,
   }) {
     generatedMapping.putIfAbsent(DocumentValidationResponseBody,
         () => DocumentValidationResponseBody.fromJsonFactory);
 
-    return _documentsGuidValidationGet(guid: guid, accept: accept?.toString());
+    return _documentsGuidValidateGet(guid: guid, accept: accept?.toString());
   }
 
   ///Client app requests a signature validation report of the document.
   ///@param guid
   ///@param Accept
-  @Get(path: '/documents/{guid}/validation')
+  @Get(path: '/documents/{guid}/validate')
   Future<chopper.Response<DocumentValidationResponseBody>>
-      _documentsGuidValidationGet({
+      _documentsGuidValidateGet({
     @Path('guid') required String? guid,
     @Header('Accept') String? accept,
   });
@@ -361,31 +361,26 @@ abstract class Autogram extends ChopperService {
   Future<chopper.Response> _signRequestPost(
       {@Body() required PostSignRequestBody? body});
 
-  ///
+  ///URL format used by Autogram extenision and Autogram v mobile app
   ///@param guid GUID of a document
   ///@param key AES256 key in Base64 for the document
-  ///@param pushkey AES256 key in Base64 for push notification content
   ///@param integration JWT of source integration. Can be used to pair device with the integration. Must contain `aud: "device"` claim
   Future<chopper.Response> qrCodeGet({
     required String? guid,
     required String? key,
-    String? pushkey,
     String? integration,
   }) {
-    return _qrCodeGet(
-        guid: guid, key: key, pushkey: pushkey, integration: integration);
+    return _qrCodeGet(guid: guid, key: key, integration: integration);
   }
 
-  ///
+  ///URL format used by Autogram extenision and Autogram v mobile app
   ///@param guid GUID of a document
   ///@param key AES256 key in Base64 for the document
-  ///@param pushkey AES256 key in Base64 for push notification content
   ///@param integration JWT of source integration. Can be used to pair device with the integration. Must contain `aud: "device"` claim
   @Get(path: '/qr-code')
   Future<chopper.Response> _qrCodeGet({
     @Query('guid') required String? guid,
     @Query('key') required String? key,
-    @Query('pushkey') String? pushkey,
     @Query('integration') String? integration,
   });
 }
@@ -457,7 +452,6 @@ class PostIntegrationRequestBody {
     required this.platform,
     required this.displayName,
     required this.publicKey,
-    required this.pushkey,
   });
 
   factory PostIntegrationRequestBody.fromJson(Map<String, dynamic> json) =>
@@ -472,8 +466,6 @@ class PostIntegrationRequestBody {
   final String displayName;
   @JsonKey(name: 'publicKey')
   final String publicKey;
-  @JsonKey(name: 'pushkey')
-  final String pushkey;
   static const fromJsonFactory = _$PostIntegrationRequestBodyFromJson;
 
   @override
@@ -488,9 +480,7 @@ class PostIntegrationRequestBody {
                     .equals(other.displayName, displayName)) &&
             (identical(other.publicKey, publicKey) ||
                 const DeepCollectionEquality()
-                    .equals(other.publicKey, publicKey)) &&
-            (identical(other.pushkey, pushkey) ||
-                const DeepCollectionEquality().equals(other.pushkey, pushkey)));
+                    .equals(other.publicKey, publicKey)));
   }
 
   @override
@@ -501,34 +491,27 @@ class PostIntegrationRequestBody {
       const DeepCollectionEquality().hash(platform) ^
       const DeepCollectionEquality().hash(displayName) ^
       const DeepCollectionEquality().hash(publicKey) ^
-      const DeepCollectionEquality().hash(pushkey) ^
       runtimeType.hashCode;
 }
 
 extension $PostIntegrationRequestBodyExtension on PostIntegrationRequestBody {
   PostIntegrationRequestBody copyWith(
-      {String? platform,
-      String? displayName,
-      String? publicKey,
-      String? pushkey}) {
+      {String? platform, String? displayName, String? publicKey}) {
     return PostIntegrationRequestBody(
         platform: platform ?? this.platform,
         displayName: displayName ?? this.displayName,
-        publicKey: publicKey ?? this.publicKey,
-        pushkey: pushkey ?? this.pushkey);
+        publicKey: publicKey ?? this.publicKey);
   }
 
   PostIntegrationRequestBody copyWithWrapped(
       {Wrapped<String>? platform,
       Wrapped<String>? displayName,
-      Wrapped<String>? publicKey,
-      Wrapped<String>? pushkey}) {
+      Wrapped<String>? publicKey}) {
     return PostIntegrationRequestBody(
         platform: (platform != null ? platform.value : this.platform),
         displayName:
             (displayName != null ? displayName.value : this.displayName),
-        publicKey: (publicKey != null ? publicKey.value : this.publicKey),
-        pushkey: (pushkey != null ? pushkey.value : this.pushkey));
+        publicKey: (publicKey != null ? publicKey.value : this.publicKey));
   }
 }
 
@@ -582,6 +565,7 @@ class PostDeviceRequestBody {
     required this.registrationId,
     required this.displayName,
     required this.publicKey,
+    required this.pushkey,
   });
 
   factory PostDeviceRequestBody.fromJson(Map<String, dynamic> json) =>
@@ -598,6 +582,8 @@ class PostDeviceRequestBody {
   final String displayName;
   @JsonKey(name: 'publicKey')
   final String publicKey;
+  @JsonKey(name: 'pushkey')
+  final String pushkey;
   static const fromJsonFactory = _$PostDeviceRequestBodyFromJson;
 
   @override
@@ -615,7 +601,9 @@ class PostDeviceRequestBody {
                     .equals(other.displayName, displayName)) &&
             (identical(other.publicKey, publicKey) ||
                 const DeepCollectionEquality()
-                    .equals(other.publicKey, publicKey)));
+                    .equals(other.publicKey, publicKey)) &&
+            (identical(other.pushkey, pushkey) ||
+                const DeepCollectionEquality().equals(other.pushkey, pushkey)));
   }
 
   @override
@@ -627,6 +615,7 @@ class PostDeviceRequestBody {
       const DeepCollectionEquality().hash(registrationId) ^
       const DeepCollectionEquality().hash(displayName) ^
       const DeepCollectionEquality().hash(publicKey) ^
+      const DeepCollectionEquality().hash(pushkey) ^
       runtimeType.hashCode;
 }
 
@@ -635,19 +624,22 @@ extension $PostDeviceRequestBodyExtension on PostDeviceRequestBody {
       {String? platform,
       String? registrationId,
       String? displayName,
-      String? publicKey}) {
+      String? publicKey,
+      String? pushkey}) {
     return PostDeviceRequestBody(
         platform: platform ?? this.platform,
         registrationId: registrationId ?? this.registrationId,
         displayName: displayName ?? this.displayName,
-        publicKey: publicKey ?? this.publicKey);
+        publicKey: publicKey ?? this.publicKey,
+        pushkey: pushkey ?? this.pushkey);
   }
 
   PostDeviceRequestBody copyWithWrapped(
       {Wrapped<String>? platform,
       Wrapped<String>? registrationId,
       Wrapped<String>? displayName,
-      Wrapped<String>? publicKey}) {
+      Wrapped<String>? publicKey,
+      Wrapped<String>? pushkey}) {
     return PostDeviceRequestBody(
         platform: (platform != null ? platform.value : this.platform),
         registrationId: (registrationId != null
@@ -655,7 +647,8 @@ extension $PostDeviceRequestBodyExtension on PostDeviceRequestBody {
             : this.registrationId),
         displayName:
             (displayName != null ? displayName.value : this.displayName),
-        publicKey: (publicKey != null ? publicKey.value : this.publicKey));
+        publicKey: (publicKey != null ? publicKey.value : this.publicKey),
+        pushkey: (pushkey != null ? pushkey.value : this.pushkey));
   }
 }
 
@@ -1940,7 +1933,8 @@ extension $DocumentVisualizationResponseBodyExtension
 @JsonSerializable(explicitToJson: true)
 class DocumentValidationResponseBody {
   const DocumentValidationResponseBody({
-    required this.fileFormat,
+    this.containerType,
+    this.signatureForm,
     this.signatures,
     this.signedObjects,
     this.unsignedObjects,
@@ -1953,11 +1947,17 @@ class DocumentValidationResponseBody {
   Map<String, dynamic> toJson() => _$DocumentValidationResponseBodyToJson(this);
 
   @JsonKey(
-    name: 'fileFormat',
-    toJson: documentValidationResponseBodyFileFormatToJson,
-    fromJson: documentValidationResponseBodyFileFormatFromJson,
+    name: 'containerType',
+    toJson: documentValidationResponseBodyContainerTypeNullableToJson,
+    fromJson: documentValidationResponseBodyContainerTypeNullableFromJson,
   )
-  final enums.DocumentValidationResponseBodyFileFormat fileFormat;
+  final enums.DocumentValidationResponseBodyContainerType? containerType;
+  @JsonKey(
+    name: 'signatureForm',
+    toJson: documentValidationResponseBodySignatureFormNullableToJson,
+    fromJson: documentValidationResponseBodySignatureFormNullableFromJson,
+  )
+  final enums.DocumentValidationResponseBodySignatureForm? signatureForm;
   @JsonKey(name: 'signatures')
   final List<DocumentValidationResponseBody$Signatures$Item>? signatures;
   @JsonKey(name: 'signedObjects')
@@ -1971,9 +1971,12 @@ class DocumentValidationResponseBody {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other is DocumentValidationResponseBody &&
-            (identical(other.fileFormat, fileFormat) ||
+            (identical(other.containerType, containerType) ||
                 const DeepCollectionEquality()
-                    .equals(other.fileFormat, fileFormat)) &&
+                    .equals(other.containerType, containerType)) &&
+            (identical(other.signatureForm, signatureForm) ||
+                const DeepCollectionEquality()
+                    .equals(other.signatureForm, signatureForm)) &&
             (identical(other.signatures, signatures) ||
                 const DeepCollectionEquality()
                     .equals(other.signatures, signatures)) &&
@@ -1990,7 +1993,8 @@ class DocumentValidationResponseBody {
 
   @override
   int get hashCode =>
-      const DeepCollectionEquality().hash(fileFormat) ^
+      const DeepCollectionEquality().hash(containerType) ^
+      const DeepCollectionEquality().hash(signatureForm) ^
       const DeepCollectionEquality().hash(signatures) ^
       const DeepCollectionEquality().hash(signedObjects) ^
       const DeepCollectionEquality().hash(unsignedObjects) ^
@@ -2000,20 +2004,25 @@ class DocumentValidationResponseBody {
 extension $DocumentValidationResponseBodyExtension
     on DocumentValidationResponseBody {
   DocumentValidationResponseBody copyWith(
-      {enums.DocumentValidationResponseBodyFileFormat? fileFormat,
+      {enums.DocumentValidationResponseBodyContainerType? containerType,
+      enums.DocumentValidationResponseBodySignatureForm? signatureForm,
       List<DocumentValidationResponseBody$Signatures$Item>? signatures,
       List<DocumentValidationResponseBody$SignedObjects$Item>? signedObjects,
       List<DocumentValidationResponseBody$UnsignedObjects$Item>?
           unsignedObjects}) {
     return DocumentValidationResponseBody(
-        fileFormat: fileFormat ?? this.fileFormat,
+        containerType: containerType ?? this.containerType,
+        signatureForm: signatureForm ?? this.signatureForm,
         signatures: signatures ?? this.signatures,
         signedObjects: signedObjects ?? this.signedObjects,
         unsignedObjects: unsignedObjects ?? this.unsignedObjects);
   }
 
   DocumentValidationResponseBody copyWithWrapped(
-      {Wrapped<enums.DocumentValidationResponseBodyFileFormat>? fileFormat,
+      {Wrapped<enums.DocumentValidationResponseBodyContainerType?>?
+          containerType,
+      Wrapped<enums.DocumentValidationResponseBodySignatureForm?>?
+          signatureForm,
       Wrapped<List<DocumentValidationResponseBody$Signatures$Item>?>?
           signatures,
       Wrapped<List<DocumentValidationResponseBody$SignedObjects$Item>?>?
@@ -2021,7 +2030,10 @@ extension $DocumentValidationResponseBodyExtension
       Wrapped<List<DocumentValidationResponseBody$UnsignedObjects$Item>?>?
           unsignedObjects}) {
     return DocumentValidationResponseBody(
-        fileFormat: (fileFormat != null ? fileFormat.value : this.fileFormat),
+        containerType:
+            (containerType != null ? containerType.value : this.containerType),
+        signatureForm:
+            (signatureForm != null ? signatureForm.value : this.signatureForm),
         signatures: (signatures != null ? signatures.value : this.signatures),
         signedObjects:
             (signedObjects != null ? signedObjects.value : this.signedObjects),
@@ -2602,8 +2614,14 @@ extension $GetDocumentResponseBody$Signers$ItemExtension
 @JsonSerializable(explicitToJson: true)
 class DocumentValidationResponseBody$Signatures$Item {
   const DocumentValidationResponseBody$Signatures$Item({
-    this.validationResult,
-    this.signatureInfo,
+    required this.validationResult,
+    required this.level,
+    required this.claimedSigningTime,
+    required this.bestSigningTime,
+    required this.signingCertificate,
+    required this.areQualifiedTimestamps,
+    this.timestamps,
+    this.signedObjectsIds,
   });
 
   factory DocumentValidationResponseBody$Signatures$Item.fromJson(
@@ -2616,11 +2634,28 @@ class DocumentValidationResponseBody$Signatures$Item {
       _$DocumentValidationResponseBody$Signatures$ItemToJson(this);
 
   @JsonKey(name: 'validationResult')
-  final DocumentValidationResponseBody$Signatures$Item$ValidationResult?
+  final DocumentValidationResponseBody$Signatures$Item$ValidationResult
       validationResult;
-  @JsonKey(name: 'signatureInfo')
-  final DocumentValidationResponseBody$Signatures$Item$SignatureInfo?
-      signatureInfo;
+  @JsonKey(
+    name: 'level',
+    toJson: documentValidationResponseBody$Signatures$ItemLevelToJson,
+    fromJson: documentValidationResponseBody$Signatures$ItemLevelFromJson,
+  )
+  final enums.DocumentValidationResponseBody$Signatures$ItemLevel level;
+  @JsonKey(name: 'claimedSigningTime')
+  final String claimedSigningTime;
+  @JsonKey(name: 'bestSigningTime')
+  final String bestSigningTime;
+  @JsonKey(name: 'signingCertificate')
+  final DocumentValidationResponseBody$Signatures$Item$SigningCertificate
+      signingCertificate;
+  @JsonKey(name: 'areQualifiedTimestamps')
+  final bool areQualifiedTimestamps;
+  @JsonKey(name: 'timestamps')
+  final List<DocumentValidationResponseBody$Signatures$Item$Timestamps$Item>?
+      timestamps;
+  @JsonKey(name: 'signedObjectsIds', defaultValue: <Object>[])
+  final List<Object>? signedObjectsIds;
   static const fromJsonFactory =
       _$DocumentValidationResponseBody$Signatures$ItemFromJson;
 
@@ -2631,9 +2666,26 @@ class DocumentValidationResponseBody$Signatures$Item {
             (identical(other.validationResult, validationResult) ||
                 const DeepCollectionEquality()
                     .equals(other.validationResult, validationResult)) &&
-            (identical(other.signatureInfo, signatureInfo) ||
+            (identical(other.level, level) ||
+                const DeepCollectionEquality().equals(other.level, level)) &&
+            (identical(other.claimedSigningTime, claimedSigningTime) ||
                 const DeepCollectionEquality()
-                    .equals(other.signatureInfo, signatureInfo)));
+                    .equals(other.claimedSigningTime, claimedSigningTime)) &&
+            (identical(other.bestSigningTime, bestSigningTime) ||
+                const DeepCollectionEquality()
+                    .equals(other.bestSigningTime, bestSigningTime)) &&
+            (identical(other.signingCertificate, signingCertificate) ||
+                const DeepCollectionEquality()
+                    .equals(other.signingCertificate, signingCertificate)) &&
+            (identical(other.areQualifiedTimestamps, areQualifiedTimestamps) ||
+                const DeepCollectionEquality().equals(
+                    other.areQualifiedTimestamps, areQualifiedTimestamps)) &&
+            (identical(other.timestamps, timestamps) ||
+                const DeepCollectionEquality()
+                    .equals(other.timestamps, timestamps)) &&
+            (identical(other.signedObjectsIds, signedObjectsIds) ||
+                const DeepCollectionEquality()
+                    .equals(other.signedObjectsIds, signedObjectsIds)));
   }
 
   @override
@@ -2642,7 +2694,13 @@ class DocumentValidationResponseBody$Signatures$Item {
   @override
   int get hashCode =>
       const DeepCollectionEquality().hash(validationResult) ^
-      const DeepCollectionEquality().hash(signatureInfo) ^
+      const DeepCollectionEquality().hash(level) ^
+      const DeepCollectionEquality().hash(claimedSigningTime) ^
+      const DeepCollectionEquality().hash(bestSigningTime) ^
+      const DeepCollectionEquality().hash(signingCertificate) ^
+      const DeepCollectionEquality().hash(areQualifiedTimestamps) ^
+      const DeepCollectionEquality().hash(timestamps) ^
+      const DeepCollectionEquality().hash(signedObjectsIds) ^
       runtimeType.hashCode;
 }
 
@@ -2651,34 +2709,71 @@ extension $DocumentValidationResponseBody$Signatures$ItemExtension
   DocumentValidationResponseBody$Signatures$Item copyWith(
       {DocumentValidationResponseBody$Signatures$Item$ValidationResult?
           validationResult,
-      DocumentValidationResponseBody$Signatures$Item$SignatureInfo?
-          signatureInfo}) {
+      enums.DocumentValidationResponseBody$Signatures$ItemLevel? level,
+      String? claimedSigningTime,
+      String? bestSigningTime,
+      DocumentValidationResponseBody$Signatures$Item$SigningCertificate?
+          signingCertificate,
+      bool? areQualifiedTimestamps,
+      List<DocumentValidationResponseBody$Signatures$Item$Timestamps$Item>?
+          timestamps,
+      List<Object>? signedObjectsIds}) {
     return DocumentValidationResponseBody$Signatures$Item(
         validationResult: validationResult ?? this.validationResult,
-        signatureInfo: signatureInfo ?? this.signatureInfo);
+        level: level ?? this.level,
+        claimedSigningTime: claimedSigningTime ?? this.claimedSigningTime,
+        bestSigningTime: bestSigningTime ?? this.bestSigningTime,
+        signingCertificate: signingCertificate ?? this.signingCertificate,
+        areQualifiedTimestamps:
+            areQualifiedTimestamps ?? this.areQualifiedTimestamps,
+        timestamps: timestamps ?? this.timestamps,
+        signedObjectsIds: signedObjectsIds ?? this.signedObjectsIds);
   }
 
   DocumentValidationResponseBody$Signatures$Item copyWithWrapped(
-      {Wrapped<
-              DocumentValidationResponseBody$Signatures$Item$ValidationResult?>?
+      {Wrapped<DocumentValidationResponseBody$Signatures$Item$ValidationResult>?
           validationResult,
-      Wrapped<DocumentValidationResponseBody$Signatures$Item$SignatureInfo?>?
-          signatureInfo}) {
+      Wrapped<enums.DocumentValidationResponseBody$Signatures$ItemLevel>? level,
+      Wrapped<String>? claimedSigningTime,
+      Wrapped<String>? bestSigningTime,
+      Wrapped<DocumentValidationResponseBody$Signatures$Item$SigningCertificate>?
+          signingCertificate,
+      Wrapped<bool>? areQualifiedTimestamps,
+      Wrapped<
+              List<
+                  DocumentValidationResponseBody$Signatures$Item$Timestamps$Item>?>?
+          timestamps,
+      Wrapped<List<Object>?>? signedObjectsIds}) {
     return DocumentValidationResponseBody$Signatures$Item(
         validationResult: (validationResult != null
             ? validationResult.value
             : this.validationResult),
-        signatureInfo:
-            (signatureInfo != null ? signatureInfo.value : this.signatureInfo));
+        level: (level != null ? level.value : this.level),
+        claimedSigningTime: (claimedSigningTime != null
+            ? claimedSigningTime.value
+            : this.claimedSigningTime),
+        bestSigningTime: (bestSigningTime != null
+            ? bestSigningTime.value
+            : this.bestSigningTime),
+        signingCertificate: (signingCertificate != null
+            ? signingCertificate.value
+            : this.signingCertificate),
+        areQualifiedTimestamps: (areQualifiedTimestamps != null
+            ? areQualifiedTimestamps.value
+            : this.areQualifiedTimestamps),
+        timestamps: (timestamps != null ? timestamps.value : this.timestamps),
+        signedObjectsIds: (signedObjectsIds != null
+            ? signedObjectsIds.value
+            : this.signedObjectsIds));
   }
 }
 
 @JsonSerializable(explicitToJson: true)
 class DocumentValidationResponseBody$SignedObjects$Item {
   const DocumentValidationResponseBody$SignedObjects$Item({
-    this.id,
+    required this.id,
     this.mimeType,
-    this.filename,
+    required this.filename,
   });
 
   factory DocumentValidationResponseBody$SignedObjects$Item.fromJson(
@@ -2691,11 +2786,11 @@ class DocumentValidationResponseBody$SignedObjects$Item {
       _$DocumentValidationResponseBody$SignedObjects$ItemToJson(this);
 
   @JsonKey(name: 'id')
-  final String? id;
+  final String id;
   @JsonKey(name: 'mimeType')
   final String? mimeType;
   @JsonKey(name: 'filename')
-  final String? filename;
+  final String filename;
   static const fromJsonFactory =
       _$DocumentValidationResponseBody$SignedObjects$ItemFromJson;
 
@@ -2735,9 +2830,9 @@ extension $DocumentValidationResponseBody$SignedObjects$ItemExtension
   }
 
   DocumentValidationResponseBody$SignedObjects$Item copyWithWrapped(
-      {Wrapped<String?>? id,
+      {Wrapped<String>? id,
       Wrapped<String?>? mimeType,
-      Wrapped<String?>? filename}) {
+      Wrapped<String>? filename}) {
     return DocumentValidationResponseBody$SignedObjects$Item(
         id: (id != null ? id.value : this.id),
         mimeType: (mimeType != null ? mimeType.value : this.mimeType),
@@ -2749,7 +2844,7 @@ extension $DocumentValidationResponseBody$SignedObjects$ItemExtension
 class DocumentValidationResponseBody$UnsignedObjects$Item {
   const DocumentValidationResponseBody$UnsignedObjects$Item({
     this.mimeType,
-    this.filename,
+    required this.filename,
   });
 
   factory DocumentValidationResponseBody$UnsignedObjects$Item.fromJson(
@@ -2764,7 +2859,7 @@ class DocumentValidationResponseBody$UnsignedObjects$Item {
   @JsonKey(name: 'mimeType')
   final String? mimeType;
   @JsonKey(name: 'filename')
-  final String? filename;
+  final String filename;
   static const fromJsonFactory =
       _$DocumentValidationResponseBody$UnsignedObjects$ItemFromJson;
 
@@ -2800,7 +2895,7 @@ extension $DocumentValidationResponseBody$UnsignedObjects$ItemExtension
   }
 
   DocumentValidationResponseBody$UnsignedObjects$Item copyWithWrapped(
-      {Wrapped<String?>? mimeType, Wrapped<String?>? filename}) {
+      {Wrapped<String?>? mimeType, Wrapped<String>? filename}) {
     return DocumentValidationResponseBody$UnsignedObjects$Item(
         mimeType: (mimeType != null ? mimeType.value : this.mimeType),
         filename: (filename != null ? filename.value : this.filename));
@@ -2810,8 +2905,8 @@ extension $DocumentValidationResponseBody$UnsignedObjects$ItemExtension
 @JsonSerializable(explicitToJson: true)
 class DocumentValidationResponseBody$Signatures$Item$ValidationResult {
   const DocumentValidationResponseBody$Signatures$Item$ValidationResult({
-    this.code,
-    this.description,
+    required this.code,
+    required this.description,
   });
 
   factory DocumentValidationResponseBody$Signatures$Item$ValidationResult.fromJson(
@@ -2826,16 +2921,16 @@ class DocumentValidationResponseBody$Signatures$Item$ValidationResult {
           this);
 
   @JsonKey(name: 'code')
-  final int? code;
+  final int code;
   @JsonKey(
     name: 'description',
     toJson:
-        documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionNullableToJson,
+        documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionToJson,
     fromJson:
-        documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionNullableFromJson,
+        documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionFromJson,
   )
   final enums
-      .DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription?
+      .DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription
       description;
   static const fromJsonFactory =
       _$DocumentValidationResponseBody$Signatures$Item$ValidationResultFromJson;
@@ -2873,10 +2968,10 @@ extension $DocumentValidationResponseBody$Signatures$Item$ValidationResultExtens
   }
 
   DocumentValidationResponseBody$Signatures$Item$ValidationResult copyWithWrapped(
-      {Wrapped<int?>? code,
+      {Wrapped<int>? code,
       Wrapped<
               enums
-              .DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription?>?
+              .DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription>?
           description}) {
     return DocumentValidationResponseBody$Signatures$Item$ValidationResult(
         code: (code != null ? code.value : this.code),
@@ -2886,220 +2981,53 @@ extension $DocumentValidationResponseBody$Signatures$Item$ValidationResultExtens
 }
 
 @JsonSerializable(explicitToJson: true)
-class DocumentValidationResponseBody$Signatures$Item$SignatureInfo {
-  const DocumentValidationResponseBody$Signatures$Item$SignatureInfo({
-    this.claimedSigningTime,
-    this.timestampSigningTime,
-    this.level,
-    this.signingCertificate,
-    this.isTimestamped,
-    this.timestamps,
-    this.signedObjectsIds,
+class DocumentValidationResponseBody$Signatures$Item$SigningCertificate {
+  const DocumentValidationResponseBody$Signatures$Item$SigningCertificate({
+    required this.qualification,
+    required this.issuerDN,
+    required this.subjectDN,
+    required this.certificateDer,
   });
 
-  factory DocumentValidationResponseBody$Signatures$Item$SignatureInfo.fromJson(
+  factory DocumentValidationResponseBody$Signatures$Item$SigningCertificate.fromJson(
           Map<String, dynamic> json) =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfoFromJson(
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificateFromJson(
           json);
 
   static const toJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfoToJson;
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificateToJson;
   Map<String, dynamic> toJson() =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfoToJson(
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificateToJson(
           this);
 
-  @JsonKey(name: 'claimedSigningTime')
-  final String? claimedSigningTime;
-  @JsonKey(name: 'timestampSigningTime')
-  final String? timestampSigningTime;
-  @JsonKey(
-    name: 'level',
-    toJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableToJson,
-    fromJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableFromJson,
-  )
-  final enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?
-      level;
-  @JsonKey(name: 'signingCertificate')
-  final DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate?
-      signingCertificate;
-  @JsonKey(name: 'isTimestamped')
-  final bool? isTimestamped;
-  @JsonKey(name: 'timestamps')
-  final List<
-          DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item>?
-      timestamps;
-  @JsonKey(name: 'signedObjectsIds', defaultValue: <String>[])
-  final List<String>? signedObjectsIds;
-  static const fromJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfoFromJson;
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other is DocumentValidationResponseBody$Signatures$Item$SignatureInfo &&
-            (identical(other.claimedSigningTime, claimedSigningTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.claimedSigningTime, claimedSigningTime)) &&
-            (identical(other.timestampSigningTime, timestampSigningTime) ||
-                const DeepCollectionEquality().equals(
-                    other.timestampSigningTime, timestampSigningTime)) &&
-            (identical(other.level, level) ||
-                const DeepCollectionEquality().equals(other.level, level)) &&
-            (identical(other.signingCertificate, signingCertificate) ||
-                const DeepCollectionEquality()
-                    .equals(other.signingCertificate, signingCertificate)) &&
-            (identical(other.isTimestamped, isTimestamped) ||
-                const DeepCollectionEquality()
-                    .equals(other.isTimestamped, isTimestamped)) &&
-            (identical(other.timestamps, timestamps) ||
-                const DeepCollectionEquality()
-                    .equals(other.timestamps, timestamps)) &&
-            (identical(other.signedObjectsIds, signedObjectsIds) ||
-                const DeepCollectionEquality()
-                    .equals(other.signedObjectsIds, signedObjectsIds)));
-  }
-
-  @override
-  String toString() => jsonEncode(this);
-
-  @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(claimedSigningTime) ^
-      const DeepCollectionEquality().hash(timestampSigningTime) ^
-      const DeepCollectionEquality().hash(level) ^
-      const DeepCollectionEquality().hash(signingCertificate) ^
-      const DeepCollectionEquality().hash(isTimestamped) ^
-      const DeepCollectionEquality().hash(timestamps) ^
-      const DeepCollectionEquality().hash(signedObjectsIds) ^
-      runtimeType.hashCode;
-}
-
-extension $DocumentValidationResponseBody$Signatures$Item$SignatureInfoExtension
-    on DocumentValidationResponseBody$Signatures$Item$SignatureInfo {
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo copyWith(
-      {String? claimedSigningTime,
-      String? timestampSigningTime,
-      enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?
-          level,
-      DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate?
-          signingCertificate,
-      bool? isTimestamped,
-      List<DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item>?
-          timestamps,
-      List<String>? signedObjectsIds}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo(
-        claimedSigningTime: claimedSigningTime ?? this.claimedSigningTime,
-        timestampSigningTime: timestampSigningTime ?? this.timestampSigningTime,
-        level: level ?? this.level,
-        signingCertificate: signingCertificate ?? this.signingCertificate,
-        isTimestamped: isTimestamped ?? this.isTimestamped,
-        timestamps: timestamps ?? this.timestamps,
-        signedObjectsIds: signedObjectsIds ?? this.signedObjectsIds);
-  }
-
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo copyWithWrapped(
-      {Wrapped<String?>? claimedSigningTime,
-      Wrapped<String?>? timestampSigningTime,
-      Wrapped<
-              enums
-              .DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?>?
-          level,
-      Wrapped<DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate?>?
-          signingCertificate,
-      Wrapped<bool?>? isTimestamped,
-      Wrapped<
-              List<
-                  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item>?>?
-          timestamps,
-      Wrapped<List<String>?>? signedObjectsIds}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo(
-        claimedSigningTime: (claimedSigningTime != null
-            ? claimedSigningTime.value
-            : this.claimedSigningTime),
-        timestampSigningTime: (timestampSigningTime != null
-            ? timestampSigningTime.value
-            : this.timestampSigningTime),
-        level: (level != null ? level.value : this.level),
-        signingCertificate: (signingCertificate != null
-            ? signingCertificate.value
-            : this.signingCertificate),
-        isTimestamped:
-            (isTimestamped != null ? isTimestamped.value : this.isTimestamped),
-        timestamps: (timestamps != null ? timestamps.value : this.timestamps),
-        signedObjectsIds: (signedObjectsIds != null
-            ? signedObjectsIds.value
-            : this.signedObjectsIds));
-  }
-}
-
-@JsonSerializable(explicitToJson: true)
-class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate {
-  const DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate({
-    this.issuerDN,
-    this.subjectDN,
-    this.serialNumber,
-    this.productionTime,
-    this.notBefore,
-    this.notAfter,
-    this.qualification,
-  });
-
-  factory DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate.fromJson(
-          Map<String, dynamic> json) =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateFromJson(
-          json);
-
-  static const toJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateToJson;
-  Map<String, dynamic> toJson() =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateToJson(
-          this);
-
-  @JsonKey(name: 'issuerDN')
-  final String? issuerDN;
-  @JsonKey(name: 'subjectDN')
-  final String? subjectDN;
-  @JsonKey(name: 'serialNumber')
-  final String? serialNumber;
-  @JsonKey(name: 'productionTime')
-  final String? productionTime;
-  @JsonKey(name: 'notBefore')
-  final String? notBefore;
-  @JsonKey(name: 'notAfter')
-  final String? notAfter;
   @JsonKey(name: 'qualification')
-  final DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification?
+  final DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification
       qualification;
+  @JsonKey(name: 'issuerDN')
+  final String issuerDN;
+  @JsonKey(name: 'subjectDN')
+  final String subjectDN;
+  @JsonKey(name: 'certificateDer')
+  final String certificateDer;
   static const fromJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateFromJson;
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificateFromJson;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other is DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate &&
+        (other is DocumentValidationResponseBody$Signatures$Item$SigningCertificate &&
+            (identical(other.qualification, qualification) ||
+                const DeepCollectionEquality()
+                    .equals(other.qualification, qualification)) &&
             (identical(other.issuerDN, issuerDN) ||
                 const DeepCollectionEquality()
                     .equals(other.issuerDN, issuerDN)) &&
             (identical(other.subjectDN, subjectDN) ||
                 const DeepCollectionEquality()
                     .equals(other.subjectDN, subjectDN)) &&
-            (identical(other.serialNumber, serialNumber) ||
+            (identical(other.certificateDer, certificateDer) ||
                 const DeepCollectionEquality()
-                    .equals(other.serialNumber, serialNumber)) &&
-            (identical(other.productionTime, productionTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.productionTime, productionTime)) &&
-            (identical(other.notBefore, notBefore) ||
-                const DeepCollectionEquality()
-                    .equals(other.notBefore, notBefore)) &&
-            (identical(other.notAfter, notAfter) ||
-                const DeepCollectionEquality()
-                    .equals(other.notAfter, notAfter)) &&
-            (identical(other.qualification, qualification) ||
-                const DeepCollectionEquality()
-                    .equals(other.qualification, qualification)));
+                    .equals(other.certificateDer, certificateDer)));
   }
 
   @override
@@ -3107,143 +3035,108 @@ class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertif
 
   @override
   int get hashCode =>
+      const DeepCollectionEquality().hash(qualification) ^
       const DeepCollectionEquality().hash(issuerDN) ^
       const DeepCollectionEquality().hash(subjectDN) ^
-      const DeepCollectionEquality().hash(serialNumber) ^
-      const DeepCollectionEquality().hash(productionTime) ^
-      const DeepCollectionEquality().hash(notBefore) ^
-      const DeepCollectionEquality().hash(notAfter) ^
-      const DeepCollectionEquality().hash(qualification) ^
+      const DeepCollectionEquality().hash(certificateDer) ^
       runtimeType.hashCode;
 }
 
-extension $DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateExtension
-    on DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate {
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate
-      copyWith(
-          {String? issuerDN,
-          String? subjectDN,
-          String? serialNumber,
-          String? productionTime,
-          String? notBefore,
-          String? notAfter,
-          DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification?
-              qualification}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate(
+extension $DocumentValidationResponseBody$Signatures$Item$SigningCertificateExtension
+    on DocumentValidationResponseBody$Signatures$Item$SigningCertificate {
+  DocumentValidationResponseBody$Signatures$Item$SigningCertificate copyWith(
+      {DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification?
+          qualification,
+      String? issuerDN,
+      String? subjectDN,
+      String? certificateDer}) {
+    return DocumentValidationResponseBody$Signatures$Item$SigningCertificate(
+        qualification: qualification ?? this.qualification,
         issuerDN: issuerDN ?? this.issuerDN,
         subjectDN: subjectDN ?? this.subjectDN,
-        serialNumber: serialNumber ?? this.serialNumber,
-        productionTime: productionTime ?? this.productionTime,
-        notBefore: notBefore ?? this.notBefore,
-        notAfter: notAfter ?? this.notAfter,
-        qualification: qualification ?? this.qualification);
+        certificateDer: certificateDer ?? this.certificateDer);
   }
 
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate
-      copyWithWrapped(
-          {Wrapped<String?>? issuerDN,
-          Wrapped<String?>? subjectDN,
-          Wrapped<String?>? serialNumber,
-          Wrapped<String?>? productionTime,
-          Wrapped<String?>? notBefore,
-          Wrapped<String?>? notAfter,
-          Wrapped<DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification?>?
-              qualification}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate(
+  DocumentValidationResponseBody$Signatures$Item$SigningCertificate copyWithWrapped(
+      {Wrapped<
+              DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification>?
+          qualification,
+      Wrapped<String>? issuerDN,
+      Wrapped<String>? subjectDN,
+      Wrapped<String>? certificateDer}) {
+    return DocumentValidationResponseBody$Signatures$Item$SigningCertificate(
+        qualification:
+            (qualification != null ? qualification.value : this.qualification),
         issuerDN: (issuerDN != null ? issuerDN.value : this.issuerDN),
         subjectDN: (subjectDN != null ? subjectDN.value : this.subjectDN),
-        serialNumber:
-            (serialNumber != null ? serialNumber.value : this.serialNumber),
-        productionTime: (productionTime != null
-            ? productionTime.value
-            : this.productionTime),
-        notBefore: (notBefore != null ? notBefore.value : this.notBefore),
-        notAfter: (notAfter != null ? notAfter.value : this.notAfter),
-        qualification:
-            (qualification != null ? qualification.value : this.qualification));
+        certificateDer: (certificateDer != null
+            ? certificateDer.value
+            : this.certificateDer));
   }
 }
 
 @JsonSerializable(explicitToJson: true)
-class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item {
-  const DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item({
-    this.issuerDN,
-    this.subjectDN,
-    this.serialNumber,
-    this.productionTime,
-    this.notBefore,
-    this.notAfter,
-    this.qualification,
-    this.timestampType,
+class DocumentValidationResponseBody$Signatures$Item$Timestamps$Item {
+  const DocumentValidationResponseBody$Signatures$Item$Timestamps$Item({
+    required this.qualification,
+    required this.timestampType,
+    required this.subjectDN,
+    required this.certificateDer,
+    required this.productionTime,
   });
 
-  factory DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item.fromJson(
+  factory DocumentValidationResponseBody$Signatures$Item$Timestamps$Item.fromJson(
           Map<String, dynamic> json) =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemFromJson(
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemFromJson(
           json);
 
   static const toJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemToJson;
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemToJson;
   Map<String, dynamic> toJson() =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemToJson(
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemToJson(
           this);
 
-  @JsonKey(name: 'issuerDN')
-  final String? issuerDN;
-  @JsonKey(name: 'subjectDN')
-  final String? subjectDN;
-  @JsonKey(name: 'serialNumber')
-  final String? serialNumber;
-  @JsonKey(name: 'productionTime')
-  final String? productionTime;
-  @JsonKey(name: 'notBefore')
-  final String? notBefore;
-  @JsonKey(name: 'notAfter')
-  final String? notAfter;
   @JsonKey(name: 'qualification')
-  final DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification?
+  final DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification
       qualification;
   @JsonKey(
     name: 'timestampType',
     toJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableToJson,
+        documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeToJson,
     fromJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableFromJson,
+        documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeFromJson,
   )
   final enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
       timestampType;
+  @JsonKey(name: 'subjectDN')
+  final String subjectDN;
+  @JsonKey(name: 'certificateDer')
+  final String certificateDer;
+  @JsonKey(name: 'productionTime')
+  final String productionTime;
   static const fromJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemFromJson;
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemFromJson;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other is DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item &&
-            (identical(other.issuerDN, issuerDN) ||
-                const DeepCollectionEquality()
-                    .equals(other.issuerDN, issuerDN)) &&
-            (identical(other.subjectDN, subjectDN) ||
-                const DeepCollectionEquality()
-                    .equals(other.subjectDN, subjectDN)) &&
-            (identical(other.serialNumber, serialNumber) ||
-                const DeepCollectionEquality()
-                    .equals(other.serialNumber, serialNumber)) &&
-            (identical(other.productionTime, productionTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.productionTime, productionTime)) &&
-            (identical(other.notBefore, notBefore) ||
-                const DeepCollectionEquality()
-                    .equals(other.notBefore, notBefore)) &&
-            (identical(other.notAfter, notAfter) ||
-                const DeepCollectionEquality()
-                    .equals(other.notAfter, notAfter)) &&
+        (other is DocumentValidationResponseBody$Signatures$Item$Timestamps$Item &&
             (identical(other.qualification, qualification) ||
                 const DeepCollectionEquality()
                     .equals(other.qualification, qualification)) &&
             (identical(other.timestampType, timestampType) ||
                 const DeepCollectionEquality()
-                    .equals(other.timestampType, timestampType)));
+                    .equals(other.timestampType, timestampType)) &&
+            (identical(other.subjectDN, subjectDN) ||
+                const DeepCollectionEquality()
+                    .equals(other.subjectDN, subjectDN)) &&
+            (identical(other.certificateDer, certificateDer) ||
+                const DeepCollectionEquality()
+                    .equals(other.certificateDer, certificateDer)) &&
+            (identical(other.productionTime, productionTime) ||
+                const DeepCollectionEquality()
+                    .equals(other.productionTime, productionTime)));
   }
 
   @override
@@ -3251,110 +3144,96 @@ class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$It
 
   @override
   int get hashCode =>
-      const DeepCollectionEquality().hash(issuerDN) ^
-      const DeepCollectionEquality().hash(subjectDN) ^
-      const DeepCollectionEquality().hash(serialNumber) ^
-      const DeepCollectionEquality().hash(productionTime) ^
-      const DeepCollectionEquality().hash(notBefore) ^
-      const DeepCollectionEquality().hash(notAfter) ^
       const DeepCollectionEquality().hash(qualification) ^
       const DeepCollectionEquality().hash(timestampType) ^
+      const DeepCollectionEquality().hash(subjectDN) ^
+      const DeepCollectionEquality().hash(certificateDer) ^
+      const DeepCollectionEquality().hash(productionTime) ^
       runtimeType.hashCode;
 }
 
-extension $DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemExtension
-    on DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item {
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item copyWith(
-      {String? issuerDN,
-      String? subjectDN,
-      String? serialNumber,
-      String? productionTime,
-      String? notBefore,
-      String? notAfter,
-      DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification?
+extension $DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemExtension
+    on DocumentValidationResponseBody$Signatures$Item$Timestamps$Item {
+  DocumentValidationResponseBody$Signatures$Item$Timestamps$Item copyWith(
+      {DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification?
           qualification,
       enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?
-          timestampType}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item(
-        issuerDN: issuerDN ?? this.issuerDN,
-        subjectDN: subjectDN ?? this.subjectDN,
-        serialNumber: serialNumber ?? this.serialNumber,
-        productionTime: productionTime ?? this.productionTime,
-        notBefore: notBefore ?? this.notBefore,
-        notAfter: notAfter ?? this.notAfter,
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType?
+          timestampType,
+      String? subjectDN,
+      String? certificateDer,
+      String? productionTime}) {
+    return DocumentValidationResponseBody$Signatures$Item$Timestamps$Item(
         qualification: qualification ?? this.qualification,
-        timestampType: timestampType ?? this.timestampType);
+        timestampType: timestampType ?? this.timestampType,
+        subjectDN: subjectDN ?? this.subjectDN,
+        certificateDer: certificateDer ?? this.certificateDer,
+        productionTime: productionTime ?? this.productionTime);
   }
 
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item
-      copyWithWrapped(
-          {Wrapped<String?>? issuerDN,
-          Wrapped<String?>? subjectDN,
-          Wrapped<String?>? serialNumber,
-          Wrapped<String?>? productionTime,
-          Wrapped<String?>? notBefore,
-          Wrapped<String?>? notAfter,
-          Wrapped<DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification?>?
-              qualification,
-          Wrapped<
-                  enums
-                  .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?>?
-              timestampType}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item(
-        issuerDN: (issuerDN != null ? issuerDN.value : this.issuerDN),
-        subjectDN: (subjectDN != null ? subjectDN.value : this.subjectDN),
-        serialNumber:
-            (serialNumber != null ? serialNumber.value : this.serialNumber),
-        productionTime: (productionTime != null
-            ? productionTime.value
-            : this.productionTime),
-        notBefore: (notBefore != null ? notBefore.value : this.notBefore),
-        notAfter: (notAfter != null ? notAfter.value : this.notAfter),
+  DocumentValidationResponseBody$Signatures$Item$Timestamps$Item copyWithWrapped(
+      {Wrapped<
+              DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification>?
+          qualification,
+      Wrapped<
+              enums
+              .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>?
+          timestampType,
+      Wrapped<String>? subjectDN,
+      Wrapped<String>? certificateDer,
+      Wrapped<String>? productionTime}) {
+    return DocumentValidationResponseBody$Signatures$Item$Timestamps$Item(
         qualification:
             (qualification != null ? qualification.value : this.qualification),
         timestampType:
-            (timestampType != null ? timestampType.value : this.timestampType));
+            (timestampType != null ? timestampType.value : this.timestampType),
+        subjectDN: (subjectDN != null ? subjectDN.value : this.subjectDN),
+        certificateDer: (certificateDer != null
+            ? certificateDer.value
+            : this.certificateDer),
+        productionTime: (productionTime != null
+            ? productionTime.value
+            : this.productionTime));
   }
 }
 
 @JsonSerializable(explicitToJson: true)
-class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification {
-  const DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification({
-    this.code,
-    this.description,
+class DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification {
+  const DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification({
+    required this.code,
+    required this.description,
   });
 
-  factory DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification.fromJson(
+  factory DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification.fromJson(
           Map<String, dynamic> json) =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationFromJson(
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationFromJson(
           json);
 
   static const toJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationToJson;
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationToJson;
   Map<String, dynamic> toJson() =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationToJson(
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationToJson(
           this);
 
   @JsonKey(name: 'code')
-  final int? code;
+  final int code;
   @JsonKey(
     name: 'description',
     toJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableToJson,
+        documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionToJson,
     fromJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableFromJson,
+        documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionFromJson,
   )
   final enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?
+      .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
       description;
   static const fromJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationFromJson;
+      _$DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationFromJson;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other is DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification &&
+        (other is DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification &&
             (identical(other.code, code) ||
                 const DeepCollectionEquality().equals(other.code, code)) &&
             (identical(other.description, description) ||
@@ -3372,26 +3251,26 @@ class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertif
       runtimeType.hashCode;
 }
 
-extension $DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationExtension
-    on DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification {
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification
+extension $DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationExtension
+    on DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification {
+  DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification
       copyWith(
           {int? code,
           enums
-              .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?
+              .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription?
               description}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification(
+    return DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification(
         code: code ?? this.code, description: description ?? this.description);
   }
 
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification
+  DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification
       copyWithWrapped(
-          {Wrapped<int?>? code,
+          {Wrapped<int>? code,
           Wrapped<
                   enums
-                  .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?>?
+                  .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>?
               description}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification(
+    return DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification(
         code: (code != null ? code.value : this.code),
         description:
             (description != null ? description.value : this.description));
@@ -3399,42 +3278,42 @@ extension $DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningC
 }
 
 @JsonSerializable(explicitToJson: true)
-class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification {
-  const DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification({
-    this.code,
-    this.description,
+class DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification {
+  const DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification({
+    required this.code,
+    required this.description,
   });
 
-  factory DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification.fromJson(
+  factory DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification.fromJson(
           Map<String, dynamic> json) =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationFromJson(
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationFromJson(
           json);
 
   static const toJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationToJson;
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationToJson;
   Map<String, dynamic> toJson() =>
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationToJson(
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationToJson(
           this);
 
   @JsonKey(name: 'code')
-  final int? code;
+  final int code;
   @JsonKey(
     name: 'description',
     toJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableToJson,
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionToJson,
     fromJson:
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableFromJson,
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionFromJson,
   )
   final enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
       description;
   static const fromJsonFactory =
-      _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationFromJson;
+      _$DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationFromJson;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other is DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification &&
+        (other is DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification &&
             (identical(other.code, code) ||
                 const DeepCollectionEquality().equals(other.code, code)) &&
             (identical(other.description, description) ||
@@ -3452,26 +3331,26 @@ class DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$It
       runtimeType.hashCode;
 }
 
-extension $DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationExtension
-    on DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification {
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification
+extension $DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationExtension
+    on DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification {
+  DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification
       copyWith(
           {int? code,
           enums
-              .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?
+              .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription?
               description}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification(
+    return DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification(
         code: code ?? this.code, description: description ?? this.description);
   }
 
-  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification
+  DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification
       copyWithWrapped(
-          {Wrapped<int?>? code,
+          {Wrapped<int>? code,
           Wrapped<
                   enums
-                  .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?>?
+                  .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>?
               description}) {
-    return DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification(
+    return DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification(
         code: (code != null ? code.value : this.code),
         description:
             (description != null ? description.value : this.description));
@@ -4441,88 +4320,181 @@ List<enums.SigningParametersTransformationMediaDestinationTypeDescription>?
       .toList();
 }
 
-String? documentValidationResponseBodyFileFormatNullableToJson(
-    enums.DocumentValidationResponseBodyFileFormat?
-        documentValidationResponseBodyFileFormat) {
-  return documentValidationResponseBodyFileFormat?.value;
+String? documentValidationResponseBodyContainerTypeNullableToJson(
+    enums.DocumentValidationResponseBodyContainerType?
+        documentValidationResponseBodyContainerType) {
+  return documentValidationResponseBodyContainerType?.value;
 }
 
-String? documentValidationResponseBodyFileFormatToJson(
-    enums.DocumentValidationResponseBodyFileFormat
-        documentValidationResponseBodyFileFormat) {
-  return documentValidationResponseBodyFileFormat.value;
+String? documentValidationResponseBodyContainerTypeToJson(
+    enums.DocumentValidationResponseBodyContainerType
+        documentValidationResponseBodyContainerType) {
+  return documentValidationResponseBodyContainerType.value;
 }
 
-enums.DocumentValidationResponseBodyFileFormat
-    documentValidationResponseBodyFileFormatFromJson(
-  Object? documentValidationResponseBodyFileFormat, [
-  enums.DocumentValidationResponseBodyFileFormat? defaultValue,
+enums.DocumentValidationResponseBodyContainerType
+    documentValidationResponseBodyContainerTypeFromJson(
+  Object? documentValidationResponseBodyContainerType, [
+  enums.DocumentValidationResponseBodyContainerType? defaultValue,
 ]) {
-  return enums.DocumentValidationResponseBodyFileFormat.values.firstWhereOrNull(
-          (e) => e.value == documentValidationResponseBodyFileFormat) ??
+  return enums.DocumentValidationResponseBodyContainerType.values
+          .firstWhereOrNull(
+              (e) => e.value == documentValidationResponseBodyContainerType) ??
       defaultValue ??
-      enums.DocumentValidationResponseBodyFileFormat.swaggerGeneratedUnknown;
+      enums.DocumentValidationResponseBodyContainerType.swaggerGeneratedUnknown;
 }
 
-enums.DocumentValidationResponseBodyFileFormat?
-    documentValidationResponseBodyFileFormatNullableFromJson(
-  Object? documentValidationResponseBodyFileFormat, [
-  enums.DocumentValidationResponseBodyFileFormat? defaultValue,
+enums.DocumentValidationResponseBodyContainerType?
+    documentValidationResponseBodyContainerTypeNullableFromJson(
+  Object? documentValidationResponseBodyContainerType, [
+  enums.DocumentValidationResponseBodyContainerType? defaultValue,
 ]) {
-  if (documentValidationResponseBodyFileFormat == null) {
+  if (documentValidationResponseBodyContainerType == null) {
     return null;
   }
-  return enums.DocumentValidationResponseBodyFileFormat.values.firstWhereOrNull(
-          (e) => e.value == documentValidationResponseBodyFileFormat) ??
+  return enums.DocumentValidationResponseBodyContainerType.values
+          .firstWhereOrNull(
+              (e) => e.value == documentValidationResponseBodyContainerType) ??
       defaultValue;
 }
 
-String documentValidationResponseBodyFileFormatExplodedListToJson(
-    List<enums.DocumentValidationResponseBodyFileFormat>?
-        documentValidationResponseBodyFileFormat) {
-  return documentValidationResponseBodyFileFormat
+String documentValidationResponseBodyContainerTypeExplodedListToJson(
+    List<enums.DocumentValidationResponseBodyContainerType>?
+        documentValidationResponseBodyContainerType) {
+  return documentValidationResponseBodyContainerType
           ?.map((e) => e.value!)
           .join(',') ??
       '';
 }
 
-List<String> documentValidationResponseBodyFileFormatListToJson(
-    List<enums.DocumentValidationResponseBodyFileFormat>?
-        documentValidationResponseBodyFileFormat) {
-  if (documentValidationResponseBodyFileFormat == null) {
+List<String> documentValidationResponseBodyContainerTypeListToJson(
+    List<enums.DocumentValidationResponseBodyContainerType>?
+        documentValidationResponseBodyContainerType) {
+  if (documentValidationResponseBodyContainerType == null) {
     return [];
   }
 
-  return documentValidationResponseBodyFileFormat.map((e) => e.value!).toList();
-}
-
-List<enums.DocumentValidationResponseBodyFileFormat>
-    documentValidationResponseBodyFileFormatListFromJson(
-  List? documentValidationResponseBodyFileFormat, [
-  List<enums.DocumentValidationResponseBodyFileFormat>? defaultValue,
-]) {
-  if (documentValidationResponseBodyFileFormat == null) {
-    return defaultValue ?? [];
-  }
-
-  return documentValidationResponseBodyFileFormat
-      .map(
-          (e) => documentValidationResponseBodyFileFormatFromJson(e.toString()))
+  return documentValidationResponseBodyContainerType
+      .map((e) => e.value!)
       .toList();
 }
 
-List<enums.DocumentValidationResponseBodyFileFormat>?
-    documentValidationResponseBodyFileFormatNullableListFromJson(
-  List? documentValidationResponseBodyFileFormat, [
-  List<enums.DocumentValidationResponseBodyFileFormat>? defaultValue,
+List<enums.DocumentValidationResponseBodyContainerType>
+    documentValidationResponseBodyContainerTypeListFromJson(
+  List? documentValidationResponseBodyContainerType, [
+  List<enums.DocumentValidationResponseBodyContainerType>? defaultValue,
 ]) {
-  if (documentValidationResponseBodyFileFormat == null) {
+  if (documentValidationResponseBodyContainerType == null) {
+    return defaultValue ?? [];
+  }
+
+  return documentValidationResponseBodyContainerType
+      .map((e) =>
+          documentValidationResponseBodyContainerTypeFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.DocumentValidationResponseBodyContainerType>?
+    documentValidationResponseBodyContainerTypeNullableListFromJson(
+  List? documentValidationResponseBodyContainerType, [
+  List<enums.DocumentValidationResponseBodyContainerType>? defaultValue,
+]) {
+  if (documentValidationResponseBodyContainerType == null) {
     return defaultValue;
   }
 
-  return documentValidationResponseBodyFileFormat
-      .map(
-          (e) => documentValidationResponseBodyFileFormatFromJson(e.toString()))
+  return documentValidationResponseBodyContainerType
+      .map((e) =>
+          documentValidationResponseBodyContainerTypeFromJson(e.toString()))
+      .toList();
+}
+
+String? documentValidationResponseBodySignatureFormNullableToJson(
+    enums.DocumentValidationResponseBodySignatureForm?
+        documentValidationResponseBodySignatureForm) {
+  return documentValidationResponseBodySignatureForm?.value;
+}
+
+String? documentValidationResponseBodySignatureFormToJson(
+    enums.DocumentValidationResponseBodySignatureForm
+        documentValidationResponseBodySignatureForm) {
+  return documentValidationResponseBodySignatureForm.value;
+}
+
+enums.DocumentValidationResponseBodySignatureForm
+    documentValidationResponseBodySignatureFormFromJson(
+  Object? documentValidationResponseBodySignatureForm, [
+  enums.DocumentValidationResponseBodySignatureForm? defaultValue,
+]) {
+  return enums.DocumentValidationResponseBodySignatureForm.values
+          .firstWhereOrNull(
+              (e) => e.value == documentValidationResponseBodySignatureForm) ??
+      defaultValue ??
+      enums.DocumentValidationResponseBodySignatureForm.swaggerGeneratedUnknown;
+}
+
+enums.DocumentValidationResponseBodySignatureForm?
+    documentValidationResponseBodySignatureFormNullableFromJson(
+  Object? documentValidationResponseBodySignatureForm, [
+  enums.DocumentValidationResponseBodySignatureForm? defaultValue,
+]) {
+  if (documentValidationResponseBodySignatureForm == null) {
+    return null;
+  }
+  return enums.DocumentValidationResponseBodySignatureForm.values
+          .firstWhereOrNull(
+              (e) => e.value == documentValidationResponseBodySignatureForm) ??
+      defaultValue;
+}
+
+String documentValidationResponseBodySignatureFormExplodedListToJson(
+    List<enums.DocumentValidationResponseBodySignatureForm>?
+        documentValidationResponseBodySignatureForm) {
+  return documentValidationResponseBodySignatureForm
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String> documentValidationResponseBodySignatureFormListToJson(
+    List<enums.DocumentValidationResponseBodySignatureForm>?
+        documentValidationResponseBodySignatureForm) {
+  if (documentValidationResponseBodySignatureForm == null) {
+    return [];
+  }
+
+  return documentValidationResponseBodySignatureForm
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<enums.DocumentValidationResponseBodySignatureForm>
+    documentValidationResponseBodySignatureFormListFromJson(
+  List? documentValidationResponseBodySignatureForm, [
+  List<enums.DocumentValidationResponseBodySignatureForm>? defaultValue,
+]) {
+  if (documentValidationResponseBodySignatureForm == null) {
+    return defaultValue ?? [];
+  }
+
+  return documentValidationResponseBodySignatureForm
+      .map((e) =>
+          documentValidationResponseBodySignatureFormFromJson(e.toString()))
+      .toList();
+}
+
+List<enums.DocumentValidationResponseBodySignatureForm>?
+    documentValidationResponseBodySignatureFormNullableListFromJson(
+  List? documentValidationResponseBodySignatureForm, [
+  List<enums.DocumentValidationResponseBodySignatureForm>? defaultValue,
+]) {
+  if (documentValidationResponseBodySignatureForm == null) {
+    return defaultValue;
+  }
+
+  return documentValidationResponseBodySignatureForm
+      .map((e) =>
+          documentValidationResponseBodySignatureFormFromJson(e.toString()))
       .toList();
 }
 
@@ -4773,641 +4745,619 @@ List<
       .toList();
 }
 
-String?
-    documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableToJson(
-        enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?
-            documentValidationResponseBody$Signatures$Item$SignatureInfoLevel) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfoLevel
-      ?.value;
+String? documentValidationResponseBody$Signatures$ItemLevelNullableToJson(
+    enums.DocumentValidationResponseBody$Signatures$ItemLevel?
+        documentValidationResponseBody$Signatures$ItemLevel) {
+  return documentValidationResponseBody$Signatures$ItemLevel?.value;
 }
 
-String? documentValidationResponseBody$Signatures$Item$SignatureInfoLevelToJson(
-    enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel
-        documentValidationResponseBody$Signatures$Item$SignatureInfoLevel) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfoLevel
-      .value;
+String? documentValidationResponseBody$Signatures$ItemLevelToJson(
+    enums.DocumentValidationResponseBody$Signatures$ItemLevel
+        documentValidationResponseBody$Signatures$ItemLevel) {
+  return documentValidationResponseBody$Signatures$ItemLevel.value;
 }
 
-enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel
-    documentValidationResponseBody$Signatures$Item$SignatureInfoLevelFromJson(
-  Object? documentValidationResponseBody$Signatures$Item$SignatureInfoLevel, [
-  enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?
-      defaultValue,
+enums.DocumentValidationResponseBody$Signatures$ItemLevel
+    documentValidationResponseBody$Signatures$ItemLevelFromJson(
+  Object? documentValidationResponseBody$Signatures$ItemLevel, [
+  enums.DocumentValidationResponseBody$Signatures$ItemLevel? defaultValue,
 ]) {
-  return enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel
-          .values
+  return enums.DocumentValidationResponseBody$Signatures$ItemLevel.values
           .firstWhereOrNull((e) =>
-              e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfoLevel) ??
+              e.value == documentValidationResponseBody$Signatures$ItemLevel) ??
       defaultValue ??
-      enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel
+      enums.DocumentValidationResponseBody$Signatures$ItemLevel
           .swaggerGeneratedUnknown;
 }
 
-enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?
-    documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableFromJson(
-  Object? documentValidationResponseBody$Signatures$Item$SignatureInfoLevel, [
-  enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel?
-      defaultValue,
+enums.DocumentValidationResponseBody$Signatures$ItemLevel?
+    documentValidationResponseBody$Signatures$ItemLevelNullableFromJson(
+  Object? documentValidationResponseBody$Signatures$ItemLevel, [
+  enums.DocumentValidationResponseBody$Signatures$ItemLevel? defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfoLevel ==
-      null) {
+  if (documentValidationResponseBody$Signatures$ItemLevel == null) {
     return null;
   }
-  return enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel
-          .values
+  return enums.DocumentValidationResponseBody$Signatures$ItemLevel.values
           .firstWhereOrNull((e) =>
-              e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfoLevel) ??
+              e.value == documentValidationResponseBody$Signatures$ItemLevel) ??
       defaultValue;
 }
 
-String documentValidationResponseBody$Signatures$Item$SignatureInfoLevelExplodedListToJson(
+String documentValidationResponseBody$Signatures$ItemLevelExplodedListToJson(
+    List<enums.DocumentValidationResponseBody$Signatures$ItemLevel>?
+        documentValidationResponseBody$Signatures$ItemLevel) {
+  return documentValidationResponseBody$Signatures$ItemLevel
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String> documentValidationResponseBody$Signatures$ItemLevelListToJson(
+    List<enums.DocumentValidationResponseBody$Signatures$ItemLevel>?
+        documentValidationResponseBody$Signatures$ItemLevel) {
+  if (documentValidationResponseBody$Signatures$ItemLevel == null) {
+    return [];
+  }
+
+  return documentValidationResponseBody$Signatures$ItemLevel
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<enums.DocumentValidationResponseBody$Signatures$ItemLevel>
+    documentValidationResponseBody$Signatures$ItemLevelListFromJson(
+  List? documentValidationResponseBody$Signatures$ItemLevel, [
+  List<enums.DocumentValidationResponseBody$Signatures$ItemLevel>? defaultValue,
+]) {
+  if (documentValidationResponseBody$Signatures$ItemLevel == null) {
+    return defaultValue ?? [];
+  }
+
+  return documentValidationResponseBody$Signatures$ItemLevel
+      .map((e) => documentValidationResponseBody$Signatures$ItemLevelFromJson(
+          e.toString()))
+      .toList();
+}
+
+List<enums.DocumentValidationResponseBody$Signatures$ItemLevel>?
+    documentValidationResponseBody$Signatures$ItemLevelNullableListFromJson(
+  List? documentValidationResponseBody$Signatures$ItemLevel, [
+  List<enums.DocumentValidationResponseBody$Signatures$ItemLevel>? defaultValue,
+]) {
+  if (documentValidationResponseBody$Signatures$ItemLevel == null) {
+    return defaultValue;
+  }
+
+  return documentValidationResponseBody$Signatures$ItemLevel
+      .map((e) => documentValidationResponseBody$Signatures$ItemLevelFromJson(
+          e.toString()))
+      .toList();
+}
+
+String? documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionNullableToJson(
+    enums
+        .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription?
+        documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription) {
+  return documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+      ?.value;
+}
+
+String? documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionToJson(
+    enums
+        .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+        documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription) {
+  return documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+      .value;
+}
+
+enums
+    .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+    documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionFromJson(
+  Object?
+      documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription, [
+  enums
+      .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription?
+      defaultValue,
+]) {
+  return enums
+          .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+          .values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription) ??
+      defaultValue ??
+      enums
+          .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+          .swaggerGeneratedUnknown;
+}
+
+enums
+    .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription?
+    documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionNullableFromJson(
+  Object?
+      documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription, [
+  enums
+      .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription?
+      defaultValue,
+]) {
+  if (documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription ==
+      null) {
+    return null;
+  }
+  return enums
+          .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
+          .values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription) ??
+      defaultValue;
+}
+
+String documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionExplodedListToJson(
     List<
             enums
-            .DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel>?
-        documentValidationResponseBody$Signatures$Item$SignatureInfoLevel) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfoLevel
+            .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>?
+        documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription) {
+  return documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
           ?.map((e) => e.value!)
           .join(',') ??
       '';
 }
 
 List<String>
-    documentValidationResponseBody$Signatures$Item$SignatureInfoLevelListToJson(
+    documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionListToJson(
         List<
                 enums
-                .DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel>?
-            documentValidationResponseBody$Signatures$Item$SignatureInfoLevel) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfoLevel ==
+                .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>?
+            documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription) {
+  if (documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription ==
       null) {
     return [];
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfoLevel
+  return documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
       .map((e) => e.value!)
       .toList();
 }
 
-List<enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel>
-    documentValidationResponseBody$Signatures$Item$SignatureInfoLevelListFromJson(
-  List? documentValidationResponseBody$Signatures$Item$SignatureInfoLevel, [
-  List<enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel>?
+List<
+        enums
+        .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>
+    documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionListFromJson(
+  List?
+      documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription, [
+  List<
+          enums
+          .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfoLevel ==
+  if (documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription ==
       null) {
     return defaultValue ?? [];
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfoLevel
+  return documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
       .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfoLevelFromJson(
+          documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionFromJson(
               e.toString()))
       .toList();
 }
 
-List<enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel>?
-    documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableListFromJson(
-  List? documentValidationResponseBody$Signatures$Item$SignatureInfoLevel, [
-  List<enums.DocumentValidationResponseBody$Signatures$Item$SignatureInfoLevel>?
+List<
+        enums
+        .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>?
+    documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionNullableListFromJson(
+  List?
+      documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription, [
+  List<
+          enums
+          .DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription>?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfoLevel ==
+  if (documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription ==
       null) {
     return defaultValue;
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfoLevel
+  return documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription
       .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfoLevelFromJson(
+          documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionFromJson(
               e.toString()))
       .toList();
 }
 
-String? documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableToJson(
+int? documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeNullableToJson(
     enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode?
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
       ?.value;
 }
 
-String? documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionToJson(
+int? documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeToJson(
     enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
       .value;
 }
 
 enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionFromJson(
+    .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeFromJson(
   Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode, [
   enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode?
       defaultValue,
 ]) {
   return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
           .values
           .firstWhereOrNull((e) =>
               e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription) ??
+              documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode) ??
       defaultValue ??
       enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
           .swaggerGeneratedUnknown;
 }
 
 enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableFromJson(
+    .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode?
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeNullableFromJson(
   Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode, [
   enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription?
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription ==
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode ==
       null) {
     return null;
   }
   return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
           .values
           .firstWhereOrNull((e) =>
               e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription) ??
+              documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode) ??
       defaultValue;
 }
 
-String documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionExplodedListToJson(
+String documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeExplodedListToJson(
     List<
             enums
-            .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription>?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+            .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode>?
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<int> documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeListToJson(
+    List<
+            enums
+            .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode>?
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode) {
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode ==
+      null) {
+    return [];
+  }
+
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<
+        enums
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode>
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeListFromJson(
+  List?
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode, [
+  List<
+          enums
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode>?
+      defaultValue,
+]) {
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode ==
+      null) {
+    return defaultValue ?? [];
+  }
+
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
+      .map((e) =>
+          documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeFromJson(
+              e.toString()))
+      .toList();
+}
+
+List<
+        enums
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode>?
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeNullableListFromJson(
+  List?
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode, [
+  List<
+          enums
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode>?
+      defaultValue,
+]) {
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode ==
+      null) {
+    return defaultValue;
+  }
+
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode
+      .map((e) =>
+          documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCodeFromJson(
+              e.toString()))
+      .toList();
+}
+
+String? documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionNullableToJson(
+    enums
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription?
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+      ?.value;
+}
+
+String? documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionToJson(
+    enums
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+      .value;
+}
+
+enums
+    .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionFromJson(
+  Object?
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription, [
+  enums
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription?
+      defaultValue,
+]) {
+  return enums
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+          .values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription) ??
+      defaultValue ??
+      enums
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+          .swaggerGeneratedUnknown;
+}
+
+enums
+    .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription?
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionNullableFromJson(
+  Object?
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription, [
+  enums
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription?
+      defaultValue,
+]) {
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription ==
+      null) {
+    return null;
+  }
+  return enums
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
+          .values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription) ??
+      defaultValue;
+}
+
+String documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionExplodedListToJson(
+    List<
+            enums
+            .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>?
+        documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
           ?.map((e) => e.value!)
           .join(',') ??
       '';
 }
 
 List<String>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionListToJson(
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionListToJson(
         List<
                 enums
-                .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription>?
-            documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription ==
+                .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>?
+            documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription) {
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription ==
       null) {
     return [];
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
       .map((e) => e.value!)
       .toList();
 }
 
 List<
         enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionListFromJson(
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionListFromJson(
   List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription, [
   List<
           enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription>?
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription ==
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription ==
       null) {
     return defaultValue ?? [];
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
       .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionFromJson(
+          documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionFromJson(
               e.toString()))
       .toList();
 }
 
 List<
         enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription>?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableListFromJson(
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>?
+    documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionNullableListFromJson(
   List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription, [
   List<
           enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription>?
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription>?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription ==
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription ==
       null) {
     return defaultValue;
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescription
+  return documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription
       .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionFromJson(
+          documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionFromJson(
               e.toString()))
       .toList();
 }
 
-int? documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeNullableToJson(
+String? documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeNullableToJson(
     enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType?
+        documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
       ?.value;
 }
 
-int? documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeToJson(
+String? documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeToJson(
     enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
+        documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
       .value;
 }
 
 enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeFromJson(
+    .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
+    documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeFromJson(
   Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType, [
   enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode?
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType?
       defaultValue,
 ]) {
   return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
           .values
           .firstWhereOrNull((e) =>
               e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode) ??
+              documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType) ??
       defaultValue ??
       enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
           .swaggerGeneratedUnknown;
 }
 
 enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeNullableFromJson(
+    .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType?
+    documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeNullableFromJson(
   Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType, [
   enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode?
+      .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode ==
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType ==
       null) {
     return null;
   }
   return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
           .values
           .firstWhereOrNull((e) =>
               e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode) ??
+              documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType) ??
       defaultValue;
 }
 
-String documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeExplodedListToJson(
+String documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeExplodedListToJson(
     List<
             enums
-            .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode>?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
-          ?.map((e) => e.value!)
-          .join(',') ??
-      '';
-}
-
-List<int> documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeListToJson(
-    List<
-            enums
-            .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode>?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode ==
-      null) {
-    return [];
-  }
-
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
-      .map((e) => e.value!)
-      .toList();
-}
-
-List<
-        enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeListFromJson(
-  List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode, [
-  List<
-          enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode>?
-      defaultValue,
-]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode ==
-      null) {
-    return defaultValue ?? [];
-  }
-
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
-      .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeFromJson(
-              e.toString()))
-      .toList();
-}
-
-List<
-        enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode>?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeNullableListFromJson(
-  List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode, [
-  List<
-          enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode>?
-      defaultValue,
-]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode ==
-      null) {
-    return defaultValue;
-  }
-
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCode
-      .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationCodeFromJson(
-              e.toString()))
-      .toList();
-}
-
-String? documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableToJson(
-    enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-      ?.value;
-}
-
-String? documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionToJson(
-    enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-      .value;
-}
-
-enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionFromJson(
-  Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription, [
-  enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?
-      defaultValue,
-]) {
-  return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-          .values
-          .firstWhereOrNull((e) =>
-              e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription) ??
-      defaultValue ??
-      enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-          .swaggerGeneratedUnknown;
-}
-
-enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableFromJson(
-  Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription, [
-  enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription?
-      defaultValue,
-]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription ==
-      null) {
-    return null;
-  }
-  return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
-          .values
-          .firstWhereOrNull((e) =>
-              e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription) ??
-      defaultValue;
-}
-
-String documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionExplodedListToJson(
-    List<
-            enums
-            .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription>?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
+            .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>?
+        documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType) {
+  return documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
           ?.map((e) => e.value!)
           .join(',') ??
       '';
 }
 
 List<String>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionListToJson(
+    documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeListToJson(
         List<
                 enums
-                .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription>?
-            documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription ==
+                .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>?
+            documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType) {
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType ==
       null) {
     return [];
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
+  return documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
       .map((e) => e.value!)
       .toList();
 }
 
 List<
         enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionListFromJson(
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>
+    documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeListFromJson(
   List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType, [
   List<
           enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription>?
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription ==
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType ==
       null) {
     return defaultValue ?? [];
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
+  return documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
       .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionFromJson(
+          documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeFromJson(
               e.toString()))
       .toList();
 }
 
 List<
         enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription>?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableListFromJson(
+        .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>?
+    documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeNullableListFromJson(
   List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription, [
+      documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType, [
   List<
           enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription>?
+          .DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType>?
       defaultValue,
 ]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription ==
+  if (documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType ==
       null) {
     return defaultValue;
   }
 
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescription
+  return documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampType
       .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionFromJson(
-              e.toString()))
-      .toList();
-}
-
-String? documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableToJson(
-    enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-      ?.value;
-}
-
-String? documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeToJson(
-    enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-      .value;
-}
-
-enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeFromJson(
-  Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType, [
-  enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?
-      defaultValue,
-]) {
-  return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-          .values
-          .firstWhereOrNull((e) =>
-              e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType) ??
-      defaultValue ??
-      enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-          .swaggerGeneratedUnknown;
-}
-
-enums
-    .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableFromJson(
-  Object?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType, [
-  enums
-      .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType?
-      defaultValue,
-]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType ==
-      null) {
-    return null;
-  }
-  return enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-          .values
-          .firstWhereOrNull((e) =>
-              e.value ==
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType) ??
-      defaultValue;
-}
-
-String documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeExplodedListToJson(
-    List<
-            enums
-            .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType>?
-        documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType) {
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-          ?.map((e) => e.value!)
-          .join(',') ??
-      '';
-}
-
-List<String>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeListToJson(
-        List<
-                enums
-                .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType>?
-            documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType ==
-      null) {
-    return [];
-  }
-
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-      .map((e) => e.value!)
-      .toList();
-}
-
-List<
-        enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType>
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeListFromJson(
-  List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType, [
-  List<
-          enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType>?
-      defaultValue,
-]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType ==
-      null) {
-    return defaultValue ?? [];
-  }
-
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-      .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeFromJson(
-              e.toString()))
-      .toList();
-}
-
-List<
-        enums
-        .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType>?
-    documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableListFromJson(
-  List?
-      documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType, [
-  List<
-          enums
-          .DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType>?
-      defaultValue,
-]) {
-  if (documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType ==
-      null) {
-    return defaultValue;
-  }
-
-  return documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampType
-      .map((e) =>
-          documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeFromJson(
+          documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeFromJson(
               e.toString()))
       .toList();
 }

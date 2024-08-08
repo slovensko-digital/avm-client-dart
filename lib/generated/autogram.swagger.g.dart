@@ -25,7 +25,6 @@ PostIntegrationRequestBody _$PostIntegrationRequestBodyFromJson(
       platform: json['platform'] as String,
       displayName: json['displayName'] as String,
       publicKey: json['publicKey'] as String,
-      pushkey: json['pushkey'] as String,
     );
 
 Map<String, dynamic> _$PostIntegrationRequestBodyToJson(
@@ -34,7 +33,6 @@ Map<String, dynamic> _$PostIntegrationRequestBodyToJson(
       'platform': instance.platform,
       'displayName': instance.displayName,
       'publicKey': instance.publicKey,
-      'pushkey': instance.pushkey,
     };
 
 PostIntegrationResponse _$PostIntegrationResponseFromJson(
@@ -56,6 +54,7 @@ PostDeviceRequestBody _$PostDeviceRequestBodyFromJson(
       registrationId: json['registrationId'] as String,
       displayName: json['displayName'] as String,
       publicKey: json['publicKey'] as String,
+      pushkey: json['pushkey'] as String,
     );
 
 Map<String, dynamic> _$PostDeviceRequestBodyToJson(
@@ -65,6 +64,7 @@ Map<String, dynamic> _$PostDeviceRequestBodyToJson(
       'registrationId': instance.registrationId,
       'displayName': instance.displayName,
       'publicKey': instance.publicKey,
+      'pushkey': instance.pushkey,
     };
 
 PostDeviceResponse _$PostDeviceResponseFromJson(Map<String, dynamic> json) =>
@@ -351,8 +351,12 @@ Map<String, dynamic> _$DocumentVisualizationResponseBodyToJson(
 DocumentValidationResponseBody _$DocumentValidationResponseBodyFromJson(
         Map<String, dynamic> json) =>
     DocumentValidationResponseBody(
-      fileFormat:
-          documentValidationResponseBodyFileFormatFromJson(json['fileFormat']),
+      containerType:
+          documentValidationResponseBodyContainerTypeNullableFromJson(
+              json['containerType']),
+      signatureForm:
+          documentValidationResponseBodySignatureFormNullableFromJson(
+              json['signatureForm']),
       signatures: (json['signatures'] as List<dynamic>?)
           ?.map((e) => DocumentValidationResponseBody$Signatures$Item.fromJson(
               e as Map<String, dynamic>))
@@ -372,8 +376,12 @@ DocumentValidationResponseBody _$DocumentValidationResponseBodyFromJson(
 Map<String, dynamic> _$DocumentValidationResponseBodyToJson(
         DocumentValidationResponseBody instance) =>
     <String, dynamic>{
-      'fileFormat':
-          documentValidationResponseBodyFileFormatToJson(instance.fileFormat),
+      'containerType':
+          documentValidationResponseBodyContainerTypeNullableToJson(
+              instance.containerType),
+      'signatureForm':
+          documentValidationResponseBodySignatureFormNullableToJson(
+              instance.signatureForm),
       'signatures': instance.signatures?.map((e) => e.toJson()).toList(),
       'signedObjects': instance.signedObjects?.map((e) => e.toJson()).toList(),
       'unsignedObjects':
@@ -513,30 +521,49 @@ DocumentValidationResponseBody$Signatures$Item
     _$DocumentValidationResponseBody$Signatures$ItemFromJson(
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$Signatures$Item(
-          validationResult: json['validationResult'] == null
-              ? null
-              : DocumentValidationResponseBody$Signatures$Item$ValidationResult
+          validationResult:
+              DocumentValidationResponseBody$Signatures$Item$ValidationResult
                   .fromJson(json['validationResult'] as Map<String, dynamic>),
-          signatureInfo: json['signatureInfo'] == null
-              ? null
-              : DocumentValidationResponseBody$Signatures$Item$SignatureInfo
-                  .fromJson(json['signatureInfo'] as Map<String, dynamic>),
+          level: documentValidationResponseBody$Signatures$ItemLevelFromJson(
+              json['level']),
+          claimedSigningTime: json['claimedSigningTime'] as String,
+          bestSigningTime: json['bestSigningTime'] as String,
+          signingCertificate:
+              DocumentValidationResponseBody$Signatures$Item$SigningCertificate
+                  .fromJson(json['signingCertificate'] as Map<String, dynamic>),
+          areQualifiedTimestamps: json['areQualifiedTimestamps'] as bool,
+          timestamps: (json['timestamps'] as List<dynamic>?)
+              ?.map((e) =>
+                  DocumentValidationResponseBody$Signatures$Item$Timestamps$Item
+                      .fromJson(e as Map<String, dynamic>))
+              .toList(),
+          signedObjectsIds: (json['signedObjectsIds'] as List<dynamic>?)
+                  ?.map((e) => e as Object)
+                  .toList() ??
+              [],
         );
 
 Map<String, dynamic> _$DocumentValidationResponseBody$Signatures$ItemToJson(
         DocumentValidationResponseBody$Signatures$Item instance) =>
     <String, dynamic>{
-      'validationResult': instance.validationResult?.toJson(),
-      'signatureInfo': instance.signatureInfo?.toJson(),
+      'validationResult': instance.validationResult.toJson(),
+      'level': documentValidationResponseBody$Signatures$ItemLevelToJson(
+          instance.level),
+      'claimedSigningTime': instance.claimedSigningTime,
+      'bestSigningTime': instance.bestSigningTime,
+      'signingCertificate': instance.signingCertificate.toJson(),
+      'areQualifiedTimestamps': instance.areQualifiedTimestamps,
+      'timestamps': instance.timestamps?.map((e) => e.toJson()).toList(),
+      'signedObjectsIds': instance.signedObjectsIds,
     };
 
 DocumentValidationResponseBody$SignedObjects$Item
     _$DocumentValidationResponseBody$SignedObjects$ItemFromJson(
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$SignedObjects$Item(
-          id: json['id'] as String?,
+          id: json['id'] as String,
           mimeType: json['mimeType'] as String?,
-          filename: json['filename'] as String?,
+          filename: json['filename'] as String,
         );
 
 Map<String, dynamic> _$DocumentValidationResponseBody$SignedObjects$ItemToJson(
@@ -552,7 +579,7 @@ DocumentValidationResponseBody$UnsignedObjects$Item
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$UnsignedObjects$Item(
           mimeType: json['mimeType'] as String?,
-          filename: json['filename'] as String?,
+          filename: json['filename'] as String,
         );
 
 Map<String, dynamic>
@@ -567,9 +594,9 @@ DocumentValidationResponseBody$Signatures$Item$ValidationResult
     _$DocumentValidationResponseBody$Signatures$Item$ValidationResultFromJson(
             Map<String, dynamic> json) =>
         DocumentValidationResponseBody$Signatures$Item$ValidationResult(
-          code: (json['code'] as num?)?.toInt(),
+          code: (json['code'] as num).toInt(),
           description:
-              documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionNullableFromJson(
+              documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionFromJson(
                   json['description']),
         );
 
@@ -580,155 +607,100 @@ Map<String, dynamic>
         <String, dynamic>{
           'code': instance.code,
           'description':
-              documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionNullableToJson(
+              documentValidationResponseBody$Signatures$Item$ValidationResultDescriptionToJson(
                   instance.description),
         };
 
-DocumentValidationResponseBody$Signatures$Item$SignatureInfo
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfoFromJson(
+DocumentValidationResponseBody$Signatures$Item$SigningCertificate
+    _$DocumentValidationResponseBody$Signatures$Item$SigningCertificateFromJson(
             Map<String, dynamic> json) =>
-        DocumentValidationResponseBody$Signatures$Item$SignatureInfo(
-          claimedSigningTime: json['claimedSigningTime'] as String?,
-          timestampSigningTime: json['timestampSigningTime'] as String?,
-          level:
-              documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableFromJson(
-                  json['level']),
-          signingCertificate: json['signingCertificate'] == null
-              ? null
-              : DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate
-                  .fromJson(json['signingCertificate'] as Map<String, dynamic>),
-          isTimestamped: json['isTimestamped'] as bool?,
-          timestamps: (json['timestamps'] as List<dynamic>?)
-              ?.map((e) =>
-                  DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item
-                      .fromJson(e as Map<String, dynamic>))
-              .toList(),
-          signedObjectsIds: (json['signedObjectsIds'] as List<dynamic>?)
-                  ?.map((e) => e as String)
-                  .toList() ??
-              [],
-        );
-
-Map<String, dynamic>
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfoToJson(
-            DocumentValidationResponseBody$Signatures$Item$SignatureInfo
-                instance) =>
-        <String, dynamic>{
-          'claimedSigningTime': instance.claimedSigningTime,
-          'timestampSigningTime': instance.timestampSigningTime,
-          'level':
-              documentValidationResponseBody$Signatures$Item$SignatureInfoLevelNullableToJson(
-                  instance.level),
-          'signingCertificate': instance.signingCertificate?.toJson(),
-          'isTimestamped': instance.isTimestamped,
-          'timestamps': instance.timestamps?.map((e) => e.toJson()).toList(),
-          'signedObjectsIds': instance.signedObjectsIds,
-        };
-
-DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateFromJson(
-            Map<String, dynamic> json) =>
-        DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate(
-          issuerDN: json['issuerDN'] as String?,
-          subjectDN: json['subjectDN'] as String?,
-          serialNumber: json['serialNumber'] as String?,
-          productionTime: json['productionTime'] as String?,
-          notBefore: json['notBefore'] as String?,
-          notAfter: json['notAfter'] as String?,
-          qualification: json['qualification'] == null
-              ? null
-              : DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification
+        DocumentValidationResponseBody$Signatures$Item$SigningCertificate(
+          qualification:
+              DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification
                   .fromJson(json['qualification'] as Map<String, dynamic>),
+          issuerDN: json['issuerDN'] as String,
+          subjectDN: json['subjectDN'] as String,
+          certificateDer: json['certificateDer'] as String,
         );
 
 Map<String, dynamic>
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificateToJson(
-            DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate
+    _$DocumentValidationResponseBody$Signatures$Item$SigningCertificateToJson(
+            DocumentValidationResponseBody$Signatures$Item$SigningCertificate
                 instance) =>
         <String, dynamic>{
+          'qualification': instance.qualification.toJson(),
           'issuerDN': instance.issuerDN,
           'subjectDN': instance.subjectDN,
-          'serialNumber': instance.serialNumber,
-          'productionTime': instance.productionTime,
-          'notBefore': instance.notBefore,
-          'notAfter': instance.notAfter,
-          'qualification': instance.qualification?.toJson(),
+          'certificateDer': instance.certificateDer,
         };
 
-DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemFromJson(
+DocumentValidationResponseBody$Signatures$Item$Timestamps$Item
+    _$DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemFromJson(
             Map<String, dynamic> json) =>
-        DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item(
-          issuerDN: json['issuerDN'] as String?,
-          subjectDN: json['subjectDN'] as String?,
-          serialNumber: json['serialNumber'] as String?,
-          productionTime: json['productionTime'] as String?,
-          notBefore: json['notBefore'] as String?,
-          notAfter: json['notAfter'] as String?,
-          qualification: json['qualification'] == null
-              ? null
-              : DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification
+        DocumentValidationResponseBody$Signatures$Item$Timestamps$Item(
+          qualification:
+              DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification
                   .fromJson(json['qualification'] as Map<String, dynamic>),
           timestampType:
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableFromJson(
+              documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeFromJson(
                   json['timestampType']),
+          subjectDN: json['subjectDN'] as String,
+          certificateDer: json['certificateDer'] as String,
+          productionTime: json['productionTime'] as String,
         );
 
 Map<String, dynamic>
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemToJson(
-            DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item
+    _$DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemToJson(
+            DocumentValidationResponseBody$Signatures$Item$Timestamps$Item
                 instance) =>
         <String, dynamic>{
-          'issuerDN': instance.issuerDN,
-          'subjectDN': instance.subjectDN,
-          'serialNumber': instance.serialNumber,
-          'productionTime': instance.productionTime,
-          'notBefore': instance.notBefore,
-          'notAfter': instance.notAfter,
-          'qualification': instance.qualification?.toJson(),
+          'qualification': instance.qualification.toJson(),
           'timestampType':
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$ItemTimestampTypeNullableToJson(
+              documentValidationResponseBody$Signatures$Item$Timestamps$ItemTimestampTypeToJson(
                   instance.timestampType),
+          'subjectDN': instance.subjectDN,
+          'certificateDer': instance.certificateDer,
+          'productionTime': instance.productionTime,
         };
 
-DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationFromJson(
+DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification
+    _$DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationFromJson(
             Map<String, dynamic> json) =>
-        DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification(
-          code: (json['code'] as num?)?.toInt(),
+        DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification(
+          code: (json['code'] as num).toInt(),
           description:
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableFromJson(
+              documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionFromJson(
                   json['description']),
         );
 
 Map<String, dynamic>
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationToJson(
-            DocumentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$Qualification
+    _$DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationToJson(
+            DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualification
                 instance) =>
         <String, dynamic>{
           'code': instance.code,
           'description':
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$SigningCertificate$QualificationDescriptionNullableToJson(
+              documentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescriptionToJson(
                   instance.description),
         };
 
-DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationFromJson(
+DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification
+    _$DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationFromJson(
             Map<String, dynamic> json) =>
-        DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification(
-          code: (json['code'] as num?)?.toInt(),
+        DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification(
+          code: (json['code'] as num).toInt(),
           description:
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableFromJson(
+              documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionFromJson(
                   json['description']),
         );
 
 Map<String, dynamic>
-    _$DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationToJson(
-            DocumentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$Qualification
+    _$DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationToJson(
+            DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualification
                 instance) =>
         <String, dynamic>{
           'code': instance.code,
           'description':
-              documentValidationResponseBody$Signatures$Item$SignatureInfo$Timestamps$Item$QualificationDescriptionNullableToJson(
+              documentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescriptionToJson(
                   instance.description),
         };
