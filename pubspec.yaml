@@ -1,6 +1,6 @@
 name: autogram_sign
 description: "Autogram service REST API client"
-version: 0.4.1
+version: 0.4.2
 homepage: ""
 
 environment:

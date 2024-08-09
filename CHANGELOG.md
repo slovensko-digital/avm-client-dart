@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Update API client - Document Validation
+
 ## 0.4.1
 
 * Implement `generateEncryptionKey()` and `generateAsymmetricKeyPair()` helpers

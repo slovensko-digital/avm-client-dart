@@ -109,11 +109,11 @@ final class _$Autogram extends Autogram {
   }
 
   @override
-  Future<Response<DocumentValidationResponseBody>> _documentsGuidValidationGet({
+  Future<Response<DocumentValidationResponseBody>> _documentsGuidValidateGet({
     required String? guid,
     String? accept,
   }) {
-    final Uri $url = Uri.parse('/documents/${guid}/validation');
+    final Uri $url = Uri.parse('/documents/${guid}/validate');
     final Map<String, String> $headers = {
       if (accept != null) 'Accept': accept,
     };
@@ -286,14 +286,12 @@ final class _$Autogram extends Autogram {
   Future<Response<dynamic>> _qrCodeGet({
     required String? guid,
     required String? key,
-    String? pushkey,
     String? integration,
   }) {
     final Uri $url = Uri.parse('/qr-code');
     final Map<String, dynamic> $params = <String, dynamic>{
       'guid': guid,
       'key': key,
-      'pushkey': pushkey,
       'integration': integration,
     };
     final Request $request = Request(
