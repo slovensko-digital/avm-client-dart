@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Fix "Document Validation" API - returning nullable type
+
 ## 0.4.2
 
 * Update API client - Document Validation

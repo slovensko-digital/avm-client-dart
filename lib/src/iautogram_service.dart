@@ -32,8 +32,8 @@ abstract class IAutogramService {
 
   /// Requests a signature validation report of the document.
   ///
-  /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Mobile2App/get_documents__guid__validation>
-  Future<DocumentValidationResponseBody> getDocumentValidation(
+  /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Mobile2App/get_documents__guid__validate>
+  Future<DocumentValidationResponseBody?> getDocumentValidation(
     String documentId,
   );
 
