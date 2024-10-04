@@ -1,3 +1,8 @@
+## 0.4.4
+
+* Update API scheme to v0.4.0
+* "Document Validation" API returns non-nullable type
+
 ## 0.4.3
 
 * Fix "Document Validation" API - returning nullable type
@@ -36,4 +41,4 @@
 
 ## 0.0.1
 
-* Add REST API client methods in IAutogramService.
+* Add REST API client methods in `IAutogramService`.

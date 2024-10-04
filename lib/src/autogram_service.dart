@@ -61,7 +61,7 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<DocumentValidationResponseBody?> getDocumentValidation(
+  Future<DocumentValidationResponseBody> getDocumentValidation(
     String documentId,
   ) {
     return _autogram.documentsGuidValidateGet(guid: documentId).then(unwrap);

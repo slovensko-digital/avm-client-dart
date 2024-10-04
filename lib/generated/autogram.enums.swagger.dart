@@ -247,24 +247,7 @@ enum DocumentValidationResponseBodySignatureForm {
   const DocumentValidationResponseBodySignatureForm(this.value);
 }
 
-enum DocumentValidationResponseBody$Signatures$Item$ValidationResultCode {
-  @JsonValue(null)
-  swaggerGeneratedUnknown(null),
-
-  @JsonValue(0)
-  value_0(0),
-  @JsonValue(1)
-  value_1(1),
-  @JsonValue(2)
-  value_2(2);
-
-  final int? value;
-
-  const DocumentValidationResponseBody$Signatures$Item$ValidationResultCode(
-      this.value);
-}
-
-enum DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription {
+enum DocumentValidationResponseBody$Signatures$ItemValidationResult {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),
 
@@ -277,7 +260,7 @@ enum DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription 
 
   final String? value;
 
-  const DocumentValidationResponseBody$Signatures$Item$ValidationResultDescription(
+  const DocumentValidationResponseBody$Signatures$ItemValidationResult(
       this.value);
 }
 
@@ -315,7 +298,7 @@ enum DocumentValidationResponseBody$Signatures$ItemLevel {
   const DocumentValidationResponseBody$Signatures$ItemLevel(this.value);
 }
 
-enum DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription {
+enum DocumentValidationResponseBody$Signatures$Item$SigningCertificateQualification {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),
 
@@ -366,28 +349,11 @@ enum DocumentValidationResponseBody$Signatures$Item$SigningCertificate$Qualifica
 
   final String? value;
 
-  const DocumentValidationResponseBody$Signatures$Item$SigningCertificate$QualificationDescription(
+  const DocumentValidationResponseBody$Signatures$Item$SigningCertificateQualification(
       this.value);
 }
 
-enum DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode {
-  @JsonValue(null)
-  swaggerGeneratedUnknown(null),
-
-  @JsonValue(0)
-  value_0(0),
-  @JsonValue(1)
-  value_1(1),
-  @JsonValue(2)
-  value_2(2);
-
-  final int? value;
-
-  const DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationCode(
-      this.value);
-}
-
-enum DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription {
+enum DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemQualification {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),
 
@@ -400,7 +366,7 @@ enum DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$Qualificatio
 
   final String? value;
 
-  const DocumentValidationResponseBody$Signatures$Item$Timestamps$Item$QualificationDescription(
+  const DocumentValidationResponseBody$Signatures$Item$Timestamps$ItemQualification(
       this.value);
 }
 
