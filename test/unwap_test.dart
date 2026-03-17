@@ -15,6 +15,14 @@ void main() {
       expect(actual, "Test");
     });
 
+    test('unwrap returns nullable value for 200 status code', () {
+      final httpResponse = http.Response('"Test"', 200);
+      final response = chopper.Response<String?>(httpResponse, "Test");
+      final actual = unwrap(response);
+
+      expect(actual, "Test");
+    });
+
     test('unwrap returns nothing for 204 status code with no body', () {
       final httpResponse = http.Response('', 204);
       final response = chopper.Response<dynamic>(httpResponse, null);

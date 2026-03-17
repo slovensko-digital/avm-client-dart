@@ -85,7 +85,7 @@ class AutogramService implements IAutogramService {
   Future<DocumentValidationResponseBody> getDocumentValidation(
     String documentId,
   ) {
-    return _autogram.documentsGuidValidationGet(guid: documentId).then(unwrap);
+    return _autogram.documentsGuidValidateGet(guid: documentId).then(unwrap);
   }
 
   @override
@@ -138,6 +138,7 @@ class AutogramService implements IAutogramService {
       registrationId: registrationId,
       displayName: displayName,
       publicKey: publicKey,
+      pushkey: "",
     );
 
     return _autogram
