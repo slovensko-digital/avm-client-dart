@@ -213,7 +213,7 @@ class AutogramService implements IAutogramService {
   }
 }
 
-extension _DateTimeExtensions on DateTime {
+extension on DateTime {
   static final _imfFixDateFormat =
       DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US');
 
