@@ -7,17 +7,17 @@ environment:
   sdk: '>=3.2.3 <4.0.0'
 
 dependencies:
-  chopper: '>=7.4.0 <8.0.0'
+  chopper: ^8.0.0
   json_annotation: 4.9.0
-  http: any
+  http:
   basic_utils: ^5.7.0
   intl: '>=0.18.1 <1.0.0'
 
 dev_dependencies:
-  lints: ^3.0.0
-  test: any
-  build_runner: any
-  chopper_generator: any
-  analyzer: ^6.0.0
-  json_serializable: ^6.7.0
-  swagger_dart_code_generator: any
+  lints:
+  test:
+  build_runner:
+  chopper_generator:
+  analyzer:
+  json_serializable:
+  swagger_dart_code_generator:
