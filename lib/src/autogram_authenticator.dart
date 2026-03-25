@@ -7,6 +7,8 @@ class AutogramAuthenticator extends HeadersInterceptor {
   AutogramAuthenticator(this.encryptionKeySource) : super(const {});
 
   @override
+  // TODO Fix override
+  // TODO Add tests
   Future<Request> onRequest(Request request) async {
     final encryptionKey = encryptionKeySource();
     final allHeaders = {
