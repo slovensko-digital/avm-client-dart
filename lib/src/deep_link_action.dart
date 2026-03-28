@@ -43,39 +43,21 @@ sealed class DeepLinkAction {
 
     return switch (uri.path) {
       "/api/v1/qr-code" => () {
-          if (!uri.queryParameters.containsKey("guid")) {
-            throw ArgumentError.value(
-              uri.toString(),
-              "uri",
-              '"guid" param is missing a value.',
-            );
-          }
-
-          if (!uri.queryParameters.containsKey("key")) {
-            throw ArgumentError.value(
-              uri.toString(),
-              "uri",
-              '"key" param is missing a value.',
-            );
-          }
+          final guid = uri.requireParam("guid");
+          final key = uri.requireParam("key");
+          final integration = uri.queryParameters["integration"];
 
           return SignRemoteDocumentAction(
-            guid: uri.queryParameters["guid"]!,
-            key: uri.queryParameters["key"]!,
-            integration: uri.queryParameters["integration"],
+            guid: guid,
+            key: key,
+            integration: integration,
           );
         }(),
       "/api/v1/qr-code-register" => () {
-          if (!uri.queryParameters.containsKey("integration")) {
-            throw ArgumentError.value(
-              uri.toString(),
-              "uri",
-              '"integration" param is missing a value.',
-            );
-          }
+          final integration = uri.requireParam("integration");
 
           return RegisterIntegrationAction(
-            integration: uri.queryParameters["integration"]!,
+            integration: integration,
           );
         }(),
       _ => throw ArgumentError.value(
@@ -116,5 +98,19 @@ class RegisterIntegrationAction extends DeepLinkAction {
   @override
   String toString() {
     return "$runtimeType(integration: $integration)";
+  }
+}
+
+extension on Uri {
+  String requireParam(String key) {
+    if (!queryParameters.containsKey(key)) {
+      throw ArgumentError.value(
+        toString(),
+        "uri",
+        '"$key" param is missing a value.',
+      );
+    }
+
+    return queryParameters[key].toString();
   }
 }
