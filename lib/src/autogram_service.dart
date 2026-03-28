@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:autogram_sign/src/jwt.dart';
 import 'package:basic_utils/basic_utils.dart' show AsymmetricKeyPair;
 import 'package:chopper/chopper.dart' show Request;
 import 'package:intl/intl.dart' show DateFormat;
@@ -9,6 +8,7 @@ import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
 import 'device_keys_store.dart';
 import 'iautogram_service.dart';
+import 'jwt.dart';
 import 'keys.dart';
 import 'response_functions.dart';
 
@@ -128,7 +128,6 @@ class AutogramService implements IAutogramService {
   @override
   Future<String> registerIntegration({
     required String displayName,
-    required String publicKey,
   }) async {
     final keyPair = await _getDeviceKeys();
     final publicKey = keyPair.publicKey.getEncoded();

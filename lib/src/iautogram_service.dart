@@ -74,7 +74,6 @@ abstract class IAutogramService {
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_integrations>
   Future<String> registerIntegration({
     required String displayName,
-    required String publicKey,
   });
 
   /// Registers itself at the server.
