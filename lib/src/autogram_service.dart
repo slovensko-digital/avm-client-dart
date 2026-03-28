@@ -138,7 +138,7 @@ class AutogramService implements IAutogramService {
       registrationId: registrationId,
       displayName: displayName,
       publicKey: publicKey,
-      pushkey: "",
+      pushkey: "", // TODO Set pushkey
     );
 
     return _autogram
@@ -161,6 +161,7 @@ class AutogramService implements IAutogramService {
     // Need to set Authorization header based on function param, therefore
     // cannot call function above directly!
 
+    // TODO Replace then with await
     final privateKey = await _getDeviceKeys().then((value) => value.privateKey);
     final token = signedJwt(
       subject: deviceId,
@@ -201,6 +202,7 @@ class AutogramService implements IAutogramService {
   /// Gets the [AsymmetricKeyPair] for this device.
   /// New value is generated and saved when it was initially empty.
   Future<AsymmetricKeyPair> _getDeviceKeys() async {
+    // TODO Create extension loadOrCreate(Future)
     var value = await _deviceKeysStore.load();
 
     if (value == null) {

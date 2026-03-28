@@ -64,13 +64,21 @@ abstract class IAutogramService {
 
   /// Registers itself at the server.
   ///
+  /// Params:
+  ///  - [registrationId] Identifier of the app instance registration entry in the notification service (APNS or GCM)
+  ///  - [displayName] Human-readable name of the device
+  ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_devices>
   Future<String> registerDevice({
     required String registrationId,
     required String displayName,
   });
 
-  /// Registers itself for receiving sign requests (push notification) from given integration
+  /// Registers itself for receiving sign requests (push notification) from given integration.
+  ///
+  /// Params:
+  ///  - [deviceId] The Device ID value.
+  ///  - [integrationPairingToken] JWT token provided by integration on pairing. The token must contain aud: "device" claim.
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_device_integrations>
   Future<void> registerDeviceIntegration(
@@ -84,6 +92,9 @@ abstract class IAutogramService {
   Future<GetDeviceIntegrationsResponseBody> listIntegrations();
 
   /// Deletes integration from its paired integrations.
+  ///
+  /// Params:
+  ///  - [integrationId] Identifier of the integration
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Integration/delete_device_integrations__integration_id_>
   Future<void> deleteIntegration(String integrationId);
