@@ -2,6 +2,7 @@ import 'dart:convert' show jsonDecode;
 import 'dart:developer' as developer;
 
 import 'package:chopper/chopper.dart' show Response;
+import 'package:html/parser.dart';
 
 import 'service_exception.dart';
 
@@ -13,15 +14,17 @@ BodyType unwrap<BodyType>(Response<BodyType> response) {
     return response.body as BodyType;
   }
 
-  final error = response.error;
   final statusCode = response.statusCode;
+  final contentType = response.headers['content-type'];
+  var text = response.error;
 
-  if (error is String) {
-    if (error.startsWith("{") && error.endsWith("}")) {
+  if (text is String) {
+    // JSON
+    if (text.startsWith("{") && text.endsWith("}")) {
       dynamic errorJson;
 
       try {
-        errorJson = jsonDecode(error);
+        errorJson = jsonDecode(text);
       } catch (error, stackTrace) {
         developer.log(
           "Error occurred when deserializing error JSON.",
@@ -50,10 +53,19 @@ BodyType unwrap<BodyType>(Response<BodyType> response) {
         }
       }
     }
+
+    // Parse title from HTML
+    if (contentType != null && contentType.startsWith('text/html')) {
+      final document = parse(text);
+      final titleElement = document.head?.querySelector('title');
+      final titleText = titleElement?.text;
+
+      text = titleText ?? "HTTP $statusCode error";
+    }
   }
 
   throw ServiceException(
     statusCode: statusCode,
-    message: error.toString(),
+    message: text.toString(),
   );
 }
