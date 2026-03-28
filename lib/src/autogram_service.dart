@@ -6,6 +6,7 @@ import 'package:intl/intl.dart' show DateFormat;
 
 import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
+import 'deep_link_action.dart';
 import 'device_keys_store.dart';
 import 'iautogram_service.dart';
 import 'jwt.dart';
@@ -20,15 +21,16 @@ class AutogramService implements IAutogramService {
   static final Uri _defaultBaseUrl =
       Uri.parse("https://autogram.slovensko.digital/api/v1");
 
+  final String _authority;
   final Autogram _autogram;
   final DeviceKeysStore _deviceKeysStore;
 
-  AutogramService._(this._autogram, this._deviceKeysStore);
+  AutogramService._(this._authority, this._autogram, this._deviceKeysStore);
 
   /// Constructs new [AutogramService] instance.
   ///
   /// Params:
-  ///  - [baseUrl] - hostname
+  ///  - [baseUrl] - REST API address
   ///  - [encryptionKeySource] - function that returns "Encryption key" value
   ///  - [deviceKeysStore] - secure store for device private/public keys
   factory AutogramService({
@@ -39,12 +41,25 @@ class AutogramService implements IAutogramService {
     final authenticator = AutogramAuthenticator(
       encryptionKeySource: encryptionKeySource,
     );
+    final finalBaseUrl = baseUrl ?? _defaultBaseUrl;
     final autogram = Autogram.create(
-      baseUrl: baseUrl ?? _defaultBaseUrl,
+      baseUrl: finalBaseUrl,
       interceptors: [authenticator],
     );
 
-    return AutogramService._(autogram, deviceKeysStore);
+    return AutogramService._(finalBaseUrl.authority, autogram, deviceKeysStore);
+  }
+
+  @override
+  DeepLinkAction parseDeepLink(
+    Uri uri, {
+    Set<String> customSchemes = const {},
+  }) {
+    return DeepLinkAction.parse(
+      uri,
+      authority: _authority,
+      customSchemes: customSchemes,
+    );
   }
 
   @override

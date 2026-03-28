@@ -1,7 +1,14 @@
 import '../generated/autogram.swagger.dart';
+import 'deep_link_action.dart';
 
 /// Provides operations to call Autogram service.
 abstract class IAutogramService {
+  /// Calls [DeepLinkAction.parse] with this service authority.
+  DeepLinkAction parseDeepLink(
+    Uri uri, {
+    Set<String> customSchemes = const {},
+  });
+
   /// Creates new Document.
   ///
   /// Returns: GUID of the posted document.
