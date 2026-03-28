@@ -149,12 +149,14 @@ class AutogramService implements IAutogramService {
   }) async {
     final keyPair = await _getDeviceKeys();
     final publicKey = keyPair.publicKey.getEncoded();
+    // TODO Set pushkey base64(AES256 key)
+    final pushKey = "R/rfN+z129w1H2iftbr1GOKXdC3OxSJU9PZeHs+W7ts=";
     final body = PostDeviceRequestBody(
       platform: Platform.operatingSystem,
       registrationId: registrationId,
       displayName: displayName,
       publicKey: publicKey,
-      pushkey: "", // TODO Set pushkey
+      pushkey: pushKey,
     );
 
     final response = await _autogram.devicesPost(body: body);
