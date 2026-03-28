@@ -1,3 +1,7 @@
+## 0.4.5
+
+* Parsing title from HTML error body as exception message
+
 ## 0.4.4
 
 * Update API scheme to v0.4.0
