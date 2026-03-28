@@ -57,7 +57,7 @@ BodyType unwrap<BodyType>(Response<BodyType> response) {
     // Parse title from HTML
     if (contentType != null && contentType.startsWith('text/html')) {
       final document = parse(text);
-      final titleElement = document.querySelector('title');
+      final titleElement = document.head?.querySelector('title');
       final titleText = titleElement?.text;
 
       text = titleText ?? "HTTP $statusCode error";

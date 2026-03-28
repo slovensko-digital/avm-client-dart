@@ -56,7 +56,11 @@ void main() {
       final httpResponse = http.Response(responseText, 502, headers: {
         'content-type': 'text/html',
       });
-      final response = chopper.Response<dynamic>(httpResponse, responseText);
+      final response = chopper.Response<dynamic>(
+        httpResponse,
+        null,
+        error: responseText,
+      );
 
       expect(
         () => unwrap(response),
