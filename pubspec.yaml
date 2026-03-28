@@ -9,7 +9,8 @@ environment:
 dependencies:
   chopper: '>=7.4.0 <8.0.0'
   json_annotation: 4.9.0
-  http: any
+  http:
+  html:
   basic_utils: ^5.7.0
   intl: '>=0.18.1 <1.0.0'
 
