@@ -12,6 +12,7 @@ dependencies:
   http:
   html:
   basic_utils: ^5.7.0
+  path:
   dart_jsonwebtoken:
   uuid: ^4.3.0
   intl: '>=0.18.1 <1.0.0'
