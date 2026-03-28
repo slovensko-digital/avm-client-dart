@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:autogram_sign/src/jwt.dart';
 import 'package:basic_utils/basic_utils.dart' show AsymmetricKeyPair;
@@ -10,7 +9,6 @@ import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
 import 'device_keys_store.dart';
 import 'iautogram_service.dart';
-import 'jwt.dart';
 import 'keys.dart';
 import 'response_functions.dart';
 
@@ -168,35 +166,35 @@ class AutogramService implements IAutogramService {
       privateKey: privateKey,
       expiresIn: const Duration(minutes: 5),
     );
-    final Uri url = Uri.parse('/device-integrations');
-    final request = Request(
-      'POST',
-      url,
-      _autogram.client.baseUrl,
-      body: body,
-      headers: {
-        'Authorization': 'Bearer: $token',
-      },
+    final url = Uri.parse('/device-integrations');
+    final baseUri = _autogram.client.baseUrl;
+    final headers = {
+      'Authorization': 'Bearer: $token',
+    };
+    final request = Request('POST', url, baseUri, body: body, headers: headers);
+    final response = await _autogram.client.send<dynamic, dynamic>(request);
+
+    return unwrap(response);
+  }
+
+  @override
+  Future<GetDeviceIntegrationsResponseBody> listIntegrations() async {
+    // TODO Authenticate by _getDeviceKeys()
+
+    final response = await _autogram.deviceIntegrationsGet();
+
+    return unwrap(response);
+  }
+
+  @override
+  Future<void> deleteIntegration(String integrationId) async {
+    // TODO Authenticate by _getDeviceKeys()
+
+    final response = await _autogram.deviceIntegrationsIntegrationIdDelete(
+      integrationId: integrationId,
     );
-    final call = _autogram.client.send<dynamic, dynamic>(request);
 
-    return await call.then(unwrap);
-  }
-
-  @override
-  Future<GetDeviceIntegrationsResponseBody> listIntegrations() {
-    // TODO Authenticate by _getDeviceKeys()
-
-    return _autogram.deviceIntegrationsGet().then(unwrap);
-  }
-
-  @override
-  Future<void> deleteIntegration(String integrationId) {
-    // TODO Authenticate by _getDeviceKeys()
-
-    return _autogram
-        .deviceIntegrationsIntegrationIdDelete(integrationId: integrationId)
-        .then(unwrap);
+    return unwrap(response);
   }
 
   /// Gets the [AsymmetricKeyPair] for this device from the [DeviceKeysStore].
