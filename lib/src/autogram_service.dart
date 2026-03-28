@@ -10,6 +10,7 @@ import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
 import 'device_keys_store.dart';
 import 'iautogram_service.dart';
+import 'jwt.dart';
 import 'keys.dart';
 import 'response_functions.dart';
 
@@ -141,10 +142,9 @@ class AutogramService implements IAutogramService {
       pushkey: "", // TODO Set pushkey
     );
 
-    return _autogram
-        .devicesPost(body: body)
-        .then(unwrap)
-        .then((value) => value.guid ?? '');
+    final response = await _autogram.devicesPost(body: body);
+
+    return unwrap(response).guid ?? '';
   }
 
   @override
@@ -199,19 +199,11 @@ class AutogramService implements IAutogramService {
         .then(unwrap);
   }
 
-  /// Gets the [AsymmetricKeyPair] for this device.
+  /// Gets the [AsymmetricKeyPair] for this device from the [DeviceKeysStore].
+  ///
   /// New value is generated and saved when it was initially empty.
-  Future<AsymmetricKeyPair> _getDeviceKeys() async {
-    // TODO Create extension loadOrCreate(Future)
-    var value = await _deviceKeysStore.load();
-
-    if (value == null) {
-      value = await Isolate.run(generateAsymmetricKeyPair);
-
-      _deviceKeysStore.save(value!);
-    }
-
-    return value;
+  Future<AsymmetricKeyPair> _getDeviceKeys() {
+    return _deviceKeysStore.loadOrCreate(generateAsymmetricKeyPair);
   }
 }
 
