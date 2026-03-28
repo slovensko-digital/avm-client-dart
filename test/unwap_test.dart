@@ -44,14 +44,32 @@ void main() {
     });
 
     test('unwrap throws ServiceException for other error status code', () {
-      final httpResponse = http.Response('', 503);
-      final response = chopper.Response<dynamic>(httpResponse, null);
+      final responseText = """
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+""";
+      final httpResponse = http.Response(responseText, 502, headers: {
+        'content-type': 'text/html',
+      });
+      final response = chopper.Response<dynamic>(
+        httpResponse,
+        null,
+        error: responseText,
+      );
 
       expect(
         () => unwrap(response),
         throwsA(
           predicate(
-            (e) => e is ServiceException && e.statusCode == 503,
+            (e) =>
+                e is ServiceException &&
+                e.statusCode == 502 &&
+                e.message == "502 Bad Gateway",
           ),
         ),
       );
