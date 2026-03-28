@@ -126,6 +126,24 @@ class AutogramService implements IAutogramService {
   }
 
   @override
+  Future<String> registerIntegration({
+    required String displayName,
+    required String publicKey,
+  }) async {
+    final keyPair = await _getDeviceKeys();
+    final publicKey = keyPair.publicKey.getEncoded();
+    final body = PostIntegrationRequestBody(
+      platform: "extension",
+      displayName: displayName,
+      publicKey: publicKey,
+    );
+
+    final response = await _autogram.integrationsPost(body: body);
+
+    return unwrap(response).guid;
+  }
+
+  @override
   Future<String> registerDevice({
     required String registrationId,
     required String displayName,
@@ -159,7 +177,6 @@ class AutogramService implements IAutogramService {
     // Need to set Authorization header based on function param, therefore
     // cannot call function above directly!
 
-    // TODO Replace then with await
     final privateKey = await _getDeviceKeys().then((value) => value.privateKey);
     final token = signedJwt(
       subject: deviceId,

@@ -4,6 +4,8 @@ import '../generated/autogram.swagger.dart';
 abstract class IAutogramService {
   /// Creates new Document.
   ///
+  /// Returns: GUID of the posted document.
+  ///
   /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Desktop2App%20-%20Extension/post_documents>
   Future<String> createDocument(
     DocumentPostRequestBody body,
@@ -62,11 +64,26 @@ abstract class IAutogramService {
     DateTime? ifModifiedSince,
   ]);
 
+  /// Integration registers itself at the server.
+  ///
+  /// Params:
+  ///  - [displayName] Human-readable name of the integration.
+  ///
+  /// Returns: Assigned identifier.
+  ///
+  /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_integrations>
+  Future<String> registerIntegration({
+    required String displayName,
+    required String publicKey,
+  });
+
   /// Registers itself at the server.
   ///
   /// Params:
   ///  - [registrationId] Identifier of the app instance registration entry in the notification service (APNS or GCM)
   ///  - [displayName] Human-readable name of the device
+  ///
+  /// Returns: Assigned identifier.
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_devices>
   Future<String> registerDevice({
