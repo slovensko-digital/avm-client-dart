@@ -44,6 +44,7 @@ void main() {
     });
 
     test('unwrap throws ServiceException for other error status code', () {
+      // TODO Add HTML body with title text and check whether it was parsed
       final httpResponse = http.Response('', 503);
       final response = chopper.Response<dynamic>(httpResponse, null);
 
