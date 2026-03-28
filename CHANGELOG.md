@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 ## 0.5.0
 
 * Prepare `DeviceKeysStore` and finish functions that works with asymmetric key pair.
+
+## 0.4.5
+
+* Parsing title from HTML error body as exception message
 
 ## 0.4.4
 
