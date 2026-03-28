@@ -165,10 +165,10 @@ class AutogramService implements IAutogramService {
   }
 
   @override
-  Future<void> registerDeviceIntegration(
-    String deviceId,
-    String integrationPairingToken,
-  ) async {
+  Future<void> registerDeviceIntegration({
+    required String deviceId,
+    required String integrationPairingToken,
+  }) async {
     final body = PostDeviceIntegrationsRequestBody(
       integrationPairingToken: integrationPairingToken,
     );
@@ -182,7 +182,7 @@ class AutogramService implements IAutogramService {
     final token = signedJwt(
       subject: deviceId,
       privateKey: privateKey,
-      expiresIn: const Duration(minutes: 5),
+      expiresIn: const Duration(minutes: 15),
     );
     final url = Uri.parse('/device-integrations');
     final baseUri = _autogram.client.baseUrl;

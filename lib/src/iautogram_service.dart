@@ -97,10 +97,10 @@ abstract class IAutogramService {
   ///  - [integrationPairingToken] JWT token provided by integration on pairing. The token must contain aud: "device" claim.
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_device_integrations>
-  Future<void> registerDeviceIntegration(
-    String deviceId,
-    String integrationPairingToken,
-  );
+  Future<void> registerDeviceIntegration({
+    required String deviceId,
+    required String integrationPairingToken,
+  });
 
   /// Retrieves a list of paired integrations.
   ///

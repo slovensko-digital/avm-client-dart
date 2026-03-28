@@ -8,13 +8,15 @@ import 'package:uuid/uuid.dart' show Uuid;
 String signedJwt({
   required String subject,
   Duration? expiresIn,
+  String? audience,
   required PrivateKey privateKey,
 }) {
   // Create JWT
   final jwtId = Uuid().v4();
   final token = jwt.JWT(
-    null,
+    {},
     subject: subject,
+    audience: audience != null ? jwt.Audience([audience]) : null,
     jwtId: jwtId,
   );
 
