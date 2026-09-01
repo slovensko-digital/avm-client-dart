@@ -45,7 +45,7 @@ abstract class IAutogramService {
     DataToSignRequestBody body,
   );
 
-  /// Sings the Document.
+  /// Signs the Document.
   ///
   /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Mobile2App/post_documents__guid__sign>
   Future<SignDocumentResponseBody> signDocument(
