@@ -103,10 +103,9 @@ Things to know before changing it:
 - **A non-`TOTAL_PASSED` validation in step 7 is the expected result**, not a regression — a
   self-signed certificate has no trust anchor, so the server reports `INDETERMINATE` /
   qualification `NA`.
-- **Step 8 currently fails against production.** `DELETE /documents/{guid}` answers HTTP 500 for
-  every document, signed or not (verified with `curl` under both auth schemes, while `GET` on the
-  same GUID returns 200). The client call is correct; the failure is reported to stderr and does
-  not fail the run. Each run therefore leaves a document behind.
+- **Step 8 cleans up after itself.** `DELETE /documents/{guid}` returned HTTP 500 for every
+  document until it was fixed server-side; as of 2026-09-01 it answers 204 and the run leaves
+  nothing behind. A cleanup failure is reported to stderr without failing the run.
 
 ## Adding a new API call
 
