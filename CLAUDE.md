@@ -40,9 +40,13 @@ fvm dart run bin/example.dart
 `lib/generated/` is **generated but committed**. Never hand-edit it; change the schema and regenerate.
 
 1. Refresh the schema: `curl -o lib/swagger/autogram.yaml https://autogram.slovensko.digital/openapi.yaml`
-2. Regenerate (command above). `build.yaml` points `swagger_dart_code_generator` at
+2. **Run `fvm dart run build_runner clean` first.** `build_runner` does not track
+   `lib/swagger/*.yaml` as a build input, so after a schema refresh a plain `build` reports
+   `Succeeded ... with 0 outputs (0 actions)` and regenerates nothing — which reads exactly like
+   "the schema didn't change". Always `clean` before regenerating a refreshed schema.
+3. Regenerate (command above). `build.yaml` points `swagger_dart_code_generator` at
    `lib/swagger/` → `lib/generated/`, producing the Chopper service `Autogram`, JSON models, and enums.
-3. `analysis_options.yaml` excludes `lib/generated/*.dart` from analysis, so generation churn there
+4. `analysis_options.yaml` excludes `lib/generated/*.dart` from analysis, so generation churn there
    won't fail `dart analyze`.
 
 A schema update can silently change model nullability and break `AutogramService`'s return types
