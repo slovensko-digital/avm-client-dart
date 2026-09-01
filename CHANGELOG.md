@@ -1,3 +1,7 @@
+## 0.4.6
+
+* Update `chopper` to latest 8.x version
+
 ## 0.4.5
 
 * Parsing title from HTML error body as exception message
