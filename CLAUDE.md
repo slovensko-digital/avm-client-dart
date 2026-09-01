@@ -30,6 +30,9 @@ fvm dart test
 # Single test file / single test by name
 fvm dart test test/unwap_test.dart
 fvm dart test -n 'unwrap returns value for 200 status code'
+
+# Drive the whole signing flow against the live server (see "End-to-end example")
+fvm dart run bin/example.dart
 ```
 
 ## Code generation
@@ -44,7 +47,8 @@ fvm dart test -n 'unwrap returns value for 200 status code'
 
 A schema update can silently change model nullability and break `AutogramService`'s return types
 (see CHANGELOG 0.4.3–0.4.5) — after regenerating, run analyze + tests and bump
-`pubspec.yaml` `version` plus a `CHANGELOG.md` entry.
+`pubspec.yaml` `version` plus a `CHANGELOG.md` entry. The unit tests cover only `unwrap` and
+`keys`, so `bin/example.dart` is the only thing that exercises the real wire format — run it too.
 
 ## Architecture
 
@@ -76,6 +80,29 @@ Cross-cutting pieces:
 
 `dart:io` is used (`Platform.operatingSystem` in `registerDevice`), so this package is not
 web-compatible.
+
+## End-to-end example
+
+`bin/example.dart` walks the full signing flow — `createDocument` → `getDocumentParameters` →
+`getDocumentVisualization` → `setDataToSign` → local signing → `signDocument` →
+`getDocumentValidation` → `deleteDocument` — printing each step. It is a manual tool, not a test:
+CI never runs it, and it talks to the **production** server hardcoded in `_baseUrl` (edit that
+constant for localhost), creating a real document each run.
+
+Things to know before changing it:
+
+- **`setDataToSign` is mandatory before `signDocument`.** `SignRequestBody.dataToSignStructure`
+  must be the exact `DataToSignStructure` the server returned, so the server can verify that what
+  was signed is what it handed out.
+- **The signer is a hardcoded self-signed `CN=John Doe` RSA-2048 key + certificate**, checked in
+  deliberately. `X-Encryption-Key` still comes from `generateEncryptionKey()` per run.
+- **A non-`TOTAL_PASSED` validation in step 7 is the expected result**, not a regression — a
+  self-signed certificate has no trust anchor, so the server reports `INDETERMINATE` /
+  qualification `NA`.
+- **Step 8 currently fails against production.** `DELETE /documents/{guid}` answers HTTP 500 for
+  every document, signed or not (verified with `curl` under both auth schemes, while `GET` on the
+  same GUID returns 200). The client call is correct; the failure is reported to stderr and does
+  not fail the run. Each run therefore leaves a document behind.
 
 ## Adding a new API call
 
