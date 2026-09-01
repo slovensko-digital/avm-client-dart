@@ -137,7 +137,7 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
-  ///Client app gets the signature parameters of the doucment
+  ///Client app gets the signature parameters of the document
   ///@param guid
   ///@param Accept
   Future<chopper.Response<SigningParameters>> documentsGuidParametersGet({
@@ -150,7 +150,7 @@ abstract class Autogram extends ChopperService {
     return _documentsGuidParametersGet(guid: guid, accept: accept?.toString());
   }
 
-  ///Client app gets the signature parameters of the doucment
+  ///Client app gets the signature parameters of the document
   ///@param guid
   ///@param Accept
   @Get(path: '/documents/{guid}/parameters')
