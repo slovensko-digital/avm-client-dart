@@ -1,7 +1,9 @@
 ## 0.5.0
 
-* Update `chopper` to latest 8.x version - **breaking**, `AutogramAuthenticator` and the generated
-  `Autogram` client expose `chopper` 8 types
+* Update `chopper` to latest 8.x version - **breaking** for two exported signatures:
+  `AutogramAuthenticator` now overrides `intercept(Chain)` instead of `onRequest(Request)`, and
+  `Autogram.create` takes `List<Interceptor>?` instead of `Iterable<dynamic>?` interceptors.
+  `AutogramService` itself is unchanged, but consumers must move to `chopper` 8 as well
 * Raise minimum Dart SDK to 3.3.4
 * Update API schema - documentation only, no API changes
 * Add `bin/example.dart` with the end-to-end document signing flow
