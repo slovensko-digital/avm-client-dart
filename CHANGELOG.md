@@ -1,6 +1,8 @@
 ## 0.4.6
 
 * Update `chopper` to latest 8.x version
+* Update API schema - documentation only, no API changes
+* Add `bin/example.dart` with the end-to-end document signing flow
 
 ## 0.4.5
 
