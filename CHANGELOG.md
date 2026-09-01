@@ -1,6 +1,8 @@
-## 0.4.6
+## 0.5.0
 
-* Update `chopper` to latest 8.x version
+* Update `chopper` to latest 8.x version - **breaking**, `AutogramAuthenticator` and the generated
+  `Autogram` client expose `chopper` 8 types
+* Raise minimum Dart SDK to 3.3.4
 * Update API schema - documentation only, no API changes
 * Add `bin/example.dart` with the end-to-end document signing flow
 
