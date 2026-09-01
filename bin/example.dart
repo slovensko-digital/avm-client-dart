@@ -313,10 +313,8 @@ Future<void> _deleteDocument(
 }
 
 /// The [_certificatePem] as the base64 encoded DER the API expects.
-String get _base64Certificate => _certificatePem
-    .replaceAll('-----BEGIN CERTIFICATE-----', '')
-    .replaceAll('-----END CERTIFICATE-----', '')
-    .replaceAll(RegExp(r'\s'), '');
+String get _base64Certificate =>
+    base64.encode(CryptoUtils.getBytesFromPEMString(_certificatePem));
 
 /// Reads the optional `--base-url=<url>` argument.
 String _parseBaseUrl(List<String> arguments) {
