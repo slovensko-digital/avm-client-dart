@@ -16,11 +16,8 @@
 /// level, but step 7 will report the signature as untrusted - that is expected
 /// and is part of what this example demonstrates.
 ///
-/// Known server-side issue: as of 2026-09-01 the production server answers
-/// `DELETE /documents/{guid}` with HTTP 500 for every document, signed or not
-/// (reproducible with plain `curl` and with either authentication scheme, while
-/// `GET` on the same GUID still returns 200). Step 8 therefore reports a failed
-/// cleanup against production; the call itself is correct.
+/// Step 8 deletes the document again, so a run leaves nothing behind. A cleanup
+/// failure is reported to stderr without failing the run.
 library;
 
 import 'dart:convert' show base64Decode, base64Encode;
@@ -124,6 +121,13 @@ Future<void> main() async {
     await _getDocumentValidation(service, documentId);
   } on ServiceException catch (exception) {
     _logError(exception);
+    exitCode = 1;
+  } catch (error, stackTrace) {
+    // Anything that fails before the server responds - connection refused,
+    // DNS, TLS, timeout - arrives here rather than as a ServiceException.
+    stderr.writeln('');
+    stderr.writeln('Request failed: $error');
+    stderr.writeln(stackTrace);
     exitCode = 1;
   } finally {
     if (documentId != null) {
@@ -306,8 +310,11 @@ Future<void> _deleteDocument(
   try {
     await service.deleteDocument(documentId);
     _log('deleted $documentId');
-  } on ServiceException catch (exception) {
-    stderr.writeln('failed to delete $documentId: $exception');
+  } catch (error) {
+    // Deliberately catches everything: this runs inside a finally, so an
+    // exception escaping here would replace - and discard - the error that
+    // caused the cleanup in the first place.
+    stderr.writeln('failed to delete $documentId: $error');
   }
 }
 
