@@ -4,7 +4,7 @@ version: 0.4.5
 homepage: ""
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.3.4 <4.0.0'
 
 dependencies:
   chopper: ^8.0.0
