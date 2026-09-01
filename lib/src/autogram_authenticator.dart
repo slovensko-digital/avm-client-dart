@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:chopper/chopper.dart';
 
-// TODO Drop AutogramAuthenticator and implement using custom DynamicMap<K, V> : MapBase<K, V> that will accept K Function()
-
 /// Sets the "X-Encryption-Key" and "Accept": "application/json" values.
+///
+/// Internal to `AutogramService` and deliberately not exported from
+/// `autogram_sign.dart`: overriding [intercept] means this class's signature
+/// follows `chopper`'s `Interceptor` contract, and keeping it private stops
+/// that contract from becoming part of this package's public API.
 class AutogramAuthenticator extends HeadersInterceptor {
   final String Function() encryptionKeySource;
 

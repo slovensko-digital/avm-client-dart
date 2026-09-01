@@ -1,4 +1,5 @@
 import 'package:autogram_sign/autogram_sign.dart';
+import 'package:autogram_sign/src/autogram_authenticator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart' show MockClient;
 import 'package:test/test.dart';
