@@ -1,6 +1,7 @@
 // ignore_for_file: type=lint
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:json_annotation/json_annotation.dart' as json;
 import 'package:collection/collection.dart';
 import 'dart:convert';
 
@@ -30,7 +31,7 @@ abstract class Autogram extends ChopperService {
     ErrorConverter? errorConverter,
     Converter? converter,
     Uri? baseUrl,
-    Iterable<dynamic>? interceptors,
+    List<Interceptor>? interceptors,
   }) {
     if (client != null) {
       return _$Autogram(client);
@@ -136,7 +137,7 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
-  ///Client app gets the signature parameters of the doucment
+  ///Client app gets the signature parameters of the document
   ///@param guid
   ///@param Accept
   Future<chopper.Response<SigningParameters>> documentsGuidParametersGet({
@@ -149,7 +150,7 @@ abstract class Autogram extends ChopperService {
     return _documentsGuidParametersGet(guid: guid, accept: accept?.toString());
   }
 
-  ///Client app gets the signature parameters of the doucment
+  ///Client app gets the signature parameters of the document
   ///@param guid
   ///@param Accept
   @Get(path: '/documents/{guid}/parameters')

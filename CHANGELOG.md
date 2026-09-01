@@ -1,3 +1,11 @@
+## 0.5.0
+
+* Update `chopper` to latest 8.x version - **breaking**: `Autogram.create` now takes `List<Interceptor>?` instead of `Iterable<dynamic>?` interceptors. `AutogramService`'s own API is unchanged, but consumers must move to `chopper` 8 as well
+* Raise minimum Dart SDK to 3.3.4
+* Stop exporting `AutogramAuthenticator` - **breaking** if used directly. It is an implementation detail of `AutogramService`, and keeping it private keeps `chopper`'s `Interceptor` contract - which it now implements as `intercept(Chain)` rather than `onRequest(Request)` - out of this package's public API
+* Update API schema - documentation only, no API changes
+* Add `bin/example.dart` with the end-to-end document signing flow
+
 ## 0.4.5
 
 * Parsing title from HTML error body as exception message
