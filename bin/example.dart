@@ -5,12 +5,11 @@
 /// validate the result and finally delete the document again.
 ///
 /// ```shell
-/// # Against the default (production) server:
 /// fvm dart run bin/example.dart
-///
-/// # Against a locally running avm-server:
-/// fvm dart run bin/example.dart --base-url=http://localhost:3000/api/v1
 /// ```
+///
+/// The server is [_baseUrl]; edit that constant to run against a locally
+/// running avm-server instead.
 ///
 /// The signing certificate below is self-signed, so the AVM service has no
 /// trust anchor for it. Signing still succeeds for the `XAdES_BASELINE_B`
@@ -24,17 +23,16 @@
 /// cleanup against production; the call itself is correct.
 library;
 
-import 'dart:convert' show base64;
+import 'dart:convert' show base64Decode, base64Encode;
 import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:autogram_sign/autogram_sign.dart';
 import 'package:basic_utils/basic_utils.dart' show CryptoUtils;
 
-/// Default AVM server, same as [AutogramService]'s own default.
-const _defaultBaseUrl = 'https://autogram.slovensko.digital/api/v1';
-
-/// Argument used to point the example at a different server.
-const _baseUrlArgument = '--base-url=';
+/// AVM server this example runs against, same as [AutogramService]'s own
+/// default. The local server would be `http://localhost:3000/api/v1`.
+const _baseUrl = 'https://autogram.slovensko.digital/api/v1';
 
 /// RSA-2048 private key of the "John Doe" test identity.
 ///
@@ -97,8 +95,8 @@ H9pzLuYxYxGeEJdoKvsd7EEbVL9RfpF4rxxrt/0=
 -----END CERTIFICATE-----
 ''';
 
-Future<void> main(List<String> arguments) async {
-  final baseUrl = Uri.parse(_parseBaseUrl(arguments));
+Future<void> main() async {
+  final baseUrl = Uri.parse(_baseUrl);
 
   // The server encrypts the stored document with this key; the same key must be
   // sent with every subsequent request for the same document.
@@ -227,10 +225,10 @@ String _signLocally(DataToSignStructure dataToSignStructure) {
   final privateKey = CryptoUtils.rsaPrivateKeyFromPem(_privateKeyPem);
   final signature = CryptoUtils.rsaSign(
     privateKey,
-    base64.decode(dataToSignStructure.dataToSign),
+    base64Decode(dataToSignStructure.dataToSign),
     algorithmName: 'SHA-256/RSA',
   );
-  final signedData = base64.encode(signature);
+  final signedData = signature.base64;
 
   _log('signedData: ${signedData.length} chars');
 
@@ -289,7 +287,8 @@ Future<void> _getDocumentValidation(
     _log('  level: ${signature.level.value}');
     _log('  claimedSigningTime: ${signature.claimedSigningTime}');
     _log('  subjectDN: ${signature.signingCertificate.subjectDN}');
-    _log('  qualification: ${signature.signingCertificate.qualification.value}');
+    _log(
+        '  qualification: ${signature.signingCertificate.qualification.value}');
   }
 }
 
@@ -314,18 +313,7 @@ Future<void> _deleteDocument(
 
 /// The [_certificatePem] as the base64 encoded DER the API expects.
 String get _base64Certificate =>
-    base64.encode(CryptoUtils.getBytesFromPEMString(_certificatePem));
-
-/// Reads the optional `--base-url=<url>` argument.
-String _parseBaseUrl(List<String> arguments) {
-  for (final argument in arguments) {
-    if (argument.startsWith(_baseUrlArgument)) {
-      return argument.substring(_baseUrlArgument.length);
-    }
-  }
-
-  return _defaultBaseUrl;
-}
+    CryptoUtils.getBytesFromPEMString(_certificatePem).base64;
 
 void _step(int number, String name) {
   stdout.writeln('');
@@ -344,4 +332,13 @@ void _logError(ServiceException exception) {
   stderr.writeln('   errorCode: ${exception.errorCode}');
   stderr.writeln('   message: ${exception.message}');
   stderr.writeln('   details: ${exception.details}');
+}
+
+extension on Uint8List {
+  /// Gets these bytes base64 encoded.
+  ///
+  /// Uses `base64Encode`, which is `base64.encode`; the codec itself cannot be
+  /// named here because an unqualified `base64` inside this extension resolves
+  /// to this getter.
+  String get base64 => base64Encode(this);
 }
