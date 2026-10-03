@@ -1,3 +1,9 @@
+## 0.5.0
+
+* Implement device registration with `publicKey` and `pushkey` (breaking change of `registerDevice`)
+* Send "Device JWT" for "/device-integrations" APIs using new `deviceTokenSource` param
+* Add `createDeviceToken()` helper
+
 ## 0.4.5
 
 * Parsing title from HTML error body as exception message
