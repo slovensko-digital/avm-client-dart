@@ -1,10 +1,14 @@
+import 'dart:async' show FutureOr;
 import 'dart:io';
+
+import 'package:basic_utils/basic_utils.dart' show ECPublicKey;
 
 import 'package:intl/intl.dart';
 
 import '../generated/autogram.swagger.dart';
 import 'autogram_authenticator.dart';
 import 'iautogram_service.dart';
+import 'keys.dart';
 import 'response_functions.dart';
 
 export 'iautogram_service.dart';
@@ -17,13 +21,20 @@ class AutogramService implements IAutogramService {
   final Autogram _autogram;
 
   /// Constructs new [AutogramService] instance.
+  ///
+  /// [deviceTokenSource] provides "Device JWT" (see [createDeviceToken]) for
+  /// device authenticated APIs - e.g. [registerDeviceIntegration].
   AutogramService({
     Uri? baseUrl,
     required String Function() encryptionKeySource,
+    FutureOr<String?> Function()? deviceTokenSource,
   }) : _autogram = Autogram.create(
           baseUrl: baseUrl ?? _defaultBaseUrl,
           interceptors: [
-            AutogramAuthenticator(encryptionKeySource),
+            AutogramAuthenticator(
+              encryptionKeySource,
+              deviceTokenSource: deviceTokenSource,
+            ),
           ],
         );
 
@@ -109,14 +120,15 @@ class AutogramService implements IAutogramService {
   Future<PostDeviceResponse> registerDevice({
     required String registrationId,
     required String displayName,
+    required ECPublicKey publicKey,
+    required String pushkey,
   }) {
-    // TODO Get public key
     final body = PostDeviceRequestBody(
       platform: Platform.operatingSystem,
       registrationId: registrationId,
       displayName: displayName,
-      publicKey: "",
-      pushkey: "",
+      publicKey: publicKey.getEncoded(),
+      pushkey: pushkey,
     );
 
     return _autogram.devicesPost(body: body).then(unwrap);
@@ -126,7 +138,6 @@ class AutogramService implements IAutogramService {
   Future<void> registerDeviceIntegration(
     String integrationPairingToken,
   ) {
-    // TODO Set JWT in header
     final body = PostDeviceIntegrationsRequestBody(
       integrationPairingToken: integrationPairingToken,
     );

@@ -1,3 +1,5 @@
+import 'package:basic_utils/basic_utils.dart' show ECPublicKey;
+
 import '../generated/autogram.swagger.dart';
 
 /// Provides operations to call Autogram service.
@@ -64,13 +66,21 @@ abstract class IAutogramService {
 
   /// Registers itself at the server.
   ///
+  /// [registrationId] is the FCM registration token, [publicKey] is used by
+  /// server to verify "Device JWT" and [pushkey] is Base64 encoded AES256 key
+  /// used to encrypt push notifications.
+  ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_devices>
   Future<PostDeviceResponse> registerDevice({
     required String registrationId,
     required String displayName,
+    required ECPublicKey publicKey,
+    required String pushkey,
   });
 
   /// Registers itself for receiving sign requests (push notification) from given integration
+  ///
+  /// Requires "Device JWT" from `deviceTokenSource`.
   ///
   /// See: <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Minimal%20Integration/post_device_integrations>
   Future<void> registerDeviceIntegration(
