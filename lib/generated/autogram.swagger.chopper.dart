@@ -91,6 +91,26 @@ final class _$Autogram extends Autogram {
   }
 
   @override
+  Future<Response<VerifiableVisualizationResponseBody>>
+      _documentsGuidVerifiableVisualizationGet({
+    required String? guid,
+    String? accept,
+  }) {
+    final Uri $url = Uri.parse('/documents/${guid}/verifiable-visualization');
+    final Map<String, String> $headers = {
+      if (accept != null) 'Accept': accept,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      headers: $headers,
+    );
+    return client.send<VerifiableVisualizationResponseBody,
+        VerifiableVisualizationResponseBody>($request);
+  }
+
+  @override
   Future<Response<SigningParameters>> _documentsGuidParametersGet({
     required String? guid,
     String? accept,
@@ -293,6 +313,21 @@ final class _$Autogram extends Autogram {
       'guid': guid,
       'key': key,
       'integration': integration,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> _qrCodeRegisterGet({required String? integration}) {
+    final Uri $url = Uri.parse('/qr-code-register');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'integration': integration
     };
     final Request $request = Request(
       'GET',

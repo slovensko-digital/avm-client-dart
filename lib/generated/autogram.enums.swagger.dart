@@ -217,6 +217,39 @@ enum SigningParametersTransformationMediaDestinationTypeDescription {
       this.value);
 }
 
+enum VerifiableVisualizationResponseBodySignatureForm {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('XAdES')
+  xades('XAdES'),
+  @JsonValue('CAdES')
+  cades('CAdES'),
+  @JsonValue('PAdES')
+  pades('PAdES');
+
+  final String? value;
+
+  const VerifiableVisualizationResponseBodySignatureForm(this.value);
+}
+
+enum VerifiableVisualizationTransformationMediaDestinationTypeDescription {
+  @JsonValue(null)
+  swaggerGeneratedUnknown(null),
+
+  @JsonValue('TXT')
+  txt('TXT'),
+  @JsonValue('HTML')
+  html('HTML'),
+  @JsonValue('XHTML')
+  xhtml('XHTML');
+
+  final String? value;
+
+  const VerifiableVisualizationTransformationMediaDestinationTypeDescription(
+      this.value);
+}
+
 enum DocumentValidationResponseBodyContainerType {
   @JsonValue(null)
   swaggerGeneratedUnknown(null),
