@@ -136,7 +136,32 @@ abstract class Autogram extends ChopperService {
     @Header('Accept') String? accept,
   });
 
-  ///Client app gets the signature parameters of the doucment
+  ///Client app requests data objects covered by the signature to visualize and verify the document by itself.
+  ///@param guid
+  ///@param Accept
+  Future<chopper.Response<VerifiableVisualizationResponseBody>>
+      documentsGuidVerifiableVisualizationGet({
+    required String? guid,
+    String? accept,
+  }) {
+    generatedMapping.putIfAbsent(VerifiableVisualizationResponseBody,
+        () => VerifiableVisualizationResponseBody.fromJsonFactory);
+
+    return _documentsGuidVerifiableVisualizationGet(
+        guid: guid, accept: accept?.toString());
+  }
+
+  ///Client app requests data objects covered by the signature to visualize and verify the document by itself.
+  ///@param guid
+  ///@param Accept
+  @Get(path: '/documents/{guid}/verifiable-visualization')
+  Future<chopper.Response<VerifiableVisualizationResponseBody>>
+      _documentsGuidVerifiableVisualizationGet({
+    @Path('guid') required String? guid,
+    @Header('Accept') String? accept,
+  });
+
+  ///Client app gets the signature parameters of the document
   ///@param guid
   ///@param Accept
   Future<chopper.Response<SigningParameters>> documentsGuidParametersGet({
@@ -149,7 +174,7 @@ abstract class Autogram extends ChopperService {
     return _documentsGuidParametersGet(guid: guid, accept: accept?.toString());
   }
 
-  ///Client app gets the signature parameters of the doucment
+  ///Client app gets the signature parameters of the document
   ///@param guid
   ///@param Accept
   @Get(path: '/documents/{guid}/parameters')
@@ -383,6 +408,18 @@ abstract class Autogram extends ChopperService {
     @Query('key') required String? key,
     @Query('integration') String? integration,
   });
+
+  ///URL format for pairing Autogram v mobile app with an integration
+  ///@param integration JWT of source integration used to pair device with the integration. Must contain `aud: "device"` claim
+  Future<chopper.Response> qrCodeRegisterGet({required String? integration}) {
+    return _qrCodeRegisterGet(integration: integration);
+  }
+
+  ///URL format for pairing Autogram v mobile app with an integration
+  ///@param integration JWT of source integration used to pair device with the integration. Must contain `aud: "device"` claim
+  @Get(path: '/qr-code-register')
+  Future<chopper.Response> _qrCodeRegisterGet(
+      {@Query('integration') required String? integration});
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -979,6 +1016,7 @@ class DataToSignRequestBody {
   const DataToSignRequestBody({
     required this.signingCertificate,
     this.addTimestamp,
+    this.signingTime,
   });
 
   factory DataToSignRequestBody.fromJson(Map<String, dynamic> json) =>
@@ -991,6 +1029,8 @@ class DataToSignRequestBody {
   final String signingCertificate;
   @JsonKey(name: 'addTimestamp', defaultValue: false)
   final bool? addTimestamp;
+  @JsonKey(name: 'signingTime')
+  final int? signingTime;
   static const fromJsonFactory = _$DataToSignRequestBodyFromJson;
 
   @override
@@ -1002,7 +1042,10 @@ class DataToSignRequestBody {
                     .equals(other.signingCertificate, signingCertificate)) &&
             (identical(other.addTimestamp, addTimestamp) ||
                 const DeepCollectionEquality()
-                    .equals(other.addTimestamp, addTimestamp)));
+                    .equals(other.addTimestamp, addTimestamp)) &&
+            (identical(other.signingTime, signingTime) ||
+                const DeepCollectionEquality()
+                    .equals(other.signingTime, signingTime)));
   }
 
   @override
@@ -1012,25 +1055,31 @@ class DataToSignRequestBody {
   int get hashCode =>
       const DeepCollectionEquality().hash(signingCertificate) ^
       const DeepCollectionEquality().hash(addTimestamp) ^
+      const DeepCollectionEquality().hash(signingTime) ^
       runtimeType.hashCode;
 }
 
 extension $DataToSignRequestBodyExtension on DataToSignRequestBody {
   DataToSignRequestBody copyWith(
-      {String? signingCertificate, bool? addTimestamp}) {
+      {String? signingCertificate, bool? addTimestamp, int? signingTime}) {
     return DataToSignRequestBody(
         signingCertificate: signingCertificate ?? this.signingCertificate,
-        addTimestamp: addTimestamp ?? this.addTimestamp);
+        addTimestamp: addTimestamp ?? this.addTimestamp,
+        signingTime: signingTime ?? this.signingTime);
   }
 
   DataToSignRequestBody copyWithWrapped(
-      {Wrapped<String>? signingCertificate, Wrapped<bool?>? addTimestamp}) {
+      {Wrapped<String>? signingCertificate,
+      Wrapped<bool?>? addTimestamp,
+      Wrapped<int?>? signingTime}) {
     return DataToSignRequestBody(
         signingCertificate: (signingCertificate != null
             ? signingCertificate.value
             : this.signingCertificate),
         addTimestamp:
-            (addTimestamp != null ? addTimestamp.value : this.addTimestamp));
+            (addTimestamp != null ? addTimestamp.value : this.addTimestamp),
+        signingTime:
+            (signingTime != null ? signingTime.value : this.signingTime));
   }
 }
 
@@ -1927,6 +1976,272 @@ extension $DocumentVisualizationResponseBodyExtension
         mimeType: (mimeType != null ? mimeType.value : this.mimeType),
         filename: (filename != null ? filename.value : this.filename),
         content: (content != null ? content.value : this.content));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class VerifiableVisualizationResponseBody {
+  const VerifiableVisualizationResponseBody({
+    required this.signatureForm,
+    required this.document,
+    this.transformation,
+    this.asicManifest,
+    this.pdfByteRange,
+    this.signingTime,
+  });
+
+  factory VerifiableVisualizationResponseBody.fromJson(
+          Map<String, dynamic> json) =>
+      _$VerifiableVisualizationResponseBodyFromJson(json);
+
+  static const toJsonFactory = _$VerifiableVisualizationResponseBodyToJson;
+  Map<String, dynamic> toJson() =>
+      _$VerifiableVisualizationResponseBodyToJson(this);
+
+  @JsonKey(
+    name: 'signatureForm',
+    toJson: verifiableVisualizationResponseBodySignatureFormToJson,
+    fromJson: verifiableVisualizationResponseBodySignatureFormFromJson,
+  )
+  final enums.VerifiableVisualizationResponseBodySignatureForm signatureForm;
+  @JsonKey(name: 'document')
+  final SignedDataObject document;
+  @JsonKey(name: 'transformation')
+  final VerifiableVisualizationTransformation? transformation;
+  @JsonKey(name: 'asicManifest')
+  final SignedDataObject? asicManifest;
+  @JsonKey(name: 'pdfByteRange', defaultValue: <int>[])
+  final List<int>? pdfByteRange;
+  @JsonKey(name: 'signingTime')
+  final int? signingTime;
+  static const fromJsonFactory = _$VerifiableVisualizationResponseBodyFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is VerifiableVisualizationResponseBody &&
+            (identical(other.signatureForm, signatureForm) ||
+                const DeepCollectionEquality()
+                    .equals(other.signatureForm, signatureForm)) &&
+            (identical(other.document, document) ||
+                const DeepCollectionEquality()
+                    .equals(other.document, document)) &&
+            (identical(other.transformation, transformation) ||
+                const DeepCollectionEquality()
+                    .equals(other.transformation, transformation)) &&
+            (identical(other.asicManifest, asicManifest) ||
+                const DeepCollectionEquality()
+                    .equals(other.asicManifest, asicManifest)) &&
+            (identical(other.pdfByteRange, pdfByteRange) ||
+                const DeepCollectionEquality()
+                    .equals(other.pdfByteRange, pdfByteRange)) &&
+            (identical(other.signingTime, signingTime) ||
+                const DeepCollectionEquality()
+                    .equals(other.signingTime, signingTime)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(signatureForm) ^
+      const DeepCollectionEquality().hash(document) ^
+      const DeepCollectionEquality().hash(transformation) ^
+      const DeepCollectionEquality().hash(asicManifest) ^
+      const DeepCollectionEquality().hash(pdfByteRange) ^
+      const DeepCollectionEquality().hash(signingTime) ^
+      runtimeType.hashCode;
+}
+
+extension $VerifiableVisualizationResponseBodyExtension
+    on VerifiableVisualizationResponseBody {
+  VerifiableVisualizationResponseBody copyWith(
+      {enums.VerifiableVisualizationResponseBodySignatureForm? signatureForm,
+      SignedDataObject? document,
+      VerifiableVisualizationTransformation? transformation,
+      SignedDataObject? asicManifest,
+      List<int>? pdfByteRange,
+      int? signingTime}) {
+    return VerifiableVisualizationResponseBody(
+        signatureForm: signatureForm ?? this.signatureForm,
+        document: document ?? this.document,
+        transformation: transformation ?? this.transformation,
+        asicManifest: asicManifest ?? this.asicManifest,
+        pdfByteRange: pdfByteRange ?? this.pdfByteRange,
+        signingTime: signingTime ?? this.signingTime);
+  }
+
+  VerifiableVisualizationResponseBody copyWithWrapped(
+      {Wrapped<enums.VerifiableVisualizationResponseBodySignatureForm>?
+          signatureForm,
+      Wrapped<SignedDataObject>? document,
+      Wrapped<VerifiableVisualizationTransformation?>? transformation,
+      Wrapped<SignedDataObject?>? asicManifest,
+      Wrapped<List<int>?>? pdfByteRange,
+      Wrapped<int?>? signingTime}) {
+    return VerifiableVisualizationResponseBody(
+        signatureForm:
+            (signatureForm != null ? signatureForm.value : this.signatureForm),
+        document: (document != null ? document.value : this.document),
+        transformation: (transformation != null
+            ? transformation.value
+            : this.transformation),
+        asicManifest:
+            (asicManifest != null ? asicManifest.value : this.asicManifest),
+        pdfByteRange:
+            (pdfByteRange != null ? pdfByteRange.value : this.pdfByteRange),
+        signingTime:
+            (signingTime != null ? signingTime.value : this.signingTime));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class SignedDataObject {
+  const SignedDataObject({
+    this.filename,
+    required this.mimeType,
+    required this.content,
+  });
+
+  factory SignedDataObject.fromJson(Map<String, dynamic> json) =>
+      _$SignedDataObjectFromJson(json);
+
+  static const toJsonFactory = _$SignedDataObjectToJson;
+  Map<String, dynamic> toJson() => _$SignedDataObjectToJson(this);
+
+  @JsonKey(name: 'filename')
+  final String? filename;
+  @JsonKey(name: 'mimeType')
+  final String mimeType;
+  @JsonKey(name: 'content')
+  final String content;
+  static const fromJsonFactory = _$SignedDataObjectFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is SignedDataObject &&
+            (identical(other.filename, filename) ||
+                const DeepCollectionEquality()
+                    .equals(other.filename, filename)) &&
+            (identical(other.mimeType, mimeType) ||
+                const DeepCollectionEquality()
+                    .equals(other.mimeType, mimeType)) &&
+            (identical(other.content, content) ||
+                const DeepCollectionEquality().equals(other.content, content)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(filename) ^
+      const DeepCollectionEquality().hash(mimeType) ^
+      const DeepCollectionEquality().hash(content) ^
+      runtimeType.hashCode;
+}
+
+extension $SignedDataObjectExtension on SignedDataObject {
+  SignedDataObject copyWith(
+      {String? filename, String? mimeType, String? content}) {
+    return SignedDataObject(
+        filename: filename ?? this.filename,
+        mimeType: mimeType ?? this.mimeType,
+        content: content ?? this.content);
+  }
+
+  SignedDataObject copyWithWrapped(
+      {Wrapped<String?>? filename,
+      Wrapped<String>? mimeType,
+      Wrapped<String>? content}) {
+    return SignedDataObject(
+        filename: (filename != null ? filename.value : this.filename),
+        mimeType: (mimeType != null ? mimeType.value : this.mimeType),
+        content: (content != null ? content.value : this.content));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class VerifiableVisualizationTransformation {
+  const VerifiableVisualizationTransformation({
+    required this.content,
+    this.mediaDestinationTypeDescription,
+  });
+
+  factory VerifiableVisualizationTransformation.fromJson(
+          Map<String, dynamic> json) =>
+      _$VerifiableVisualizationTransformationFromJson(json);
+
+  static const toJsonFactory = _$VerifiableVisualizationTransformationToJson;
+  Map<String, dynamic> toJson() =>
+      _$VerifiableVisualizationTransformationToJson(this);
+
+  @JsonKey(name: 'content')
+  final String content;
+  @JsonKey(
+    name: 'mediaDestinationTypeDescription',
+    toJson:
+        verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableToJson,
+    fromJson:
+        verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableFromJson,
+  )
+  final enums
+      .VerifiableVisualizationTransformationMediaDestinationTypeDescription?
+      mediaDestinationTypeDescription;
+  static const fromJsonFactory =
+      _$VerifiableVisualizationTransformationFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is VerifiableVisualizationTransformation &&
+            (identical(other.content, content) ||
+                const DeepCollectionEquality()
+                    .equals(other.content, content)) &&
+            (identical(other.mediaDestinationTypeDescription,
+                    mediaDestinationTypeDescription) ||
+                const DeepCollectionEquality().equals(
+                    other.mediaDestinationTypeDescription,
+                    mediaDestinationTypeDescription)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(content) ^
+      const DeepCollectionEquality().hash(mediaDestinationTypeDescription) ^
+      runtimeType.hashCode;
+}
+
+extension $VerifiableVisualizationTransformationExtension
+    on VerifiableVisualizationTransformation {
+  VerifiableVisualizationTransformation copyWith(
+      {String? content,
+      enums
+          .VerifiableVisualizationTransformationMediaDestinationTypeDescription?
+          mediaDestinationTypeDescription}) {
+    return VerifiableVisualizationTransformation(
+        content: content ?? this.content,
+        mediaDestinationTypeDescription: mediaDestinationTypeDescription ??
+            this.mediaDestinationTypeDescription);
+  }
+
+  VerifiableVisualizationTransformation copyWithWrapped(
+      {Wrapped<String>? content,
+      Wrapped<
+              enums
+              .VerifiableVisualizationTransformationMediaDestinationTypeDescription?>?
+          mediaDestinationTypeDescription}) {
+    return VerifiableVisualizationTransformation(
+        content: (content != null ? content.value : this.content),
+        mediaDestinationTypeDescription:
+            (mediaDestinationTypeDescription != null
+                ? mediaDestinationTypeDescription.value
+                : this.mediaDestinationTypeDescription));
   }
 }
 
@@ -4104,6 +4419,217 @@ List<enums.SigningParametersTransformationMediaDestinationTypeDescription>?
   return signingParametersTransformationMediaDestinationTypeDescription
       .map((e) =>
           signingParametersTransformationMediaDestinationTypeDescriptionFromJson(
+              e.toString()))
+      .toList();
+}
+
+String? verifiableVisualizationResponseBodySignatureFormNullableToJson(
+    enums.VerifiableVisualizationResponseBodySignatureForm?
+        verifiableVisualizationResponseBodySignatureForm) {
+  return verifiableVisualizationResponseBodySignatureForm?.value;
+}
+
+String? verifiableVisualizationResponseBodySignatureFormToJson(
+    enums.VerifiableVisualizationResponseBodySignatureForm
+        verifiableVisualizationResponseBodySignatureForm) {
+  return verifiableVisualizationResponseBodySignatureForm.value;
+}
+
+enums.VerifiableVisualizationResponseBodySignatureForm
+    verifiableVisualizationResponseBodySignatureFormFromJson(
+  Object? verifiableVisualizationResponseBodySignatureForm, [
+  enums.VerifiableVisualizationResponseBodySignatureForm? defaultValue,
+]) {
+  return enums.VerifiableVisualizationResponseBodySignatureForm.values
+          .firstWhereOrNull((e) =>
+              e.value == verifiableVisualizationResponseBodySignatureForm) ??
+      defaultValue ??
+      enums.VerifiableVisualizationResponseBodySignatureForm
+          .swaggerGeneratedUnknown;
+}
+
+enums.VerifiableVisualizationResponseBodySignatureForm?
+    verifiableVisualizationResponseBodySignatureFormNullableFromJson(
+  Object? verifiableVisualizationResponseBodySignatureForm, [
+  enums.VerifiableVisualizationResponseBodySignatureForm? defaultValue,
+]) {
+  if (verifiableVisualizationResponseBodySignatureForm == null) {
+    return null;
+  }
+  return enums.VerifiableVisualizationResponseBodySignatureForm.values
+          .firstWhereOrNull((e) =>
+              e.value == verifiableVisualizationResponseBodySignatureForm) ??
+      defaultValue;
+}
+
+String verifiableVisualizationResponseBodySignatureFormExplodedListToJson(
+    List<enums.VerifiableVisualizationResponseBodySignatureForm>?
+        verifiableVisualizationResponseBodySignatureForm) {
+  return verifiableVisualizationResponseBodySignatureForm
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String> verifiableVisualizationResponseBodySignatureFormListToJson(
+    List<enums.VerifiableVisualizationResponseBodySignatureForm>?
+        verifiableVisualizationResponseBodySignatureForm) {
+  if (verifiableVisualizationResponseBodySignatureForm == null) {
+    return [];
+  }
+
+  return verifiableVisualizationResponseBodySignatureForm
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<enums.VerifiableVisualizationResponseBodySignatureForm>
+    verifiableVisualizationResponseBodySignatureFormListFromJson(
+  List? verifiableVisualizationResponseBodySignatureForm, [
+  List<enums.VerifiableVisualizationResponseBodySignatureForm>? defaultValue,
+]) {
+  if (verifiableVisualizationResponseBodySignatureForm == null) {
+    return defaultValue ?? [];
+  }
+
+  return verifiableVisualizationResponseBodySignatureForm
+      .map((e) => verifiableVisualizationResponseBodySignatureFormFromJson(
+          e.toString()))
+      .toList();
+}
+
+List<enums.VerifiableVisualizationResponseBodySignatureForm>?
+    verifiableVisualizationResponseBodySignatureFormNullableListFromJson(
+  List? verifiableVisualizationResponseBodySignatureForm, [
+  List<enums.VerifiableVisualizationResponseBodySignatureForm>? defaultValue,
+]) {
+  if (verifiableVisualizationResponseBodySignatureForm == null) {
+    return defaultValue;
+  }
+
+  return verifiableVisualizationResponseBodySignatureForm
+      .map((e) => verifiableVisualizationResponseBodySignatureFormFromJson(
+          e.toString()))
+      .toList();
+}
+
+String? verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableToJson(
+    enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription?
+        verifiableVisualizationTransformationMediaDestinationTypeDescription) {
+  return verifiableVisualizationTransformationMediaDestinationTypeDescription
+      ?.value;
+}
+
+String? verifiableVisualizationTransformationMediaDestinationTypeDescriptionToJson(
+    enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription
+        verifiableVisualizationTransformationMediaDestinationTypeDescription) {
+  return verifiableVisualizationTransformationMediaDestinationTypeDescription
+      .value;
+}
+
+enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription
+    verifiableVisualizationTransformationMediaDestinationTypeDescriptionFromJson(
+  Object?
+      verifiableVisualizationTransformationMediaDestinationTypeDescription, [
+  enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription?
+      defaultValue,
+]) {
+  return enums
+          .VerifiableVisualizationTransformationMediaDestinationTypeDescription
+          .values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              verifiableVisualizationTransformationMediaDestinationTypeDescription) ??
+      defaultValue ??
+      enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription
+          .swaggerGeneratedUnknown;
+}
+
+enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription?
+    verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableFromJson(
+  Object?
+      verifiableVisualizationTransformationMediaDestinationTypeDescription, [
+  enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription?
+      defaultValue,
+]) {
+  if (verifiableVisualizationTransformationMediaDestinationTypeDescription ==
+      null) {
+    return null;
+  }
+  return enums
+          .VerifiableVisualizationTransformationMediaDestinationTypeDescription
+          .values
+          .firstWhereOrNull((e) =>
+              e.value ==
+              verifiableVisualizationTransformationMediaDestinationTypeDescription) ??
+      defaultValue;
+}
+
+String verifiableVisualizationTransformationMediaDestinationTypeDescriptionExplodedListToJson(
+    List<
+            enums
+            .VerifiableVisualizationTransformationMediaDestinationTypeDescription>?
+        verifiableVisualizationTransformationMediaDestinationTypeDescription) {
+  return verifiableVisualizationTransformationMediaDestinationTypeDescription
+          ?.map((e) => e.value!)
+          .join(',') ??
+      '';
+}
+
+List<String>
+    verifiableVisualizationTransformationMediaDestinationTypeDescriptionListToJson(
+        List<
+                enums
+                .VerifiableVisualizationTransformationMediaDestinationTypeDescription>?
+            verifiableVisualizationTransformationMediaDestinationTypeDescription) {
+  if (verifiableVisualizationTransformationMediaDestinationTypeDescription ==
+      null) {
+    return [];
+  }
+
+  return verifiableVisualizationTransformationMediaDestinationTypeDescription
+      .map((e) => e.value!)
+      .toList();
+}
+
+List<enums.VerifiableVisualizationTransformationMediaDestinationTypeDescription>
+    verifiableVisualizationTransformationMediaDestinationTypeDescriptionListFromJson(
+  List? verifiableVisualizationTransformationMediaDestinationTypeDescription, [
+  List<
+          enums
+          .VerifiableVisualizationTransformationMediaDestinationTypeDescription>?
+      defaultValue,
+]) {
+  if (verifiableVisualizationTransformationMediaDestinationTypeDescription ==
+      null) {
+    return defaultValue ?? [];
+  }
+
+  return verifiableVisualizationTransformationMediaDestinationTypeDescription
+      .map((e) =>
+          verifiableVisualizationTransformationMediaDestinationTypeDescriptionFromJson(
+              e.toString()))
+      .toList();
+}
+
+List<
+        enums
+        .VerifiableVisualizationTransformationMediaDestinationTypeDescription>?
+    verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableListFromJson(
+  List? verifiableVisualizationTransformationMediaDestinationTypeDescription, [
+  List<
+          enums
+          .VerifiableVisualizationTransformationMediaDestinationTypeDescription>?
+      defaultValue,
+]) {
+  if (verifiableVisualizationTransformationMediaDestinationTypeDescription ==
+      null) {
+    return defaultValue;
+  }
+
+  return verifiableVisualizationTransformationMediaDestinationTypeDescription
+      .map((e) =>
+          verifiableVisualizationTransformationMediaDestinationTypeDescriptionFromJson(
               e.toString()))
       .toList();
 }

@@ -32,6 +32,15 @@ abstract class IAutogramService {
     String documentId,
   );
 
+  /// Requests data objects covered by the signature, so the document can be
+  /// visualized by the client and the data to sign verified against it.
+  ///
+  /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Mobile2App/get_documents__guid__verifiable_visualization>
+  Future<VerifiableVisualizationResponseBody>
+      getDocumentVerifiableVisualization(
+    String documentId,
+  );
+
   /// Requests a signature validation report of the document.
   ///
   /// See <https://generator3.swagger.io/index.html?url=https://autogram.slovensko.digital/openapi.yaml#/Mobile2App/get_documents__guid__validate>

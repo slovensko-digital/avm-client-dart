@@ -147,6 +147,7 @@ DataToSignRequestBody _$DataToSignRequestBodyFromJson(
     DataToSignRequestBody(
       signingCertificate: json['signingCertificate'] as String,
       addTimestamp: json['addTimestamp'] as bool? ?? false,
+      signingTime: (json['signingTime'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$DataToSignRequestBodyToJson(
@@ -154,6 +155,7 @@ Map<String, dynamic> _$DataToSignRequestBodyToJson(
     <String, dynamic>{
       'signingCertificate': instance.signingCertificate,
       'addTimestamp': instance.addTimestamp,
+      'signingTime': instance.signingTime,
     };
 
 DataToSignStructure _$DataToSignStructureFromJson(Map<String, dynamic> json) =>
@@ -346,6 +348,74 @@ Map<String, dynamic> _$DocumentVisualizationResponseBodyToJson(
       'mimeType': instance.mimeType,
       'filename': instance.filename,
       'content': instance.content,
+    };
+
+VerifiableVisualizationResponseBody
+    _$VerifiableVisualizationResponseBodyFromJson(Map<String, dynamic> json) =>
+        VerifiableVisualizationResponseBody(
+          signatureForm:
+              verifiableVisualizationResponseBodySignatureFormFromJson(
+                  json['signatureForm']),
+          document: SignedDataObject.fromJson(
+              json['document'] as Map<String, dynamic>),
+          transformation: json['transformation'] == null
+              ? null
+              : VerifiableVisualizationTransformation.fromJson(
+                  json['transformation'] as Map<String, dynamic>),
+          asicManifest: json['asicManifest'] == null
+              ? null
+              : SignedDataObject.fromJson(
+                  json['asicManifest'] as Map<String, dynamic>),
+          pdfByteRange: (json['pdfByteRange'] as List<dynamic>?)
+                  ?.map((e) => (e as num).toInt())
+                  .toList() ??
+              [],
+          signingTime: (json['signingTime'] as num?)?.toInt(),
+        );
+
+Map<String, dynamic> _$VerifiableVisualizationResponseBodyToJson(
+        VerifiableVisualizationResponseBody instance) =>
+    <String, dynamic>{
+      'signatureForm': verifiableVisualizationResponseBodySignatureFormToJson(
+          instance.signatureForm),
+      'document': instance.document.toJson(),
+      'transformation': instance.transformation?.toJson(),
+      'asicManifest': instance.asicManifest?.toJson(),
+      'pdfByteRange': instance.pdfByteRange,
+      'signingTime': instance.signingTime,
+    };
+
+SignedDataObject _$SignedDataObjectFromJson(Map<String, dynamic> json) =>
+    SignedDataObject(
+      filename: json['filename'] as String?,
+      mimeType: json['mimeType'] as String,
+      content: json['content'] as String,
+    );
+
+Map<String, dynamic> _$SignedDataObjectToJson(SignedDataObject instance) =>
+    <String, dynamic>{
+      'filename': instance.filename,
+      'mimeType': instance.mimeType,
+      'content': instance.content,
+    };
+
+VerifiableVisualizationTransformation
+    _$VerifiableVisualizationTransformationFromJson(
+            Map<String, dynamic> json) =>
+        VerifiableVisualizationTransformation(
+          content: json['content'] as String,
+          mediaDestinationTypeDescription:
+              verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableFromJson(
+                  json['mediaDestinationTypeDescription']),
+        );
+
+Map<String, dynamic> _$VerifiableVisualizationTransformationToJson(
+        VerifiableVisualizationTransformation instance) =>
+    <String, dynamic>{
+      'content': instance.content,
+      'mediaDestinationTypeDescription':
+          verifiableVisualizationTransformationMediaDestinationTypeDescriptionNullableToJson(
+              instance.mediaDestinationTypeDescription),
     };
 
 DocumentValidationResponseBody _$DocumentValidationResponseBodyFromJson(

@@ -1,6 +1,6 @@
 name: autogram_sign
 description: "Autogram service REST API client"
-version: 0.5.0
+version: 0.6.0
 homepage: ""
 
 environment:
@@ -21,4 +21,4 @@ dev_dependencies:
   chopper_generator: any
   analyzer: ^6.0.0
   json_serializable: ^6.7.0
-  swagger_dart_code_generator: any
+  swagger_dart_code_generator: ">=2.14.0 <3.0.0"

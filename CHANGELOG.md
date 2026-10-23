@@ -1,3 +1,10 @@
+## 0.6.0
+
+* Update API scheme to v0.5.0
+* Implement `getDocumentVerifiableVisualization()` returning data objects covered by the signature
+* Send optional `signingTime` in `DataToSignRequestBody` (required for PAdES verifiable visualization)
+* Limit `swagger_dart_code_generator` to 2.x, which generates code for `chopper` 7
+
 ## 0.5.0
 
 * Implement device registration with `publicKey` and `pushkey` (breaking change of `registerDevice`)

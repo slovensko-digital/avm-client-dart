@@ -72,6 +72,16 @@ class AutogramService implements IAutogramService {
   }
 
   @override
+  Future<VerifiableVisualizationResponseBody>
+      getDocumentVerifiableVisualization(
+    String documentId,
+  ) {
+    return _autogram
+        .documentsGuidVerifiableVisualizationGet(guid: documentId)
+        .then(unwrap);
+  }
+
+  @override
   Future<DocumentValidationResponseBody> getDocumentValidation(
     String documentId,
   ) {
